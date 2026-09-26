@@ -2497,49 +2497,27 @@ export default function PlayerController({
         </defs>
       </svg>
 
-      <div
-        className="w-full flex items-center justify-center relative overflow-visible transition-transform duration-500 gap-x-6"
-        style={{
-          transform: viewMode === 'full'
-            ? 'translateX(0)'
-            : `translateX(calc(-25vw + (${(menuWidth * 0.9) - orbSize}px) / 2))`
-        }}
-      >
-        {/* Left column (Playlists in Full, Hidden in Split) */}
-        {viewMode === 'full' && (
-          <div className="flex flex-col gap-y-1">
-            <div className="flex items-center justify-end">
-              <PlayerControllerPlaylistMenu {...sharedProps} />
-            </div>
+      <div className="w-full flex items-center justify-center relative overflow-visible gap-x-6">
+        {/* Left column: Top Playlist Menu */}
+        <div className="flex flex-col gap-y-1">
+          <div className="flex items-center justify-end">
+            <PlayerControllerPlaylistMenu {...sharedProps} />
           </div>
-        )}
+        </div>
 
-        {/* Center column (Orb) */}
+        {/* Center column: Central Orb */}
         <div
           className="flex items-center justify-center flex-shrink-0"
-          style={{
-            margin: viewMode === 'full' ? `0 ${orbMenuGap}px` : '0'
-          }}
+          style={{ margin: `0 ${orbMenuGap}px` }}
         >
           <PlayerControllerOrbMenu {...sharedProps} />
         </div>
 
-        {/* Right column (Videos in Full, Stacked in Split) */}
-        <div
-          className={`flex flex-col ${viewMode === 'full' ? 'gap-y-1' : '-space-y-4 items-center'}`}
-        >
-          {viewMode === 'full' ? (
-            <div className="flex items-center justify-start">
-              <PlayerControllerVideoMenu {...sharedProps} />
-            </div>
-          ) : (
-            <>
-              <div className="-ml-16">
-                <PlayerControllerPlaylistMenu {...sharedProps} />
-              </div>
-              <PlayerControllerVideoMenu {...sharedProps} />
-            </>
-          )}
+        {/* Right column: Top Video Menu */}
+        <div className="flex flex-col gap-y-1">
+          <div className="flex items-center justify-start">
+            <PlayerControllerVideoMenu {...sharedProps} />
+          </div>
         </div>
       </div>
 

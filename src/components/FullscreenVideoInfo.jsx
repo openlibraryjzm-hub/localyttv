@@ -300,10 +300,12 @@ const FullscreenVideoInfo = () => {
                           href={channelUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="p-2.5 rounded-full bg-black/40 hover:bg-black/60 border border-white/30 transition-all text-white flex items-center justify-center shrink-0 hover:scale-110 active:scale-95 shadow-lg"
+                          className="p-2 rounded-full bg-transparent transition-all text-white flex items-center justify-center shrink-0 hover:scale-110 active:scale-95"
                           title="Open Channel"
                         >
-                          <ExternalLink size={18} />
+                          <span style={ICON_STYLE}>
+                            <ExternalLink size={20} />
+                          </span>
                         </a>
                       ) : (
                         <div className="w-10 shrink-0" />
@@ -488,28 +490,28 @@ const FullscreenVideoInfo = () => {
             {/* Subtitles & Track Config Button */}
             <button
               onClick={() => setActiveTab(activeTab === 'subtitles' ? 'playlist' : 'subtitles')}
-              className={`group shrink-0 w-12 h-12 flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 relative rounded-full bg-black/40 hover:bg-black/60 border border-white/30 backdrop-blur-md shadow-xl ${activeTab === 'subtitles' || activeSubtitleId ? 'bg-sky-500/40 border-sky-400' : ''}`}
+              className="group shrink-0 w-12 h-12 flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 relative rounded-full bg-transparent"
               title="Subtitles & Track Config"
             >
               <span style={ICON_STYLE}>
-                <Subtitles size={26} color={activeTab === 'subtitles' || activeSubtitleId ? "#38bdf8" : "white"} strokeWidth={2} />
+                <Subtitles size={28} color={activeTab === 'subtitles' || activeSubtitleId ? "#38bdf8" : "white"} strokeWidth={2.5} />
               </span>
             </button>
 
             {/* Volume Control (Icon + Slider) */}
-            <div className="flex items-center gap-2.5 flex-1 min-w-[100px] px-2 py-1 rounded-2xl bg-black/40 border border-white/20 backdrop-blur-md shadow-xl">
+            <div className="flex items-center gap-2.5 flex-1 min-w-[100px] px-1 py-1 bg-transparent">
               <button
                 onClick={() => handleVolumeChange({ target: { value: volume === 0 ? 100 : 0 } })}
-                className="transition-all shrink-0 w-8 h-8 flex items-center justify-center hover:scale-110 active:scale-95"
+                className="transition-all shrink-0 w-9 h-9 flex items-center justify-center hover:scale-110 active:scale-95"
                 title="Mute/Unmute"
               >
                 <span style={ICON_STYLE}>
                   {volume === 0 ? (
-                    <VolumeX size={24} color="white" strokeWidth={2.5} />
+                    <VolumeX size={26} color="white" strokeWidth={2.5} />
                   ) : volume < 50 ? (
-                    <Volume1 size={24} color="white" strokeWidth={2.5} />
+                    <Volume1 size={26} color="white" strokeWidth={2.5} />
                   ) : (
-                    <Volume2 size={24} color="white" strokeWidth={2.5} />
+                    <Volume2 size={26} color="white" strokeWidth={2.5} />
                   )}
                 </span>
               </button>
@@ -519,7 +521,7 @@ const FullscreenVideoInfo = () => {
                 max="100"
                 value={volume}
                 onChange={handleVolumeChange}
-                className="w-full h-2 bg-black/60 border border-white/20 rounded-lg appearance-none cursor-pointer accent-sky-400 transition-opacity outline-none opacity-90 hover:opacity-100"
+                className="w-full h-2 bg-white/40 border border-black/80 rounded-lg appearance-none cursor-pointer accent-white transition-opacity outline-none opacity-95 hover:opacity-100 shadow-[0_2px_4px_rgba(0,0,0,0.8)]"
                 title={`Volume: ${volume}%`}
               />
             </div>
@@ -527,14 +529,14 @@ const FullscreenVideoInfo = () => {
             {/* Content Mode Toggle (Info vs Playlist) */}
             <button
               onClick={() => setActiveTab(activeTab === 'info' ? 'playlist' : 'info')}
-              className="group shrink-0 w-12 h-12 flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 relative rounded-full bg-black/40 hover:bg-black/60 border border-white/30 backdrop-blur-md shadow-xl"
+              className="group shrink-0 w-12 h-12 flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 relative rounded-full bg-transparent"
               title={activeTab === 'info' ? "Show Playlist" : "Show Video Info"}
             >
               <span style={ICON_STYLE}>
                 {activeTab === 'info' ? (
-                  <ListMusic size={26} color="white" strokeWidth={2.5} />
+                  <ListMusic size={28} color="white" strokeWidth={2.5} />
                 ) : (
-                  <Info size={26} color="white" strokeWidth={2.5} />
+                  <Info size={28} color="white" strokeWidth={2.5} />
                 )}
               </span>
             </button>
@@ -542,17 +544,16 @@ const FullscreenVideoInfo = () => {
             {/* Shield Toggle Capsule */}
             <button
               onClick={toggleScreenProtector}
-              className={`group shrink-0 w-16 h-8 rounded-full flex items-center transition-all duration-300 relative border border-white/30 px-0.5 shadow-xl ${screenProtectorActive ? 'bg-green-500/80' : 'bg-black/50'}`}
+              className={`group shrink-0 w-16 h-8 rounded-full flex items-center transition-all duration-300 relative border-2 border-black/80 px-0.5 shadow-xl ${screenProtectorActive ? 'bg-green-500' : 'bg-white/30 backdrop-blur-sm'}`}
               title={screenProtectorActive ? "Disable Shield (Enable Embed UI)" : "Enable Shield (Hide Embed UI)"}
-              style={{ backdropFilter: 'blur(4px)' }}
             >
               <div
-                className={`w-7 h-7 rounded-full bg-white shadow-md transition-transform duration-300 flex items-center justify-center ${screenProtectorActive ? 'translate-x-8' : 'translate-x-0'}`}
+                className={`w-6 h-6 rounded-full bg-white shadow-md border border-black/40 transition-transform duration-300 flex items-center justify-center ${screenProtectorActive ? 'translate-x-8' : 'translate-x-0'}`}
               >
                 {screenProtectorActive ? (
-                  <Shield size={15} fill="currentColor" className="text-green-600" />
+                  <Shield size={14} fill="currentColor" className="text-green-600" />
                 ) : (
-                  <ShieldOff size={15} className="text-slate-800" />
+                  <ShieldOff size={14} className="text-slate-900" />
                 )}
               </div>
             </button>

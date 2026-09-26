@@ -646,6 +646,13 @@ const LongPlaylistCard = ({
         {/* Background Glow Effect */}
         <div className="absolute inset-0 bg-gradient-to-br from-sky-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
 
+        {/* Top Header: Centered Playlist Title */}
+        <div className="w-full text-center px-4 pt-2.5 pb-1 relative z-10">
+            <h3 className="text-2xl font-black text-[#052F4A] truncate leading-tight group-hover:text-sky-600 transition-colors" title={playlist.name}>
+                {playlist.name}
+            </h3>
+        </div>
+
         <div className="flex flex-col md:flex-row gap-3 p-2 relative z-10">
             {/* Left Column: Thumbnail & Controls */}
             <div className="w-full md:w-1/2 flex flex-col">
@@ -879,17 +886,8 @@ const LongPlaylistCard = ({
 
             {/* Right Column: Content Grid */}
             <div className="w-full md:w-1/2 flex flex-col min-w-0 justify-between py-1 px-1">
-                {/* Title Header */}
-                <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0 flex-1">
-                        <h3 className="text-2xl font-black text-[#052F4A] truncate leading-tight group-hover:text-sky-600 transition-colors" title={playlist.name}>
-                            {playlist.name}
-                        </h3>
-                    </div>
-                </div>
-
                 {/* Main Content: Pie Menu or Mini Grid */}
-                <div className="mt-3 flex-1">
+                <div className="flex-1">
                     {isMenuOpen ? (
                         <div className="bg-slate-800/95 backdrop-blur-md rounded-2xl p-4 border border-slate-700/50 shadow-2xl animate-in zoom-in-95 duration-200 h-full flex items-center" data-card-action="true">
                             <div className="flex items-center gap-4 w-full">

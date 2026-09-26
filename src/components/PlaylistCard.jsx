@@ -570,7 +570,7 @@ const PlaylistCard = ({
         {size !== 'small' && (
           <div className={`mb-1.25 flex items-center justify-between border-2 border-[#052F4A] rounded-md p-1 bg-slate-100/90 shadow-sm relative overflow-hidden h-[32px]`}>
             <h3
-              className="font-bold truncate transition-colors pl-1 flex-1 text-left text-base"
+              className="font-bold truncate transition-colors px-2 flex-1 text-center text-base"
               style={{ color: "#052F4A" }}
               onMouseEnter={(e) => (e.currentTarget.style.color = "#38bdf8")}
               onMouseLeave={(e) => (e.currentTarget.style.color = "#052F4A")}

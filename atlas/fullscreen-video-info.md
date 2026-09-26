@@ -34,16 +34,23 @@ The Fullscreen Video Info panel is a dedicated component that appears in the rig
 ### 2. Layout Sections (Top to Bottom)
 
 - **Main Video Thumbnail**: 16:9 aspect ratio thumbnail at the top of the panel with rounded corners and border shadow.
-- **Channel Info & Metadata Area**:
-  - **Row 1 (Channel Details)**: Circular author avatar, centered channel name, and external link button.
-  - **Row 2 (Metadata Stats)**: Centered view count and upload date formatted as `Month Day, Year` with 1px black stroke outlines and drop shadows for high readability over any background.
+- **Channel Info & Metadata Card**:
+  - A single solid light card (`bg-slate-100 border-2 border-[#052F4A] rounded-2xl p-3 shadow-md`).
+  - **Left**: Circular author avatar (48px) with a dark navy border.
+  - **Middle Column**: Channel author name (large, bold `#052F4A`) stacked with view count and upload date as a metadata subtitle (`1.2M views • Oct 14, 2023`).
+  - **Right**: Compact YouTube action pill button with `ExternalLink` icon and `"YouTube"` text.
 - **Playlist Tab & Card Container**:
   - Displays parent playlist metadata and mini previews via `PlaylistCard` in `large` size mode.
   - Container is horizontally indented (`px-5 mt-2`) for clean visual hierarchy.
-  - Renders a **solid top header bar** (`bg-slate-100 border-2 border-[#052F4A]`) over a **floating 15-item mini thumbnail grid** ($3 \text{ columns} \times 5 \text{ rows}$, `grid-cols-3 gap-1`).
-  - Fetches 15 preview items via `getPlaylistItemsPreview(currentPlaylistId, 15)`.
-- **Bottom Control Bar**:
-  - Balanced control bar featuring an expanding volume range slider (`flex-1 min-w-[70px] max-w-[150px]`) and playback control triggers.
+  - Renders a **2-row solid Playlist Header Card** (`bg-slate-100 border-2 border-[#052F4A] rounded-2xl p-1 shadow-md h-[68px]` matching Author Card height):
+    - **Row 1**: Playlist Title + Grid / Shuffle / Add action buttons.
+    - **Row 2**: Content type indicators (`🎬 Videos`, `🔮 Orbs`, `🖼️ Banners`) on left + Colored folder distribution pill badges (`[🔴 4] [🔵 2]`) on right.
+  - **Mini Thumbnail Grid**: 15 preview items ($3 \text{ columns} \times 5 \text{ rows}$, `grid-cols-3 gap-1`) floating directly underneath the 2-row Header Card.
+- **Bottom Control Dock Card**:
+  - A unified solid light card (`bg-slate-100 border-2 border-[#052F4A] rounded-2xl px-3 py-2 shadow-md mx-2.5 mb-2.5`).
+  - **Left**: Volume control section with Mute button (`#052F4A`) and custom range slider.
+  - **Center**: Interactive Info vs Playlist mode toggle pill button (`border-2 border-[#052F4A]`).
+  - **Right**: Screen Protector Shield toggle capsule with a dark navy border.
 
 ---
 

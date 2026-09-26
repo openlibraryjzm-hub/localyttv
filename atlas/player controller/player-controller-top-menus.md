@@ -14,9 +14,10 @@ The Top Video Menu and Top Playlist Menu form the right and left control cluster
 The **Top Playlist Menu** and **Top Video Menu** form the left and right control cards of the `PlayerController`. They remain horizontally aligned at all times across all view modes (Fullscreen, Half, Quarter).
 
 - **Horizontal Layout & Scale**: Both menus scale symmetrically (`scale-105`) in a 3-column layout alongside the central Orb without stacking or position shifts.
-- **Card Backdrop Styling**: Utilizes the **Atmospheric Blurred App Banner Backdrop System** (`atlas/design/blurred-banner-backdrop-system.md`).
-  - Container base uses solid `bg-slate-950` with an 85% opacity blurred App Banner backdrop (`filter: blur(28px)`, `transform: scale(1.15)`).
-  - The outer card maintains `overflow: visible`, ensuring dropdowns (Add Menu, More Options), tooltips, and color pickers float freely without being clipped.
+- **Card Backdrop Styling**:
+  - Top Playlist Menu and Top Video Menu are styled as **Solid Light Cards** (`bg-slate-100 border-2 border-[#052F4A] rounded-2xl shadow-2xl`).
+  - All card borders, text, titles, badges, and bottom toolbar buttons/icons strictly enforce the signature **Dark Navy** (`#052F4A`) color.
+  - The outer container maintains `overflow: visible`, ensuring dropdowns (Add Menu, More Options), tooltips, and color pickers float freely without being clipped.
 
 ### Compact Layout & Alignment
 - **Centered Gap Alignment**: In splitscreen view, the gap between the Central Orb and the right-hand stacked menus is precisely centered over the video player's midpoint. This is achieved via a dynamic transform: `translateX(calc(-25vw + (menuWidth - orbSize) / 2))`, ensuring a balanced visual hierarchy regardless of screen width.

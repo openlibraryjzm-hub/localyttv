@@ -113,6 +113,7 @@ const PlaylistCard = ({
   isFolderCard = false,
   folderColorFilter = null,
   onFolderModeToggle,
+  headerExtension = null,
 }) => {
   const { currentPlaylistId, setPlaylistItems, setPreviewPlaylist } =
     usePlaylistStore();
@@ -659,129 +660,138 @@ const PlaylistCard = ({
       >
         {/* Title bar – only in large size; small carousel uses title below thumbnail (VideoCard-style) */}
         {size !== 'small' && (
-          <div className={`mb-1.25 flex items-center justify-between border-2 border-[#052F4A] rounded-md p-1 bg-slate-100 shadow-sm relative overflow-hidden h-[32px]`}>
-            <h3
-              className="font-bold truncate transition-colors px-2 flex-1 text-center text-base"
-              style={{ color: "#052F4A" }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "#38bdf8")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "#052F4A")}
-              title={playlist.name}
-            >
-              {playlist.name}
-            </h3>
+          <div className={`mb-1.25 border-2 border-[#052F4A] rounded-2xl bg-slate-100 shadow-sm relative overflow-hidden flex flex-col p-1`}>
+            <div className="flex items-center justify-between relative h-[32px] w-full">
+              <h3
+                className="font-bold truncate transition-colors px-2 flex-1 text-center text-base"
+                style={{ color: "#052F4A" }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#38bdf8")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "#052F4A")}
+                title={playlist.name}
+              >
+                {playlist.name}
+              </h3>
 
-            <div className="flex items-center gap-0.5 md:opacity-0 md:group-hover:opacity-100 transition-opacity absolute right-1 top-0 bottom-0 pr-1 pl-4 bg-gradient-to-l from-slate-100 via-slate-100 to-transparent z-10">
-              <div className="flex items-center">
-                <button
-                  onClick={handlePreviewPlaylist}
-                  className="p-1 hover:bg-slate-200 rounded text-[#052F4A] hover:text-sky-600 transition-colors"
-                  title="Preview playlist"
-                >
-                  <Grid3x3 size={18} strokeWidth={2.5} />
-                </button>
-              </div>
-
-              <div className="w-px h-5 bg-slate-300 mx-0.5" />
-
-              <div className="flex items-center gap-0.5">
-                {previewThumbnail?.isShuffled && (
+              <div className="flex items-center gap-0.5 md:opacity-0 md:group-hover:opacity-100 transition-opacity absolute right-1 top-0 bottom-0 pr-1 pl-4 bg-gradient-to-l from-slate-100 via-slate-100 to-transparent z-10">
+                <div className="flex items-center">
                   <button
-                    onClick={handleResetShuffle}
+                    onClick={handlePreviewPlaylist}
                     className="p-1 hover:bg-slate-200 rounded text-[#052F4A] hover:text-sky-600 transition-colors"
-                    title="Reset to default cover"
+                    title="Preview playlist"
                   >
-                    <RotateCcw size={18} strokeWidth={2.5} />
+                    <Grid3x3 size={18} strokeWidth={2.5} />
                   </button>
-                )}
-                <button
-                  onClick={handleShuffle}
-                  className="p-1 hover:bg-slate-200 rounded text-[#052F4A] hover:text-sky-600 transition-colors"
-                  title="Preview random thumbnail"
-                >
-                  <Shuffle size={18} />
-                </button>
-              </div>
-
-              <div className="w-px h-5 bg-slate-300 mx-0.5" />
-
-              <div className="flex items-center gap-0.5">
-                <div data-card-menu="true">
-                  <CardMenu
-                    customButton={
-                      <button
-                        type="button"
-                        className="p-1 rounded bg-gradient-to-tr from-sky-500 to-sky-600 text-white flex items-center justify-center hover:from-sky-600 hover:to-sky-700 transition-all shadow-sm active:scale-95"
-                        title="Add Options"
-                      >
-                        <Plus size={18} strokeWidth={2.5} />
-                      </button>
-                    }
-                    options={[
-                      { label: "Open in Playlist Uploader", action: "openUploader", icon: <Upload size={16} className="text-sky-400" /> },
-                      {
-                        render: (closeMenu) => (
-                          <div className="flex items-center w-full">
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                handleQuickAdd(false);
-                                closeMenu();
-                              }}
-                              className="flex-1 text-left px-4 py-2.5 text-sm text-white hover:bg-slate-700 transition-colors flex items-center gap-3 rounded-l-md"
-                              title="Add clipboard to playlist in background"
-                            >
-                              <Plus size={16} className="text-emerald-400 flex-shrink-0" />
-                              <span className="truncate">Quick Add</span>
-                            </button>
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                handleQuickAdd(true);
-                                closeMenu();
-                              }}
-                              className="px-4 py-2.5 hover:bg-slate-700 transition-colors flex items-center justify-center border-l border-slate-700 text-emerald-400 hover:text-emerald-300 rounded-r-md"
-                              title="Add and Play immediately"
-                            >
-                              <Play size={14} className="fill-current flex-shrink-0" />
-                            </button>
-                          </div>
-                        )
-                      },
-                      {
-                        label: "Assign to Quick Slot...",
-                        submenu: "quickAssign",
-                        icon: <Grid3x3 size={16} className="text-amber-400" />
-                      }
-                    ]}
-                    submenuOptions={{
-                      quickAssign: [0, 1, 2, 3].map(i => ({
-                        label: `Slot ${i + 1}: ${quickAssignSlots?.[i]?.name || 'Empty'}`,
-                        action: `assignSlot${i}`,
-                        icon: <Plus size={14} className={quickAssignSlots?.[i]?.id === playlist.id ? "text-emerald-400" : "text-slate-400"} />
-                      }))
-                    }}
-                    onOptionClick={(opt) => {
-                      if (opt.action === "openUploader") handleExportPlaylist?.(playlist.id, playlist.name);
-                      else if (opt.action?.startsWith("assignSlot")) {
-                        const slotIdx = parseInt(opt.action.replace("assignSlot", ""), 10);
-                        setQuickAssignSlot(slotIdx, playlist.id, playlist.name);
-                        console.log(`Assigned Slot ${slotIdx + 1} to playlist: ${playlist.name}`);
-                      }
-                    }}
-                  />
                 </div>
-                <div data-card-menu="true">
-                  <CardMenu
-                    options={cardMenuOptions}
-                    onOptionClick={handleCardMenuOptionClick}
-                  />
+
+                <div className="w-px h-5 bg-slate-300 mx-0.5" />
+
+                <div className="flex items-center gap-0.5">
+                  {previewThumbnail?.isShuffled && (
+                    <button
+                      onClick={handleResetShuffle}
+                      className="p-1 hover:bg-slate-200 rounded text-[#052F4A] hover:text-sky-600 transition-colors"
+                      title="Reset to default cover"
+                    >
+                      <RotateCcw size={18} strokeWidth={2.5} />
+                    </button>
+                  )}
+                  <button
+                    onClick={handleShuffle}
+                    className="p-1 hover:bg-slate-200 rounded text-[#052F4A] hover:text-sky-600 transition-colors"
+                    title="Preview random thumbnail"
+                  >
+                    <Shuffle size={18} />
+                  </button>
+                </div>
+
+                <div className="w-px h-5 bg-slate-300 mx-0.5" />
+
+                <div className="flex items-center gap-0.5">
+                  <div data-card-menu="true">
+                    <CardMenu
+                      customButton={
+                        <button
+                          type="button"
+                          className="p-1 rounded bg-gradient-to-tr from-sky-500 to-sky-600 text-white flex items-center justify-center hover:from-sky-600 hover:to-sky-700 transition-all shadow-sm active:scale-95"
+                          title="Add Options"
+                        >
+                          <Plus size={18} strokeWidth={2.5} />
+                        </button>
+                      }
+                      options={[
+                        { label: "Open in Playlist Uploader", action: "openUploader", icon: <Upload size={16} className="text-sky-400" /> },
+                        {
+                          render: (closeMenu) => (
+                            <div className="flex items-center w-full">
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleQuickAdd(false);
+                                  closeMenu();
+                                }}
+                                className="flex-1 text-left px-4 py-2.5 text-sm text-white hover:bg-slate-700 transition-colors flex items-center gap-3 rounded-l-md"
+                                title="Add clipboard to playlist in background"
+                              >
+                                <Plus size={16} className="text-emerald-400 flex-shrink-0" />
+                                <span className="truncate">Quick Add</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleQuickAdd(true);
+                                  closeMenu();
+                                }}
+                                className="px-4 py-2.5 hover:bg-slate-700 transition-colors flex items-center justify-center border-l border-slate-700 text-emerald-400 hover:text-emerald-300 rounded-r-md"
+                                title="Add and Play immediately"
+                              >
+                                <Play size={14} className="fill-current flex-shrink-0" />
+                              </button>
+                            </div>
+                          )
+                        },
+                        {
+                          label: "Assign to Quick Slot...",
+                          submenu: "quickAssign",
+                          icon: <Grid3x3 size={16} className="text-amber-400" />
+                        }
+                      ]}
+                      submenuOptions={{
+                        quickAssign: [0, 1, 2, 3].map(i => ({
+                          label: `Slot ${i + 1}: ${quickAssignSlots?.[i]?.name || 'Empty'}`,
+                          action: `assignSlot${i}`,
+                          icon: <Plus size={14} className={quickAssignSlots?.[i]?.id === playlist.id ? "text-emerald-400" : "text-slate-400"} />
+                        }))
+                      }}
+                      onOptionClick={(opt) => {
+                        if (opt.action === "openUploader") handleExportPlaylist?.(playlist.id, playlist.name);
+                        else if (opt.action?.startsWith("assignSlot")) {
+                          const slotIdx = parseInt(opt.action.replace("assignSlot", ""), 10);
+                          setQuickAssignSlot(slotIdx, playlist.id, playlist.name);
+                          console.log(`Assigned Slot ${slotIdx + 1} to playlist: ${playlist.name}`);
+                        }
+                      }}
+                    />
+                  </div>
+                  <div data-card-menu="true">
+                    <CardMenu
+                      options={cardMenuOptions}
+                      onOptionClick={handleCardMenuOptionClick}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
+
+            {/* Row 2: Playlist Stats & Folder Distribution (Header Extension) */}
+            {headerExtension && (
+              <div className="border-t-2 border-[#052F4A]/20 pt-1.5 pb-0.5 px-2 flex items-center justify-between gap-2 text-[#052F4A] w-full">
+                {headerExtension}
+              </div>
+            )}
           </div>
         )}
 
@@ -1078,8 +1088,9 @@ const PlaylistCard = ({
 
         {/* Mini Preview Grid – 15 items (3 cols x 5 rows) for large size, hidden in small size */}
         {size !== 'small' && (
-          <div className="mt-1 grid grid-cols-3 gap-1 px-1 pb-0">
-            {localPreviewVideos.slice(0, 15).map((item, index) => {
+          <div className="mt-1 flex-1 flex flex-col justify-center my-auto py-2 transition-all">
+            <div className="grid grid-cols-3 gap-1.5 px-1">
+              {localPreviewVideos.slice(0, 15).map((item, index) => {
               const slotKey = getPreviewItemKey(item, index);
               const thumbSrc = getPreviewItemThumbnail(item);
               const thumbFailed = miniImageErrors.has(slotKey);
@@ -1114,6 +1125,7 @@ const PlaylistCard = ({
                 className="aspect-video relative rounded-md bg-slate-800/20 border border-slate-700/30"
               />
             ))}
+            </div>
           </div>
         )}
       </div>

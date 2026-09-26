@@ -130,7 +130,7 @@ export default function PlayerControllerOrbMenu(props) {
         
         {/* Cycle Button (Bottom Left) */}
         <button 
-          className="absolute rounded-full flex items-center justify-center bg-white shadow-xl hover:scale-110 active:scale-95 group/btn z-50 border-2 border-black opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300" 
+          className="absolute rounded-full flex items-center justify-center bg-white shadow-xl hover:scale-110 active:scale-95 group/btn z-50 border-2 border-[#052F4A] opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300" 
           style={{
             left: '15%',
             top: '85%',
@@ -173,14 +173,14 @@ export default function PlayerControllerOrbMenu(props) {
               } else {
                 setCurrentPage('orb-config');
               }
-            }} className="absolute rounded-full flex items-center justify-center bg-white shadow-xl hover:scale-110 active:scale-95 group/btn z-50 border-2 border-black opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300" style={{
+            }} className="absolute rounded-full flex items-center justify-center bg-white shadow-xl hover:scale-110 active:scale-95 group/btn z-50 border-2 border-[#052F4A] opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300" style={{
               left: '15%',
               top: '15%',
               transform: 'translate(-50%, -50%)',
               width: `28px`,
               height: `28px`
             }} title={getInspectTitle('Orb Config') || 'Orb Config'}>
-              <Circle size={14} className="text-black" strokeWidth={2.5} />
+              <Circle size={14} className="text-[#052F4A]" strokeWidth={2.5} />
             </button>
 
             {/* Settings Button (Top Right) */}
@@ -204,14 +204,14 @@ export default function PlayerControllerOrbMenu(props) {
               } else {
                 setCurrentPage('app');
               }
-            }} className="absolute rounded-full flex items-center justify-center bg-white shadow-xl hover:scale-110 active:scale-95 group/btn z-50 border-2 border-black opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300" style={{
+            }} className="absolute rounded-full flex items-center justify-center bg-white shadow-xl hover:scale-110 active:scale-95 group/btn z-50 border-2 border-[#052F4A] opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300" style={{
               left: '85%',
               top: '15%',
               transform: 'translate(-50%, -50%)',
               width: `28px`,
               height: `28px`
             }} title={getInspectTitle('Settings') || 'Settings'}>
-              <Settings size={14} className="text-black" strokeWidth={2.5} />
+              <Settings size={14} className="text-[#052F4A]" strokeWidth={2.5} />
             </button>
 
             {/* Home Explorer Button (Bottom Center) */}
@@ -235,69 +235,69 @@ export default function PlayerControllerOrbMenu(props) {
               } else {
                 setCurrentPage('explorer');
               }
-            }} className="absolute rounded-full flex items-center justify-center bg-white shadow-xl hover:scale-110 active:scale-95 group/btn z-50 border-2 border-black opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300" style={{
+            }} className="absolute rounded-full flex items-center justify-center bg-white shadow-xl hover:scale-110 active:scale-95 group/btn z-50 border-2 border-[#052F4A] opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300" style={{
               left: '50%',
               top: '100%',
               transform: 'translate(-50%, -50%)',
               width: `28px`,
               height: `28px`
             }} title={`Explorer (Page ${activePage || 1})`}>
-              <span className="text-[14px] font-black text-black leading-none">{activePage || 1}</span>
+              <span className="text-[14px] font-black text-[#052F4A] leading-none">{activePage || 1}</span>
             </button>
 
             {/* Navigation Mode Toggle (Bottom Right) */}
-            <button onClick={() => setActiveNavigationMode(activeNavigationMode === 'orb' ? 'banner' : 'orb')} onTouchStart={() => setActiveNavigationMode(activeNavigationMode === 'orb' ? 'banner' : 'orb')} className={`absolute rounded-full flex items-center justify-center bg-white shadow-xl hover:scale-110 active:scale-95 group/btn z-50 border-2 border-black text-black opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300`} style={{
+            <button onClick={() => setActiveNavigationMode(activeNavigationMode === 'orb' ? 'banner' : 'orb')} onTouchStart={() => setActiveNavigationMode(activeNavigationMode === 'orb' ? 'banner' : 'orb')} className={`absolute rounded-full flex items-center justify-center bg-white shadow-xl hover:scale-110 active:scale-95 group/btn z-50 border-2 border-[#052F4A] text-[#052F4A] opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300`} style={{
               left: '85%',
               top: '85%',
               transform: 'translate(-50%, -50%)',
               width: `28px`,
               height: `28px`
             }} title={activeNavigationMode === 'orb' ? "Switch to Banner Navigation" : "Switch to Orb Navigation"}>
-              {activeNavigationMode === 'orb' ? <Circle size={14} className="text-black" strokeWidth={2.5} /> : <Layout size={14} className="text-black" strokeWidth={2.5} />}
+              {activeNavigationMode === 'orb' ? <Circle size={14} className="text-[#052F4A]" strokeWidth={2.5} /> : <Layout size={14} className="text-[#052F4A]" strokeWidth={2.5} />}
             </button>
 
             {/* Prev Playlist */}
-            <button onClick={() => handlePlaylistNav('prev')} onTouchStart={() => handlePlaylistNav('prev')} className="absolute rounded-full flex items-center justify-center bg-white shadow-xl hover:scale-110 active:scale-95 group/btn z-50 border-2 border-black opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300" style={{
+            <button onClick={() => handlePlaylistNav('prev')} onTouchStart={() => handlePlaylistNav('prev')} className="absolute rounded-full flex items-center justify-center bg-white shadow-xl hover:scale-110 active:scale-95 group/btn z-50 border-2 border-[#052F4A] opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300" style={{
               left: '2%',
               top: '38%',
               transform: 'translate(-50%, -50%)',
               width: `28px`,
               height: `28px`
             }} title={activeNavigationMode === 'orb' ? "Previous Orb Playlist" : "Previous Banner Category"}>
-              <ChevronsLeft size={14} className="text-black" strokeWidth={2.5} />
+              <ChevronsLeft size={14} className="text-[#052F4A]" strokeWidth={2.5} />
             </button>
 
             {/* Prev Item */}
-            <button onClick={() => handleItemNav('prev')} onTouchStart={() => handleItemNav('prev')} className="absolute rounded-full flex items-center justify-center bg-white shadow-xl hover:scale-110 active:scale-95 group/btn z-50 border-2 border-black opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300" style={{
+            <button onClick={() => handleItemNav('prev')} onTouchStart={() => handleItemNav('prev')} className="absolute rounded-full flex items-center justify-center bg-white shadow-xl hover:scale-110 active:scale-95 group/btn z-50 border-2 border-[#052F4A] opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300" style={{
               left: '2%',
               top: '62%',
               transform: 'translate(-50%, -50%)',
               width: `28px`,
               height: `28px`
             }} title={activeNavigationMode === 'orb' ? "Previous Orb" : "Previous Banner"}>
-              <ChevronLeft size={14} className="text-black" strokeWidth={2.5} />
+              <ChevronLeft size={14} className="text-[#052F4A]" strokeWidth={2.5} />
             </button>
 
             {/* Next Playlist */}
-            <button onClick={() => handlePlaylistNav('next')} onTouchStart={() => handlePlaylistNav('next')} className="absolute rounded-full flex items-center justify-center bg-white shadow-xl hover:scale-110 active:scale-95 group/btn z-50 border-2 border-black opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300" style={{
+            <button onClick={() => handlePlaylistNav('next')} onTouchStart={() => handlePlaylistNav('next')} className="absolute rounded-full flex items-center justify-center bg-white shadow-xl hover:scale-110 active:scale-95 group/btn z-50 border-2 border-[#052F4A] opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300" style={{
               left: '98%',
               top: '38%',
               transform: 'translate(-50%, -50%)',
               width: `28px`,
               height: `28px`
             }} title={activeNavigationMode === 'orb' ? "Next Orb Playlist" : "Next Banner Category"}>
-              <ChevronsRight size={14} className="text-black" strokeWidth={2.5} />
+              <ChevronsRight size={14} className="text-[#052F4A]" strokeWidth={2.5} />
             </button>
 
             {/* Next Item */}
-            <button onClick={() => handleItemNav('next')} onTouchStart={() => handleItemNav('next')} className="absolute rounded-full flex items-center justify-center bg-white shadow-xl hover:scale-110 active:scale-95 group/btn z-50 border-2 border-black opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300" style={{
+            <button onClick={() => handleItemNav('next')} onTouchStart={() => handleItemNav('next')} className="absolute rounded-full flex items-center justify-center bg-white shadow-xl hover:scale-110 active:scale-95 group/btn z-50 border-2 border-[#052F4A] opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300" style={{
               left: '98%',
               top: '62%',
               transform: 'translate(-50%, -50%)',
               width: `28px`,
               height: `28px`
             }} title={activeNavigationMode === 'orb' ? "Next Orb" : "Next Banner"}>
-              <ChevronRight size={14} className="text-black" strokeWidth={2.5} />
+              <ChevronRight size={14} className="text-[#052F4A]" strokeWidth={2.5} />
             </button>
           </>
         )}
@@ -306,7 +306,7 @@ export default function PlayerControllerOrbMenu(props) {
           <>
             {/* Placeholder Button (Bottom Center) */}
             <button 
-              className="absolute rounded-full flex items-center justify-center bg-white shadow-xl hover:scale-110 active:scale-95 group/btn z-50 border-2 border-black opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300" 
+              className="absolute rounded-full flex items-center justify-center bg-white shadow-xl hover:scale-110 active:scale-95 group/btn z-50 border-2 border-[#052F4A] opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300" 
               style={{
                 left: '50%',
                 top: '100%',
@@ -318,7 +318,7 @@ export default function PlayerControllerOrbMenu(props) {
               onTouchStart={() => console.log('Placeholder touched')}
               title="Placeholder"
             >
-              <HelpCircle size={14} className="text-black" strokeWidth={2.5} />
+              <HelpCircle size={14} className="text-[#052F4A]" strokeWidth={2.5} />
             </button>
           </>
         )}

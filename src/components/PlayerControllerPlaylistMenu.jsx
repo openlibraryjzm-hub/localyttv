@@ -97,15 +97,13 @@ const COLORS = FOLDER_COLORS.map(color => ({
 // White icon with black outline (no circle) - use as wrapper style for toolbar icons
 const ICON_WHITE_OUTLINE = {
   display: 'inline-flex',
-  color: 'white',
-  filter: 'drop-shadow(-1px -1px 0 #000) drop-shadow(1px -1px 0 #000) drop-shadow(-1px 1px 0 #000) drop-shadow(1px 1px 0 #000)'
+  color: '#052F4A'
 };
 
-// Badge text: white with black outline (no bubble container)
+// Badge text: solid dark blue
 const BADGE_TEXT_STYLE = {
-  color: 'white',
-  WebkitTextStroke: '1px #000',
-  textShadow: '-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000'
+  color: '#052F4A',
+  fontWeight: 900
 };
 
 export default function PlayerControllerPlaylistMenu(props) {
@@ -227,26 +225,11 @@ export default function PlayerControllerPlaylistMenu(props) {
           width: `${menuWidth}px`,
           height: `${menuHeight}px`
         }}>
-          {/* Solid App Banner Gradient Backdrop Layer */}
+          {/* Solid Light Card Backdrop Layer */}
           <div 
             aria-hidden="true" 
-            className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none z-0 border border-white/20 shadow-2xl bg-slate-950"
-          >
-            {/* Blurred App Banner Image Layer */}
-            <div style={{
-              position: 'absolute',
-              inset: 0,
-              backgroundImage: `url(${bannerImage})`,
-              backgroundPosition: `${bannerHorizontal}% ${bannerVertical}%`,
-              backgroundRepeat: 'repeat-x',
-              backgroundSize: `${bannerScale}vw auto`,
-              filter: 'blur(36px)',
-              opacity: 0.85,
-              transform: 'scale(1.25)',
-            }} />
-            {/* Depth Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40" />
-          </div>
+            className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none z-0 border-2 border-[#052F4A] shadow-xl bg-slate-100"
+          />
           <div 
             className="flex-grow flex flex-col items-center justify-center px-4 relative z-10 overflow-x-visible overflow-y-hidden w-full h-full min-h-0" 
             {...useLongPress(handleShufflePlaylist, handlePlaylistsGrid)}
@@ -256,12 +239,9 @@ export default function PlayerControllerPlaylistMenu(props) {
               handleShufflePlaylist();
             }}
           >
-            <h1 ref={playlistTitleRef} className="font-black text-center leading-tight line-clamp-3 tracking-tight transition-all pb-1 cursor-pointer hover:opacity-90 select-none" style={{
+            <h1 ref={playlistTitleRef} className="font-black text-center leading-tight line-clamp-3 tracking-tight transition-all pb-1 cursor-pointer hover:opacity-90 select-none text-[#052F4A]" style={{
               fontSize: `${titleFontSize}px`,
-              pointerEvents: 'none', // Let the container handle the touch events
-              color: 'white',
-              WebkitTextStroke: '1px #000',
-              textShadow: '-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000'
+              pointerEvents: 'none'
             }} title={`${playlistTitle} (Long-press for mega shuffle)`}>
               {playlistTitle}
             </h1>
@@ -305,7 +285,7 @@ export default function PlayerControllerPlaylistMenu(props) {
                   cycleGroupBadge('prev');
                 }} onTouchEnd={e => e.stopPropagation()} className="p-0.5 hover:scale-110 active:scale-95 transition-transform" title={getInspectTitle('Previous group carousel') || 'Previous group carousel'}>
                   <span style={ICON_WHITE_OUTLINE}>
-                    <ChevronLeft size={14} color="white" strokeWidth={3} />
+                    <ChevronLeft size={14} color="#052F4A" strokeWidth={3} />
                   </span>
                 </button>
                 
@@ -365,7 +345,7 @@ export default function PlayerControllerPlaylistMenu(props) {
                   cycleGroupBadge('next');
                 }} onTouchEnd={e => e.stopPropagation()} className="p-0.5 hover:scale-110 active:scale-95 transition-transform" title={getInspectTitle('Next group carousel') || 'Next group carousel'}>
                   <span style={ICON_WHITE_OUTLINE}>
-                    <ChevronRight size={14} color="white" strokeWidth={3} />
+                    <ChevronRight size={14} color="#052F4A" strokeWidth={3} />
                   </span>
                 </button>
               </span>
@@ -401,7 +381,7 @@ export default function PlayerControllerPlaylistMenu(props) {
 
           </div>
 
-          <div className="border-t border-sky-300/50 flex items-center px-6 shrink-0 relative rounded-b-2xl bg-transparent" style={{
+          <div className="border-t-2 border-[#052F4A]/20 flex items-center px-6 shrink-0 relative rounded-b-2xl bg-transparent" style={{
             height: `${bottomBarHeight}px`
           }}>
             <div className="w-full h-full flex items-center relative">
@@ -412,7 +392,7 @@ export default function PlayerControllerPlaylistMenu(props) {
                 <div className="relative flex items-center justify-center -translate-x-6">
                   <button onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)} onTouchStart={() => setIsMoreMenuOpen(!isMoreMenuOpen)} className="flex items-center justify-center group/tool" title={getInspectTitle('More options')}>
                     <span style={ICON_WHITE_OUTLINE}>
-                      <MoreHorizontal size={Math.round(bottomIconSize * 0.5)} color="white" strokeWidth={3} />
+                      <MoreHorizontal size={Math.round(bottomIconSize * 0.5)} color="#052F4A" strokeWidth={3} />
                     </span>
                   </button>
                   {isMoreMenuOpen && <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-56 bg-sky-50 border border-sky-300 rounded-lg shadow-xl overflow-hidden z-[10001] animate-in fade-in zoom-in-95 duration-100 flex flex-col p-1" style={{
@@ -602,19 +582,19 @@ export default function PlayerControllerPlaylistMenu(props) {
                 {/* 2. History Clock Icon */}
                 <div className="relative flex items-center justify-center h-full -translate-x-[5px]">
                   <div className="absolute -left-6 opacity-100 pointer-events-auto">
-                    <button onClick={handleHistoryBack} onTouchStart={handleHistoryBack} className="p-0.5 text-black hover:scale-110 active:scale-95 transition-transform" title="History Back (Older)">
+                    <button onClick={handleHistoryBack} onTouchStart={handleHistoryBack} className="p-0.5 text-[#052F4A] hover:scale-110 active:scale-95 transition-transform" title="History Back (Older)">
                       <ChevronLeft size={navChevronSize} strokeWidth={3} />
                     </button>
                   </div>
 
                   <button onClick={() => console.log('History button clicked')} className={`flex items-center justify-center group/tool transition-all ${historyIndex >= Math.min(historyStack.length - 1, 5) || historyStack.length <= 1 ? historyIndex === 0 ? 'opacity-30' : '' : ''}`} title={getInspectTitle('History')}>
                     <span style={ICON_WHITE_OUTLINE}>
-                      <Clock size={Math.round(bottomIconSize * 0.5)} color="white" strokeWidth={3} />
+                      <Clock size={Math.round(bottomIconSize * 0.5)} color="#052F4A" strokeWidth={3} />
                     </span>
                   </button>
 
                   <div className="absolute -right-6 opacity-100 pointer-events-auto">
-                    <button onClick={handleHistoryForward} onTouchStart={handleHistoryForward} className="p-0.5 text-black hover:scale-110 active:scale-95 transition-transform" title="History Forward (Newer)">
+                    <button onClick={handleHistoryForward} onTouchStart={handleHistoryForward} className="p-0.5 text-[#052F4A] hover:scale-110 active:scale-95 transition-transform" title="History Forward (Newer)">
                       <ChevronRight size={navChevronSize} strokeWidth={3} />
                     </button>
                   </div>
@@ -625,7 +605,7 @@ export default function PlayerControllerPlaylistMenu(props) {
               <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center z-10 w-10">
                 <button onClick={() => setIsAddMenuOpen(!isAddMenuOpen)} onTouchStart={() => setIsAddMenuOpen(!isAddMenuOpen)} className="flex items-center justify-center group/tool" title={getInspectTitle('Add to Playlist')}>
                   <span style={ICON_WHITE_OUTLINE}>
-                    <Plus size={Math.round(bottomIconSize * 0.5)} color="white" strokeWidth={3} />
+                    <Plus size={Math.round(bottomIconSize * 0.5)} color="#052F4A" strokeWidth={3} />
                   </span>
                 </button>
                 {isAddMenuOpen && <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-[280px] bg-sky-50 border border-sky-300 rounded-lg shadow-xl overflow-hidden z-[10001] animate-in fade-in zoom-in-95 duration-100 flex flex-col p-1" style={{
@@ -692,7 +672,7 @@ export default function PlayerControllerPlaylistMenu(props) {
                         <button onClick={() => handlePinClick(priorityPinData.video)} onTouchStart={() => handlePinClick(priorityPinData.video)} className={`rounded-lg flex items-center justify-center transition-all shadow-md overflow-hidden ${activePin === priorityPinData.id ? 'ring-2 ring-sky-400' : ''}`} style={{
                           width: '100%',
                           height: '100%',
-                          border: '2px solid #000'
+                          border: '2px solid #052F4A'
                         }} title={`Priority Pin: ${priorityPinData.video.title || 'Untitled Video'}`}>
                           {thumbnailUrl ? <img src={thumbnailUrl} alt={priorityPinData.video.title} className="w-full h-full object-cover" /> : <Pin size={24} fill="#fbbf24" strokeWidth={2} />}
                         </button>
@@ -707,19 +687,19 @@ export default function PlayerControllerPlaylistMenu(props) {
                 {/* 5. Grid Button */}
                 <div className="relative flex items-center justify-center h-full translate-x-[14px]">
                   <div className="absolute -left-6 opacity-100 pointer-events-auto">
-                    <button onClick={() => navigatePlaylist('down')} onTouchStart={() => navigatePlaylist('down')} className="p-0.5 text-black hover:scale-110 active:scale-95 transition-transform" title={getInspectTitle('Previous playlist')}>
+                    <button onClick={() => navigatePlaylist('down')} onTouchStart={() => navigatePlaylist('down')} className="p-0.5 text-[#052F4A] hover:scale-110 active:scale-95 transition-transform" title={getInspectTitle('Previous playlist')}>
                       <ChevronLeft size={navChevronSize} strokeWidth={3} />
                     </button>
                   </div>
 
                   <button onClick={handlePlaylistsGrid} onTouchStart={handlePlaylistsGrid} className="flex items-center justify-center group/tool transition-all" title={getInspectTitle('View playlists grid')}>
                     <span style={ICON_WHITE_OUTLINE}>
-                      <Menu size={Math.round(bottomIconSize * 0.5)} color="white" strokeWidth={3} />
+                      <Menu size={Math.round(bottomIconSize * 0.5)} color="#052F4A" strokeWidth={3} />
                     </span>
                   </button>
 
                   <div className="absolute -right-6 opacity-100 pointer-events-auto">
-                    <button onClick={() => navigatePlaylist('up')} onTouchStart={() => navigatePlaylist('up')} className="p-0.5 text-black hover:scale-110 active:scale-95 transition-transform" title={getInspectTitle('Next playlist')}>
+                    <button onClick={() => navigatePlaylist('up')} onTouchStart={() => navigatePlaylist('up')} className="p-0.5 text-[#052F4A] hover:scale-110 active:scale-95 transition-transform" title={getInspectTitle('Next playlist')}>
                       <ChevronRight size={navChevronSize} strokeWidth={3} />
                     </button>
                   </div>

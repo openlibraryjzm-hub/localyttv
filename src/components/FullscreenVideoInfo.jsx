@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Play, Pause, Volume1, Volume2, VolumeX, Shield, ShieldOff, ExternalLink, User, ChevronDown, Info, ListMusic, Subtitles, Check, FolderOpen } from 'lucide-react';
+import { Play, Pause, Volume1, Volume2, VolumeX, Shield, ShieldOff, ExternalLink, User, ChevronDown, Info, ListMusic, Check } from 'lucide-react';
 import { usePlaylistStore } from '../store/playlistStore';
 import { useLayoutStore } from '../store/layoutStore';
 import { useConfigStore } from '../store/configStore';
-import { useSubtitleStore } from '../store/subtitleStore';
 import { invoke } from '../api/platformBridge';
-import { getPlaylistItemsPreview, getFoldersForPlaylist, getAllPlaylistMetadata, getAllPlaylists } from '../api/playlistApi';
+import { getPlaylistItemsPreview, getFoldersForPlaylist, getAllPlaylistMetadata, getAllPlaylists, getAllFolderAssignments } from '../api/playlistApi';
+import { FOLDER_COLORS } from '../utils/folderColors';
 import PlaylistCard from './PlaylistCard';
 
 const TEXT_PRIMARY = {
@@ -65,14 +65,13 @@ const FullscreenVideoInfo = () => {
   const [isPlaying, setIsPlaying] = useState(true);
   const [volume, setVolume] = useState(100);
   const [descriptionMode, setDescriptionMode] = useState('full'); // 'min' | 'trunc' | 'full'
-  const [activeTab, setActiveTab] = useState('playlist'); // 'info' | 'playlist' | 'subtitles'
-
-  const { availableSubtitles, activeSubtitleId, fontSize, setActiveSubtitle, setFontSize } = useSubtitleStore();
+  const [activeTab, setActiveTab] = useState('playlist'); // 'info' | 'playlist'
 
   // Data for the current playlist card
   const [playlistMetadata, setPlaylistMetadata] = useState(null);
   const [playlistFolders, setPlaylistFolders] = useState([]);
   const [previewVideos, setPreviewVideos] = useState([]);
+  const [folderCounts, setFolderCounts] = useState({});
   const [isLoadingPlaylistData, setIsLoadingPlaylistData] = useState(false);
 
   const { currentPlaylistItems, currentVideoIndex, currentPlaylistId, allPlaylists, setAllPlaylists } = usePlaylistStore();
@@ -83,6 +82,7 @@ const FullscreenVideoInfo = () => {
         setPlaylistMetadata(null);
         setPlaylistFolders([]);
         setPreviewVideos([]);
+        setFolderCounts({});
         return;
       }
 
@@ -94,16 +94,38 @@ const FullscreenVideoInfo = () => {
           setAllPlaylists(all);
         }
 
-        const [metaList, folders, previews] = await Promise.all([
+        const [metaList, folders, previews, folderAssignments] = await Promise.all([
           getAllPlaylistMetadata(),
           getFoldersForPlaylist(currentPlaylistId),
-          getPlaylistItemsPreview(currentPlaylistId, 15)
+          getPlaylistItemsPreview(currentPlaylistId, 15),
+          getAllFolderAssignments(currentPlaylistId).catch(() => ({}))
         ]);
 
         const meta = metaList.find(m => String(m.playlist_id) === String(currentPlaylistId));
         setPlaylistMetadata(meta || null);
         setPlaylistFolders(folders || []);
         setPreviewVideos(previews || []);
+
+        // Compute folder counts distribution
+        const counts = {};
+        if (folderAssignments && typeof folderAssignments === 'object') {
+          Object.values(folderAssignments).forEach(val => {
+            const arr = Array.isArray(val) ? val : [val];
+            arr.forEach(col => {
+              if (typeof col === 'string' && col) {
+                counts[col] = (counts[col] || 0) + 1;
+              }
+            });
+          });
+        }
+        if (Object.keys(counts).length === 0 && Array.isArray(folders)) {
+          folders.forEach(f => {
+            const col = f.id || f.folder_color || f.color;
+            const cnt = f.count ?? f.video_count ?? 1;
+            if (col) counts[col] = (counts[col] || 0) + cnt;
+          });
+        }
+        setFolderCounts(counts);
       } catch (error) {
         console.error('Failed to fetch playlist data for fullscreen info:', error);
       } finally {
@@ -270,10 +292,10 @@ const FullscreenVideoInfo = () => {
                   ) : null}
                 </div>
 
-                {/* 3 Solid Header Bars (Matching PlaylistCard Header Aesthetic) */}
-                <div className="mt-3 px-2.5 flex flex-col gap-2">
-                  {/* Bar 1: Discord-Style Author Header Card */}
-                  <div className="border-2 border-[#052F4A] rounded-xl p-2.5 bg-slate-100 shadow-md relative overflow-hidden h-[68px] flex items-center gap-3 px-3.5 shrink-0">
+                {/* Single Unified Author & Video Info Card */}
+                <div className="mt-3 px-2.5">
+                  <div className="border-2 border-[#052F4A] rounded-2xl p-3 bg-slate-100 shadow-md relative overflow-hidden flex items-center gap-3 shrink-0">
+                    {/* Avatar */}
                     <img
                       src={isValidProfileImg ? profileImg : fallbackSrc}
                       alt={author}
@@ -284,123 +306,43 @@ const FullscreenVideoInfo = () => {
                       }}
                     />
 
-                    <span className="font-black text-lg text-[#052F4A] truncate flex-1 leading-tight" title={author}>
-                      {author}
-                    </span>
-                  </div>
+                    {/* Info Column (Author + Subtitle View Count & Date) */}
+                    <div className="flex flex-col min-w-0 flex-1 justify-center">
+                      <span className="font-black text-base text-[#052F4A] truncate leading-tight" title={author}>
+                        {author}
+                      </span>
+                      {(viewCountText || formattedDate) && (
+                        <div className="font-bold text-[11px] uppercase tracking-wide text-[#052F4A]/80 truncate mt-0.5">
+                          {viewCountText && <span>{viewCountText} views</span>}
+                          {viewCountText && formattedDate && <span className="mx-1.5 opacity-50">•</span>}
+                          {formattedDate && <span>{formattedDate}</span>}
+                        </div>
+                      )}
+                    </div>
 
-                  {/* Bar 2: View Count and Upload Date */}
-                  <div className="border-2 border-[#052F4A] rounded-md p-1 bg-slate-100 shadow-sm relative overflow-hidden h-[36px] flex items-center justify-start gap-2 px-3.5 text-[#052F4A] shrink-0">
-                    <span className="font-bold text-xs uppercase tracking-wide truncate">
-                      {viewCountText && <span>{viewCountText} views</span>}
-                      {viewCountText && formattedDate && <span className="mx-1.5 opacity-50">•</span>}
-                      {formattedDate && <span>{formattedDate}</span>}
-                    </span>
+                    {/* YouTube Action Button */}
+                    {(() => {
+                      const ytUrl = video.video_url || video.videoUrl || (video.video_id ? `https://www.youtube.com/watch?v=${video.video_id}` : null);
+                      if (!ytUrl) return null;
+                      return (
+                        <a
+                          href={ytUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="border-2 border-[#052F4A] rounded-xl px-2.5 py-1.5 bg-slate-200/60 hover:bg-sky-100 shadow-sm flex items-center gap-1.5 text-[#052F4A] font-black text-xs uppercase tracking-wider transition-all active:scale-95 cursor-pointer select-none shrink-0"
+                          title="View on YouTube"
+                        >
+                          <ExternalLink size={14} strokeWidth={2.5} />
+                          <span>YouTube</span>
+                        </a>
+                      );
+                    })()}
                   </div>
-
-                  {/* Bar 3: View on YouTube Button */}
-                  {(() => {
-                    const ytUrl = video.video_url || video.videoUrl || (video.video_id ? `https://www.youtube.com/watch?v=${video.video_id}` : null);
-                    return (
-                      <a
-                        href={ytUrl || '#'}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={(e) => {
-                          if (!ytUrl) e.preventDefault();
-                        }}
-                        className="border-2 border-[#052F4A] rounded-md p-1 bg-slate-100 hover:bg-sky-50 shadow-sm relative overflow-hidden h-[36px] flex items-center justify-start gap-2.5 px-3.5 text-[#052F4A] hover:text-sky-600 font-bold text-xs uppercase tracking-wider transition-all active:scale-95 cursor-pointer select-none shrink-0"
-                        title="View on YouTube"
-                      >
-                        <ExternalLink size={16} strokeWidth={2.5} />
-                        <span>View on YouTube</span>
-                      </a>
-                    );
-                  })()}
                 </div>
 
                 {/* Tab Content */}
                 <div className="px-0 min-h-0 flex-1 mt-2">
-                  {activeTab === 'subtitles' ? (
-                    /* Subtitles & Track Config Tab */
-                    <div className="w-full px-2 mt-1 flex flex-col gap-3">
-                      <div className="p-4 rounded-2xl bg-slate-900/90 border border-white/20 backdrop-blur-md shadow-2xl flex flex-col gap-3.5 text-white">
-                        <div className="flex items-center justify-between border-b border-white/10 pb-2.5 px-1">
-                          <span className="text-sm font-black uppercase tracking-wider text-sky-400">Subtitles & Track Config</span>
-                          <span className="text-xs font-bold text-slate-300">
-                            {availableSubtitles.length} track(s) found
-                          </span>
-                        </div>
-
-                        {/* Subtitle Track Selector */}
-                        <div className="flex flex-col gap-2 max-h-[220px] overflow-y-auto scrollbar-hide">
-                          {/* Off option */}
-                          <button
-                            onClick={() => setActiveSubtitle(null)}
-                            className={`flex items-center justify-between w-full px-3.5 py-2.5 rounded-xl text-sm font-bold text-left transition-all ${!activeSubtitleId ? 'bg-sky-500/30 text-sky-200 border border-sky-400/60' : 'bg-white/5 hover:bg-white/10 text-slate-300'}`}
-                          >
-                            <span>Off (No Subtitles)</span>
-                            {!activeSubtitleId && <Check size={18} className="text-sky-400" />}
-                          </button>
-
-                          {/* Detected Tracks */}
-                          {availableSubtitles.map((sub) => (
-                            <button
-                              key={sub.id}
-                              onClick={async () => {
-                                try {
-                                  const vtt = await invoke('read_subtitle_vtt', { subPath: sub.path });
-                                  setActiveSubtitle(sub.id, vtt);
-                                } catch (e) {
-                                  console.error('Failed to load subtitle:', e);
-                                }
-                              }}
-                              className={`flex items-center justify-between w-full px-3.5 py-2.5 rounded-xl text-sm font-bold text-left transition-all ${activeSubtitleId === sub.id ? 'bg-sky-500/30 text-sky-200 border border-sky-400/60' : 'bg-white/5 hover:bg-white/10 text-slate-300'}`}
-                            >
-                              <span className="truncate pr-2">{sub.label}</span>
-                              {activeSubtitleId === sub.id && <Check size={18} className="text-sky-400 shrink-0" />}
-                            </button>
-                          ))}
-                        </div>
-
-                        {/* Load External Subtitle File */}
-                        <button
-                          onClick={async () => {
-                            try {
-                              const file = await invoke('select_subtitle_file');
-                              if (file) {
-                                const vtt = await invoke('read_subtitle_vtt', { subPath: file });
-                                const customId = `external-${Date.now()}`;
-                                setActiveSubtitle(customId, vtt);
-                              }
-                            } catch (e) {
-                              console.error('Failed to select subtitle file:', e);
-                            }
-                          }}
-                          className="flex items-center justify-center gap-2.5 w-full py-2.5 px-3.5 bg-sky-500/25 hover:bg-sky-500/40 border border-sky-400/40 rounded-xl text-sm font-bold text-sky-200 transition-all active:scale-95 shadow-md"
-                        >
-                          <FolderOpen size={18} className="text-sky-400" />
-                          <span>Load Custom Subtitle File...</span>
-                        </button>
-
-                        {/* Font Size Selector */}
-                        <div className="border-t border-white/10 pt-2.5 flex items-center justify-between px-1">
-                          <span className="text-xs font-bold uppercase tracking-wider text-slate-300">Subtitle Size</span>
-                          <div className="flex items-center gap-2">
-                            {['sm', 'md', 'lg', 'xl'].map((sz) => (
-                              <button
-                                key={sz}
-                                onClick={() => setFontSize(sz)}
-                                className={`px-3 py-1.5 rounded-xl text-xs font-black uppercase transition-all ${fontSize === sz ? 'bg-sky-500 text-white shadow-md' : 'bg-white/10 text-slate-300 hover:text-white'}`}
-                              >
-                                {sz}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ) : activeTab === 'info' ? (
+                  {activeTab === 'info' ? (
                     <div className="flex flex-col gap-3 px-2">
                       {/* Integrated Description Box */}
                       {description && (
@@ -469,6 +411,52 @@ const FullscreenVideoInfo = () => {
                                 activeThumbnailUrl={activeThumb}
                                 size="large"
                                 inCarousel={false}
+                                headerExtension={
+                                  <>
+                                    {/* Left: Content Type Badges (Videos, Orbs, Banners) */}
+                                    <div className="flex items-center gap-1.5 flex-wrap text-[11px] font-black uppercase tracking-wider">
+                                      <span className="inline-flex items-center gap-1 bg-slate-200/80 px-2 py-0.5 rounded-lg border border-[#052F4A]/30" title={`${playlistMetadata?.count || 0} Videos`}>
+                                        <Play size={11} className="fill-current text-[#052F4A]" />
+                                        <span>{playlistMetadata?.count || 0} Videos</span>
+                                      </span>
+
+                                      {assignedOrbs.length > 0 && (
+                                        <span className="inline-flex items-center gap-1 bg-amber-100/90 text-amber-900 px-2 py-0.5 rounded-lg border border-amber-500/40" title={`${assignedOrbs.length} Orbs`}>
+                                          <span className="text-[11px]">🔮</span>
+                                          <span>{assignedOrbs.length} Orbs</span>
+                                        </span>
+                                      )}
+
+                                      {assignedBanners.length > 0 && (
+                                        <span className="inline-flex items-center gap-1 bg-violet-100/90 text-violet-900 px-2 py-0.5 rounded-lg border border-violet-500/40" title={`${assignedBanners.length} Banners`}>
+                                          <span className="text-[11px]">🖼️</span>
+                                          <span>{assignedBanners.length} Banners</span>
+                                        </span>
+                                      )}
+                                    </div>
+
+                                    {/* Right: Colored Folder Distribution Badges */}
+                                    {folderCounts && Object.keys(folderCounts).length > 0 && (
+                                      <div className="flex items-center gap-1 flex-wrap justify-end">
+                                        {Object.entries(folderCounts).map(([colorId, count]) => {
+                                          if (!count || count <= 0) return null;
+                                          const colorObj = FOLDER_COLORS.find(c => c.id === colorId) || { hex: '#ef4444', name: colorId };
+                                          return (
+                                            <span
+                                              key={colorId}
+                                              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-black border border-black/20 shadow-sm text-white shrink-0"
+                                              style={{ backgroundColor: colorObj.hex }}
+                                              title={`${count} video(s) in ${colorObj.name} folder`}
+                                            >
+                                              <span className="w-1.5 h-1.5 rounded-full bg-white opacity-90" />
+                                              <span>{count}</span>
+                                            </span>
+                                          );
+                                        })}
+                                      </div>
+                                    )}
+                                  </>
+                                }
                               />
                             );
                           })()}
@@ -482,79 +470,72 @@ const FullscreenVideoInfo = () => {
           })()}
         </div>
 
-        {/* Video Controls - Fixed at bottom */}
+        {/* Unified Bottom Control Dock Card */}
         {!fullscreenInfoBlanked && video && (
-          <div className="shrink-0 w-full mt-3 px-1 py-1 bg-transparent flex items-center justify-between gap-3 relative transition-all duration-300 z-20">
-            {/* Subtitles & Track Config Button */}
-            <button
-              onClick={() => setActiveTab(activeTab === 'subtitles' ? 'playlist' : 'subtitles')}
-              className="group shrink-0 w-12 h-12 flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 relative rounded-full bg-transparent"
-              title="Subtitles & Track Config"
-            >
-              <span style={ICON_STYLE}>
-                <Subtitles size={28} color={activeTab === 'subtitles' || activeSubtitleId ? "#38bdf8" : "white"} strokeWidth={2.5} />
-              </span>
-            </button>
-
-            {/* Volume Control (Icon + Slider) */}
-            <div className="flex items-center gap-2.5 flex-1 min-w-[100px] px-1 py-1 bg-transparent">
-              <button
-                onClick={() => handleVolumeChange({ target: { value: volume === 0 ? 100 : 0 } })}
-                className="transition-all shrink-0 w-9 h-9 flex items-center justify-center hover:scale-110 active:scale-95"
-                title="Mute/Unmute"
-              >
-                <span style={ICON_STYLE}>
+          <div className="shrink-0 w-full mt-2 px-2.5 pb-2.5 relative transition-all duration-300 z-20">
+            <div className="border-2 border-[#052F4A] rounded-2xl px-3 py-2 bg-slate-100 shadow-md flex items-center justify-between gap-3">
+              {/* Left: Volume Control (Mute Icon + Slider Track) */}
+              <div className="flex items-center gap-2.5 flex-1 min-w-[110px]">
+                <button
+                  onClick={() => handleVolumeChange({ target: { value: volume === 0 ? 100 : 0 } })}
+                  className="transition-transform shrink-0 hover:scale-110 active:scale-95 text-[#052F4A] flex items-center justify-center"
+                  title={volume === 0 ? "Unmute" : "Mute"}
+                >
                   {volume === 0 ? (
-                    <VolumeX size={26} color="white" strokeWidth={2.5} />
+                    <VolumeX size={22} strokeWidth={2.5} />
                   ) : volume < 50 ? (
-                    <Volume1 size={26} color="white" strokeWidth={2.5} />
+                    <Volume1 size={22} strokeWidth={2.5} />
                   ) : (
-                    <Volume2 size={26} color="white" strokeWidth={2.5} />
+                    <Volume2 size={22} strokeWidth={2.5} />
                   )}
-                </span>
-              </button>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={volume}
-                onChange={handleVolumeChange}
-                className="w-full h-2 bg-white/40 border border-black/80 rounded-lg appearance-none cursor-pointer accent-white transition-opacity outline-none opacity-95 hover:opacity-100 shadow-[0_2px_4px_rgba(0,0,0,0.8)]"
-                title={`Volume: ${volume}%`}
-              />
-            </div>
-
-            {/* Content Mode Toggle (Info vs Playlist) */}
-            <button
-              onClick={() => setActiveTab(activeTab === 'info' ? 'playlist' : 'info')}
-              className="group shrink-0 w-12 h-12 flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 relative rounded-full bg-transparent"
-              title={activeTab === 'info' ? "Show Playlist" : "Show Video Info"}
-            >
-              <span style={ICON_STYLE}>
-                {activeTab === 'info' ? (
-                  <ListMusic size={28} color="white" strokeWidth={2.5} />
-                ) : (
-                  <Info size={28} color="white" strokeWidth={2.5} />
-                )}
-              </span>
-            </button>
-
-            {/* Shield Toggle Capsule */}
-            <button
-              onClick={toggleScreenProtector}
-              className={`group shrink-0 w-16 h-8 rounded-full flex items-center transition-all duration-300 relative border-2 border-black/80 px-0.5 shadow-xl ${screenProtectorActive ? 'bg-green-500' : 'bg-white/30 backdrop-blur-sm'}`}
-              title={screenProtectorActive ? "Disable Shield (Enable Embed UI)" : "Enable Shield (Hide Embed UI)"}
-            >
-              <div
-                className={`w-6 h-6 rounded-full bg-white shadow-md border border-black/40 transition-transform duration-300 flex items-center justify-center ${screenProtectorActive ? 'translate-x-8' : 'translate-x-0'}`}
-              >
-                {screenProtectorActive ? (
-                  <Shield size={14} fill="currentColor" className="text-green-600" />
-                ) : (
-                  <ShieldOff size={14} className="text-slate-900" />
-                )}
+                </button>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={volume}
+                  onChange={handleVolumeChange}
+                  className="w-full h-2 bg-slate-300 border border-[#052F4A]/40 rounded-lg appearance-none cursor-pointer accent-[#052F4A] transition-all outline-none opacity-90 hover:opacity-100 shadow-inner"
+                  title={`Volume: ${volume}%`}
+                />
               </div>
-            </button>
+
+              {/* Center: Info vs Playlist Mode Toggle Button */}
+              <button
+                onClick={() => setActiveTab(activeTab === 'info' ? 'playlist' : 'info')}
+                className={`border-2 border-[#052F4A] rounded-xl px-2.5 py-1.5 shadow-sm flex items-center gap-1.5 font-black text-xs uppercase tracking-wider transition-all active:scale-95 cursor-pointer shrink-0 ${activeTab === 'info' ? 'bg-[#052F4A] text-slate-100' : 'bg-slate-200/60 hover:bg-sky-100 text-[#052F4A]'}`}
+                title={activeTab === 'info' ? "Show Playlist" : "Show Video Info"}
+              >
+                {activeTab === 'info' ? (
+                  <>
+                    <ListMusic size={15} strokeWidth={2.5} />
+                    <span>Playlist</span>
+                  </>
+                ) : (
+                  <>
+                    <Info size={15} strokeWidth={2.5} />
+                    <span>Info</span>
+                  </>
+                )}
+              </button>
+
+              {/* Right: Shield Toggle Capsule */}
+              <button
+                onClick={toggleScreenProtector}
+                className={`group shrink-0 h-8 rounded-full flex items-center transition-all duration-300 relative border-2 border-[#052F4A] px-1 shadow-sm ${screenProtectorActive ? 'bg-emerald-500 w-14' : 'bg-slate-200/80 hover:bg-slate-300/80 w-14'}`}
+                title={screenProtectorActive ? "Disable Shield (Enable Embed UI)" : "Enable Shield (Hide Embed UI)"}
+              >
+                <div
+                  className={`w-5 h-5 rounded-full bg-slate-100 shadow-md border border-[#052F4A] transition-transform duration-300 flex items-center justify-center ${screenProtectorActive ? 'translate-x-6' : 'translate-x-0'}`}
+                >
+                  {screenProtectorActive ? (
+                    <Shield size={12} fill="currentColor" className="text-emerald-700" />
+                  ) : (
+                    <ShieldOff size={12} className="text-[#052F4A]" />
+                  )}
+                </div>
+              </button>
+            </div>
           </div>
         )}
       </div>

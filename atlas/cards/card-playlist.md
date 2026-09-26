@@ -17,19 +17,21 @@ Playlist cards and Colored Folder cards share the exact same UI card schema and 
   - **Hover Overlay**: Semi-transparent black overlay for visual focus.
 
 - **Content Area**:
-  - The entire card is wrapped in a square border (`border-2 border-slate-700/50`) with rounded corners and a white background.
-  - **Playlist Title**: Positioned inside the container, above the thumbnail, enclosed in a separate inner rectangle with a dark blue border (`border-[#052F4A]`) and light background.
+  - **Solid Header Card**: Enclosed in a solid light card container (`bg-slate-100 border-2 border-[#052F4A] rounded-2xl p-1 shadow-md`).
+  - **Row 1 (Playlist Title & Actions)**: Positioned inside the top row with a dark navy title (`#052F4A`) and hover action triggers (Grid3x3, Shuffle, Reset, Flash Add `+`, Card Menu).
+  - **Row 2 (Header Extension - Playlist Stats & Folder Badges)**: Optional second row rendering item count badges (Videos `🎬`, Orbs `🔮`, Banners `🖼️`) on the left and colored folder distribution pill badges (`[🔴 4] [🔵 2]`) on the right.
 
 - **Hover Actions (Title Bar)**:
-  - Play, Shuffle, and Preview buttons horizontally aligned within the Title Bar when hovered.
+  - Play, Shuffle, and Preview buttons horizontally aligned within Row 1 when hovered.
   - Separated by vertical dividers:
     - **Preview**: Grid3x3 icon (Opens in context on Videos Page).
     - **Navigation**: Refresh (conditional, post-shuffle reset) and Shuffle.
-    - **Actions**: Flash Add Button (vibrant `+` dropdown triggering uploader modal or split button Quick Add/Play options ingesting links directly from clipboard), Info (toggles video title).
+    - **Actions**: Flash Add Button (vibrant `+` dropdown triggering uploader modal or split button Quick Add/Play options ingesting links directly from clipboard), Card Menu.
 
-- **Quick Preview Strip (Playlist Specific)**:
-  - Bottom row displaying 4 mini video thumbnails (medium quality) from the playlist.
-  - Clicking any instantly launches that specific video.
+- **Mini Preview Grid (15-Item Explorer)**:
+  - Floating mini thumbnail grid ($3 \text{ columns} \times 5 \text{ rows}$, `grid-cols-3 gap-1.5`).
+  - Vertically centered (`flex-1 my-auto flex flex-col justify-center`) to ensure 100% equalized vertical margins between the top header card and bottom containers.
+  - Clicking any item instantly launches that specific video, orb, or banner.
 
 - **Global Toggles**:
   - **List View**: Bottom-left List icon opens the Folder List View (Reel Overlay).

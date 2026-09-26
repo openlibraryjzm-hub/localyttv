@@ -86,15 +86,13 @@ const COLORS = FOLDER_COLORS.map(color => ({
 // White icon with black outline (no circle) - use as wrapper style for toolbar icons
 const ICON_WHITE_OUTLINE = {
   display: 'inline-flex',
-  color: 'white',
-  filter: 'drop-shadow(-1px -1px 0 #000) drop-shadow(1px -1px 0 #000) drop-shadow(-1px 1px 0 #000) drop-shadow(1px 1px 0 #000)'
+  color: '#052F4A'
 };
 
-// Badge text: white with black outline (no bubble container)
+// Badge text: solid dark blue
 const BADGE_TEXT_STYLE = {
-  color: 'white',
-  WebkitTextStroke: '1px #000',
-  textShadow: '-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000'
+  color: '#052F4A',
+  fontWeight: 900
 };
 
 export default function PlayerControllerVideoMenu(props) {
@@ -246,26 +244,11 @@ export default function PlayerControllerVideoMenu(props) {
           width: `${menuWidth}px`,
           height: `${menuHeight}px`
         }}>
-          {/* Solid App Banner Gradient Backdrop Layer */}
+          {/* Solid Light Card Backdrop Layer */}
           <div 
             aria-hidden="true" 
-            className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none z-0 border border-white/20 shadow-2xl bg-slate-950"
-          >
-            {/* Blurred App Banner Image Layer */}
-            <div style={{
-              position: 'absolute',
-              inset: 0,
-              backgroundImage: `url(${bannerImage})`,
-              backgroundPosition: `${bannerHorizontal}% ${bannerVertical}%`,
-              backgroundRepeat: 'repeat-x',
-              backgroundSize: `${bannerScale}vw auto`,
-              filter: 'blur(36px)',
-              opacity: 0.85,
-              transform: 'scale(1.25)',
-            }} />
-            {/* Depth Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40" />
-          </div>
+            className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none z-0 border-2 border-[#052F4A] shadow-xl bg-slate-100"
+          />
           {showColorPicker && <button onClick={() => {
             setShowColorPicker(null);
             setHoveredColorName(null);
@@ -329,24 +312,21 @@ export default function PlayerControllerVideoMenu(props) {
                 ))}
               </div>
             </div> : <div className="w-full flex flex-col justify-center transition-all relative h-full">
-              <h1 className="font-black text-center leading-tight line-clamp-3 tracking-tight transition-all pb-1" style={{
-                fontSize: `${titleFontSize}px`,
-                color: 'white',
-                WebkitTextStroke: '1px #000',
-                textShadow: '-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000'
+              <h1 className="font-black text-center leading-tight line-clamp-3 tracking-tight transition-all pb-1 text-[#052F4A]" style={{
+                fontSize: `${titleFontSize}px`
               }}>
                 {displayVideo.title}
               </h1>
             </div>}
           </div>
-          <div className="border-t border-sky-300/50 flex items-center px-3 shrink-0 relative rounded-b-2xl bg-transparent" style={{
+          <div className="border-t-2 border-[#052F4A]/20 flex items-center px-3 shrink-0 relative rounded-b-2xl bg-transparent" style={{
             height: `${bottomBarHeight}px`
           }}>
             {showColorPicker ? <div className="flex items-center justify-center w-full h-full animate-in fade-in slide-in-from-bottom-1 duration-300"><span className="text-[10px] font-black uppercase tracking-[0.3em] text-sky-700/80">{hoveredColorName || `Select ${showColorPicker} color`}</span></div> : <div className="w-full h-full relative">
               {/* Navigation Controls - Now Absolute Centered */}
               {/* Navigation Contols (Left Cluster - "Far Left") - Mirrored from Playlist */}
               {/* Previous Video - Left of Grid */}
-              <button onClick={handlePrevVideo} className="absolute left-1/2 top-1/2 p-0.5 text-black" style={{
+              <button onClick={handlePrevVideo} className="absolute left-1/2 top-1/2 p-0.5 text-[#052F4A]" style={{
                 transform: `translate(calc(-50% - 148px), -50%)`
               }} title={getInspectTitle('Previous video')}>
                 <ChevronLeft size={navChevronSize} strokeWidth={3} />
@@ -375,7 +355,7 @@ export default function PlayerControllerVideoMenu(props) {
               >
                 <span style={ICON_WHITE_OUTLINE}>
                   <svg width={Math.round(bottomIconSize * 0.55)} height={Math.round(bottomIconSize * 0.55)} viewBox="0 0 24 24" fill="none" style={{
-                    color: 'white'
+                    color: '#052F4A'
                   }}>
                     {/* 3x3 grid of dots like a dice face */}
                     <circle cx="6" cy="6" r="2" fill="currentColor" />
@@ -392,7 +372,7 @@ export default function PlayerControllerVideoMenu(props) {
               </MenuButton>
 
               {/* Next Video - Right of Grid */}
-              <button onClick={handleNextVideo} className="absolute left-1/2 top-1/2 p-0.5 text-black" style={{
+              <button onClick={handleNextVideo} className="absolute left-1/2 top-1/2 p-0.5 text-[#052F4A]" style={{
                 transform: `translate(calc(-50% - 92px), -50%)`
               }} title={getInspectTitle('Next video')}>
                 <ChevronRight size={navChevronSize} strokeWidth={3} />
@@ -428,7 +408,7 @@ export default function PlayerControllerVideoMenu(props) {
                     </span>;
                   }
                   return <span style={ICON_WHITE_OUTLINE}>
-                    <Play size={Math.round(bottomIconSize * 0.5)} color="white" fill="white" strokeWidth={0} />
+                    <Play size={Math.round(bottomIconSize * 0.5)} color="#052F4A" fill="#052F4A" strokeWidth={0} />
                   </span>;
                 })()}
               </MenuButton>
@@ -453,7 +433,7 @@ export default function PlayerControllerVideoMenu(props) {
                   } : FOLDER_COLORS.find(c => c.id === quickShuffleColor) || FOLDER_COLORS.find(c => c.id === 'indigo');
                   if (shuffleColorObj.hex === '#000') {
                     return <span style={ICON_WHITE_OUTLINE}>
-                      <Shuffle size={Math.round(bottomIconSize * 0.5)} color="white" strokeWidth={3} />
+                      <Shuffle size={Math.round(bottomIconSize * 0.5)} color="#052F4A" strokeWidth={3} />
                     </span>;
                   }
                   return <Shuffle size={Math.round(bottomIconSize * 0.5)} color={shuffleColorObj.hex} strokeWidth={3} />;
@@ -481,7 +461,7 @@ export default function PlayerControllerVideoMenu(props) {
                     </span>;
                   }
                   return <span style={ICON_WHITE_OUTLINE}>
-                    <Star size={Math.round(bottomIconSize * 0.5)} color="white" fill="transparent" strokeWidth={3} />
+                    <Star size={Math.round(bottomIconSize * 0.5)} color="#052F4A" fill="transparent" strokeWidth={3} />
                   </span>;
                 })()}
               </MenuButton>
@@ -514,7 +494,7 @@ export default function PlayerControllerVideoMenu(props) {
                   const isNormalPinned = targetVideo && isPinned(targetVideo.id) && !isPriority;
                   const isFollower = targetVideo && isFollowerPin(targetVideo.id);
                   
-                  let iconColor = 'white';
+                  let iconColor = '#052F4A';
                   let iconFill = 'transparent';
                   let strokeWidth = 2.5;
                   if (isPriority) {
@@ -566,7 +546,7 @@ export default function PlayerControllerVideoMenu(props) {
                 {isVideoLiked ? <span style={ICON_WHITE_OUTLINE}>
                   <ThumbsUp size={Math.round(bottomIconSize * 0.5)} color={likeColor} fill={likeColor} strokeWidth={3} />
                 </span> : <span style={ICON_WHITE_OUTLINE}>
-                  <ThumbsUp size={Math.round(bottomIconSize * 0.5)} color="white" fill="transparent" strokeWidth={3} />
+                  <ThumbsUp size={Math.round(bottomIconSize * 0.5)} color="#052F4A" fill="transparent" strokeWidth={3} />
                 </span>}
               </MenuButton>
 
@@ -576,7 +556,7 @@ export default function PlayerControllerVideoMenu(props) {
               }}>
                 <button onClick={() => setIsTooltipOpen(!isTooltipOpen)} className="flex items-center justify-center group/tool relative" title={getInspectTitle('YouTube API Settings')}>
                   <span style={ICON_WHITE_OUTLINE}>
-                    <Info size={Math.round(bottomIconSize * 0.5)} color="white" strokeWidth={3} />
+                    <Info size={Math.round(bottomIconSize * 0.5)} color="#052F4A" strokeWidth={3} />
                   </span>
                 </button>
 

@@ -10,6 +10,7 @@ The Central Orb is a circular element (154px diameter by default) positioned at 
 
 ## 1. User-Perspective Description
 
+- **Transparent Backdrop & Dark Navy Styling**: The Central Orb Menu container background is 100% transparent down to the underlying App Banner. All floating circular orb buttons, borders, and icons strictly enforce the signature **Dark Navy** (`#052F4A`) outline styling.
 - **Audio Visualizer Border**: The static blue border has been replaced. The Audio Visualizer acts as the dynamic, reactive border for the orb, starting exactly where the image ends (Radius 77px).
 - **Orb Image**: Displays the current video's thumbnail by default, or a custom uploaded image. Supports **Orb Group Overrides** (random image from an assigned group). Clipped to a circular shape with optional "spill" effects.
 - **Cycle Button**: (Bottom-Left) Replaces the old Upload Button. Displays a dice face symbol (e.g., `Dice1` or `Dice2`) representing the current button layout cycle. Clicking/tapping it toggles the active button cycle layout (Cycle 1 vs Cycle 2). Custom orb images can still be uploaded via Settings -> Orb tab.

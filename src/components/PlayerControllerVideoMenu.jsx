@@ -99,6 +99,23 @@ const BADGE_TEXT_STYLE = {
 
 export default function PlayerControllerVideoMenu(props) {
   const {
+    fullscreenBanner,
+    bannerPreviewMode,
+    bannerNavBannerId,
+    bannerPresets
+  } = useConfigStore();
+
+  let effectiveBanner = fullscreenBanner;
+  if (bannerNavBannerId && !bannerPreviewMode && bannerPresets?.length) {
+    const preset = bannerPresets.find(p => p.id === bannerNavBannerId);
+    if (preset?.fullscreenBanner) effectiveBanner = preset.fullscreenBanner;
+  }
+  const bannerImage = effectiveBanner?.image || '/banner.PNG';
+  const bannerScale = effectiveBanner?.scale ?? 100;
+  const bannerVertical = effectiveBanner?.verticalPosition ?? 0;
+  const bannerHorizontal = effectiveBanner?.horizontalOffset ?? 0;
+
+  const {
     viewMode,
     isEditMode,
     menuWidth,
@@ -229,6 +246,23 @@ export default function PlayerControllerVideoMenu(props) {
           width: `${menuWidth}px`,
           height: `${menuHeight}px`
         }}>
+          {/* Blurred App Banner Backdrop Layer */}
+          <div 
+            aria-hidden="true" 
+            className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none z-0 border border-white/25 shadow-2xl"
+          >
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              backgroundImage: `url(${bannerImage})`,
+              backgroundPosition: `${bannerHorizontal}% ${bannerVertical}%`,
+              backgroundRepeat: 'repeat-x',
+              backgroundSize: `${bannerScale}vw auto`,
+              filter: 'blur(28px)',
+              transform: 'scale(1.15)',
+            }} />
+            <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
+          </div>
           {showColorPicker && <button onClick={() => {
             setShowColorPicker(null);
             setHoveredColorName(null);

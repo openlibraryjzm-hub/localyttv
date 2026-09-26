@@ -109,7 +109,27 @@ const BADGE_TEXT_STYLE = {
 };
 
 export default function PlayerControllerPlaylistMenu(props) {
-  const { visualizerMode = 'bar', setVisualizerMode, quickAssignSlots, visualizerColor = '#ffffff', setVisualizerColor } = useConfigStore();
+  const {
+    visualizerMode = 'bar',
+    setVisualizerMode,
+    quickAssignSlots,
+    visualizerColor = '#ffffff',
+    setVisualizerColor,
+    fullscreenBanner,
+    bannerPreviewMode,
+    bannerNavBannerId,
+    bannerPresets
+  } = useConfigStore();
+
+  let effectiveBanner = fullscreenBanner;
+  if (bannerNavBannerId && !bannerPreviewMode && bannerPresets?.length) {
+    const preset = bannerPresets.find(p => p.id === bannerNavBannerId);
+    if (preset?.fullscreenBanner) effectiveBanner = preset.fullscreenBanner;
+  }
+  const bannerImage = effectiveBanner?.image || '/banner.PNG';
+  const bannerScale = effectiveBanner?.scale ?? 100;
+  const bannerVertical = effectiveBanner?.verticalPosition ?? 0;
+  const bannerHorizontal = effectiveBanner?.horizontalOffset ?? 0;
   const {
     viewMode,
     leftAltNavX,
@@ -203,10 +223,27 @@ export default function PlayerControllerPlaylistMenu(props) {
             </div>}
           </div>
         </div>
-        <div className={`shadow-2xl flex flex-col relative overflow-visible transition-all duration-300 group/playlist ${isEditMode ? 'ring-4 ring-sky-400/30' : 'bg-transparent rounded-2xl overflow-hidden'}`} style={{
+        <div className={`shadow-2xl flex flex-col relative overflow-visible transition-all duration-300 group/playlist ${isEditMode ? 'ring-4 ring-sky-400/30' : 'bg-transparent rounded-2xl'}`} style={{
           width: `${menuWidth}px`,
           height: `${menuHeight}px`
         }}>
+          {/* Blurred App Banner Backdrop Layer */}
+          <div 
+            aria-hidden="true" 
+            className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none z-0 border border-white/25 shadow-2xl"
+          >
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              backgroundImage: `url(${bannerImage})`,
+              backgroundPosition: `${bannerHorizontal}% ${bannerVertical}%`,
+              backgroundRepeat: 'repeat-x',
+              backgroundSize: `${bannerScale}vw auto`,
+              filter: 'blur(28px)',
+              transform: 'scale(1.15)',
+            }} />
+            <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
+          </div>
           <div 
             className="flex-grow flex flex-col items-center justify-center px-4 relative z-10 overflow-x-visible overflow-y-hidden w-full h-full min-h-0" 
             {...useLongPress(handleShufflePlaylist, handlePlaylistsGrid)}

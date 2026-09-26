@@ -4,6 +4,7 @@ The App Banner is the top-level background system that spans the full width of t
 
 **Related Documentation:**
 - **Player Controller**: See `advanced-player-controller.md` for the controller that sits on this banner
+- **Blurred Backdrop System**: See `blurred-banner-backdrop-system.md` for details on how downstream components reuse the banner as a blurred background layer
 - **Layout**: See `ui-layout.md` for layout system details
 - **Page Banner**: See `page-banner.md` for the page-level banners used on Videos/Playlists pages
 - **App Page (Editor)**: See `app-page.md` for the banner configuration interface

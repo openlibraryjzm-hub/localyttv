@@ -9,13 +9,14 @@ The Top Video Menu and Top Playlist Menu form the right and left control cluster
 
 ---
 
-## 1. Split-Screen Stacked Layout Architecture
+## 1. Controller Layout & Backdrop Architecture
 
-When the application is in Half or Quarter Split-Screen View, the `PlayerController` uses a responsive **CSS Grid** architecture:
-- The Central Orb anchors the left side spanning two rows.
-- The **Top Video Menu** and **Top Playlist Menu** neatly stack on the right side.
-- Both menus slightly scale down (`scale-90`) with calculated negative margins to compress intelligently into a combined `204px` natural flex height, flawlessly fitting into the `200px` App Banner area without visual overflow.
-- **See-Through Styling**: Both use a transparent background (`bg-transparent`) and no borders, allowing the App Banner to seamlessly show through. A shadow (`shadow-2xl`) defines their rounded shape.
+The **Top Playlist Menu** and **Top Video Menu** form the left and right control cards of the `PlayerController`. They remain horizontally aligned at all times across all view modes (Fullscreen, Half, Quarter).
+
+- **Horizontal Layout & Scale**: Both menus scale symmetrically (`scale-105`) in a 3-column layout alongside the central Orb without stacking or position shifts.
+- **Card Backdrop Styling**: Utilizes the **Atmospheric Blurred App Banner Backdrop System** (`atlas/design/blurred-banner-backdrop-system.md`).
+  - Container base uses solid `bg-slate-950` with an 85% opacity blurred App Banner backdrop (`filter: blur(28px)`, `transform: scale(1.15)`).
+  - The outer card maintains `overflow: visible`, ensuring dropdowns (Add Menu, More Options), tooltips, and color pickers float freely without being clipped.
 
 ### Compact Layout & Alignment
 - **Centered Gap Alignment**: In splitscreen view, the gap between the Central Orb and the right-hand stacked menus is precisely centered over the video player's midpoint. This is achieved via a dynamic transform: `translateX(calc(-25vw + (menuWidth - orbSize) / 2))`, ensuring a balanced visual hierarchy regardless of screen width.

@@ -19,8 +19,9 @@ The Videos Page displays the contents of a specific playlist, folder, or view wi
   - Pushed tight into the bottom of the sticky toolbar via negative margins.
 
 - **Background Styling**:
-  - The scrollable grid uses a **heavily blurred** version of the global `fullscreen app banner` image.
-  - Note: The sticky toolbar and top navigation components sit above this blur.
+  - Uses the **Atmospheric Blurred App Banner Backdrop System** (`atlas/design/blurred-banner-backdrop-system.md`).
+  - Anchored on a solid `bg-slate-950` container with an absolute positioned blurred banner overlay (`filter: blur(36px)`, `transform: scale(1.25)`, `opacity: 0.85`), dynamically synced to the active App Banner / preset image in real-time.
+  - The sticky toolbar and grid content float crisply above this backdrop layer (`z-10 relative`) with white text and black stroke/shadow outlines for 100% legibility.
 
 - **Empty States**:
   - If a folder filter is applied but contains no videos, the grid remains an empty colored blur box.

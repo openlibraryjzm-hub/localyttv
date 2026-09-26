@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:utils="clr-namespace:Yttv.Utils"
+             x:Class="Yttv.Components.FolderPrism">
+
+    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+        <HorizontalStackLayout Spacing="10" Padding="10">
+            <!-- All Button -->
+            <Ellipse WidthRequest="30" HeightRequest="30" Fill="LightGray" Stroke="White" StrokeThickness="2">
+                <Ellipse.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding Playlist.CycleFolderFilterCommand}" CommandParameter="all" />
+                </Ellipse.GestureRecognizers>
+            </Ellipse>
+
+            <!-- Color Dots (Static for now, could be Bindable) -->
+            <Ellipse WidthRequest="30" HeightRequest="30" Fill="#ef4444">
+                <Ellipse.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding Playlist.CycleFolderFilterCommand}" CommandParameter="red" />
+                </Ellipse.GestureRecognizers>
+            </Ellipse>
+            <!-- Add other colors... -->
+            <Ellipse WidthRequest="30" HeightRequest="30" Fill="#f97316" />
+            <Ellipse WidthRequest="30" HeightRequest="30" Fill="#f59e0b" />
+            <Ellipse WidthRequest="30" HeightRequest="30" Fill="#eab308" />
+            <Ellipse WidthRequest="30" HeightRequest="30" Fill="#84cc16" />
+            <Ellipse WidthRequest="30" HeightRequest="30" Fill="#22c55e" />
+            <Ellipse WidthRequest="30" HeightRequest="30" Fill="#10b981" />
+            <Ellipse WidthRequest="30" HeightRequest="30" Fill="#14b8a6" />
+            <Ellipse WidthRequest="30" HeightRequest="30" Fill="#06b6d4" />
+            <Ellipse WidthRequest="30" HeightRequest="30" Fill="#0ea5e9" />
+            <Ellipse WidthRequest="30" HeightRequest="30" Fill="#3b82f6" />
+            <Ellipse WidthRequest="30" HeightRequest="30" Fill="#6366f1" />
+            <Ellipse WidthRequest="30" HeightRequest="30" Fill="#8b5cf6" />
+            <Ellipse WidthRequest="30" HeightRequest="30" Fill="#a855f7" />
+            <Ellipse WidthRequest="30" HeightRequest="30" Fill="#d946ef" />
+            <Ellipse WidthRequest="30" HeightRequest="30" Fill="#ec4899" />
+        </HorizontalStackLayout>
+    </ScrollView>
+</ContentView>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:comp="clr-namespace:Yttv.Components"
+             x:Class="Yttv.Components.GroupPlaylistCarousel">
+
+    <VerticalStackLayout Spacing="10" Padding="10">
+        <!-- Group Header -->
+        <HorizontalStackLayout Spacing="10">
+            <Ellipse WidthRequest="20" HeightRequest="20" Fill="{Binding FolderColorId}" />
+            <Label Text="{Binding Name}" Style="{StaticResource GlassLabelStyle}" FontSize="18" />
+        </HorizontalStackLayout>
+
+        <!-- Carousel -->
+        <CollectionView ItemsLayout="HorizontalList">
+            <!-- This will need a nested binding to the group's playlists -->
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <comp:PlaylistCard WidthRequest="250" />
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </VerticalStackLayout>
+</ContentView>

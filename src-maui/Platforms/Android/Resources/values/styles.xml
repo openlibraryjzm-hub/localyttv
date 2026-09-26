@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<style name="Maui.MainTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+		<item name="android:windowTranslucentStatus">true</item>
+		<item name="android:windowTranslucentNavigation">true</item>
+	</style>
+	<style name="Maui.SplashTheme" parent="Maui.MainTheme">
+		<item name="android:windowBackground">#e0f2fe</item>
+	</style>
+</resources>

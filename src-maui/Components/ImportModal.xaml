@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Yttv.ViewModels"
+             x:Class="Yttv.Components.ImportModal">
+
+    <Grid BackgroundColor="#AA000000">
+        <Border Style="{StaticResource GlassBorderStyle}" 
+                VerticalOptions="Center" 
+                HorizontalOptions="Center" 
+                WidthRequest="500" 
+                Padding="30">
+            
+            <VerticalStackLayout Spacing="20">
+                <Label Text="IMPORT PLAYLIST" 
+                       Style="{StaticResource GlassLabelStyle}" 
+                       FontSize="24" 
+                       HorizontalOptions="Center" />
+
+                <Entry x:Name="PlaylistNameEntry" 
+                       Placeholder="Playlist Name" 
+                       PlaceholderColor="Gray"
+                       TextColor="{StaticResource PrimaryNavy}" />
+
+                <Entry x:Name="PlaylistUrlEntry" 
+                       Placeholder="YouTube Playlist URL" 
+                       PlaceholderColor="Gray"
+                       TextColor="{StaticResource PrimaryNavy}" />
+
+                <Grid ColumnDefinitions="*, *" ColumnSpacing="20">
+                    <Button Grid.Column="0" 
+                            Text="CANCEL" 
+                            Clicked="OnCancelClicked"
+                            BackgroundColor="Transparent" 
+                            TextColor="Red" />
+                    
+                    <Button Grid.Column="1" 
+                            Text="IMPORT" 
+                            Clicked="OnImportClicked"
+                            Style="{StaticResource GlassLabelStyle}" 
+                            BackgroundColor="{StaticResource GlassAccent}" 
+                            TextColor="White" />
+                </Grid>
+            </VerticalStackLayout>
+        </Border>
+    </Grid>
+</ContentView>

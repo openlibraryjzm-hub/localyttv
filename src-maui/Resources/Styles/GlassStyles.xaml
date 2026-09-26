@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+<ResourceDictionary 
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <!-- Color Palette -->
+    <Color x:Key="AppBackground">#e0f2fe</Color>
+    <Color x:Key="PrimaryNavy">#052F4A</Color>
+    <Color x:Key="GlassBackground">#66FFFFFF</Color> <!-- 40% White -->
+    <Color x:Key="GlassBorder">#99FFFFFF</Color> <!-- 60% White -->
+    <Color x:Key="GlassAccent">#3b82f6</Color> <!-- Blue 500 -->
+
+    <!-- Glassmorphism Styles -->
+    <Style x:Key="GlassFrameStyle" TargetType="Frame">
+        <Setter Property="BackgroundColor" Value="{StaticResource GlassBackground}" />
+        <Setter Property="BorderColor" Value="{StaticResource GlassBorder}" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="HasShadow" Value="False" />
+        <Setter Property="Padding" Value="10" />
+    </Style>
+
+    <Style x:Key="GlassBorderStyle" TargetType="Border">
+        <Setter Property="BackgroundColor" Value="{StaticResource GlassBackground}" />
+        <Setter Property="Stroke" Value="{StaticResource GlassBorder}" />
+        <Setter Property="StrokeThickness" Value="1.5" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 12" />
+        <Setter Property="Padding" Value="10" />
+    </Style>
+
+    <Style x:Key="GlassLabelStyle" TargetType="Label">
+        <Setter Property="TextColor" Value="{StaticResource PrimaryNavy}" />
+        <Setter Property="FontAttributes" Value="Bold" />
+    </Style>
+
+    <Style x:Key="GlassButtonStyle" TargetType="Button">
+        <Setter Property="TextColor" Value="{StaticResource PrimaryNavy}" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="BorderColor" Value="{StaticResource GlassBorder}" />
+        <Setter Property="BorderWidth" Value="1" />
+    </Style>
+
+</ResourceDictionary>

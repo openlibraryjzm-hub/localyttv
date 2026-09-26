@@ -1,0 +1,16 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "desktop-mpv",
+  "platforms": ["windows", "linux", "macos"],
+  "description": "Permissions for the native MPV player on desktop only",
+  "windows": [
+    "main"
+  ],
+  "permissions": [
+    "mpv:default",
+    "mpv:allow-init",
+    "mpv:allow-command",
+    "mpv:allow-destroy",
+    "mpv:allow-set-video-margin-ratio"
+  ]
+}

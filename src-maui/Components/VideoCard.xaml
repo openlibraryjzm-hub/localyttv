@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:Yttv.Models"
+             xmlns:vm="clr-namespace:Yttv.ViewModels"
+             x:Class="Yttv.Components.VideoCard">
+
+    <Border Style="{StaticResource GlassBorderStyle}" Margin="5">
+        <Grid ColumnDefinitions="160, *" HeightRequest="90">
+            <!-- Thumbnail -->
+            <Image Grid.Column="0" 
+                   Source="{Binding ThumbnailUrl}" 
+                   Aspect="AspectFill" 
+                   WidthRequest="160" />
+            
+            <!-- Metadata -->
+            <VerticalStackLayout Grid.Column="1" Padding="10,0" VerticalOptions="Center">
+                <Label Text="{Binding Title}" 
+                       Style="{StaticResource GlassLabelStyle}" 
+                       LineBreakMode="TailTruncation" 
+                       MaxLines="2" />
+                <Label Text="{Binding Author}" 
+                       TextColor="{StaticResource PrimaryNavy}" 
+                       Opacity="0.7" 
+                       FontSize="12" />
+            </VerticalStackLayout>
+        </Grid>
+        
+        <Border.GestureRecognizers>
+            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:MainViewModel}}, Path=Playlist.SetCurrentVideoCommand}" CommandParameter="{Binding .}" />
+        </Border.GestureRecognizers>
+    </Border>
+</ContentView>

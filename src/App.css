@@ -1,0 +1,397 @@
+/* src/App.css */
+@import "tailwindcss";
+
+:root {
+  --bg-primary: #e0f2fe;
+  --bg-secondary: #bae6fd;
+  --bg-tertiary: #7dd3fc;
+  --border-color: rgba(0, 0, 0, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body,
+html,
+#root {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  width: 100vw;
+  background: var(--bg-primary);
+  color: #000000;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.app-container {
+  height: 100vh;
+  width: 100vw;
+  position: relative;
+}
+
+/* View Mode Toggle - Temporary for testing */
+.view-mode-toggle {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+  display: flex;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  backdrop-filter: blur(10px);
+}
+
+.view-mode-toggle button {
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+}
+
+.view-mode-toggle button:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.view-mode-toggle button.active {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: rgba(59, 130, 246, 0.5);
+  color: rgba(30, 64, 175, 1);
+}
+
+/* ============================================
+   CUSTOM SCROLLBAR STYLES (universal)
+   Fully rectangular (no rounding), 14px, diagonal grip stripes
+   ============================================ */
+
+/* Firefox */
+* {
+  scrollbar-width: auto;
+  scrollbar-color: #94a3b8 #e2e8f0;
+}
+
+/* Webkit: fully rectangular, no rounded ends */
+*::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+  border-radius: 0 !important;
+  -webkit-border-radius: 0 !important;
+}
+
+/* Remove rounded end caps (buttons); keeps bar fully rectangular */
+*::-webkit-scrollbar-button {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+*::-webkit-scrollbar-track {
+  background: #e2e8f0 !important;
+  border-radius: 0 !important;
+  -webkit-border-radius: 0 !important;
+  margin: 4px;
+}
+
+/* Thumb: rectangular, diagonal stripe pattern (opaque stripes so pattern is visible) */
+*::-webkit-scrollbar-thumb {
+  background: #94a3b8 !important;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    #94a3b8 0px,
+    #94a3b8 3px,
+    #64748b 3px,
+    #64748b 5px
+  ) !important;
+  border-radius: 0 !important;
+  -webkit-border-radius: 0 !important;
+  border: 1px solid #64748b;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #64748b !important;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    #64748b 0px,
+    #64748b 3px,
+    #475569 3px,
+    #475569 5px
+  ) !important;
+}
+
+*::-webkit-scrollbar-thumb:active {
+  background: #475569 !important;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    #475569 0px,
+    #475569 3px,
+    #334155 3px,
+    #334155 5px
+  ) !important;
+}
+
+/* Corner: rectangular */
+*::-webkit-scrollbar-corner {
+  background: #e2e8f0 !important;
+  border-radius: 0 !important;
+  -webkit-border-radius: 0 !important;
+}
+
+/* ============================================
+   SCROLLBAR CHEVRON CONTROLS
+   ============================================ */
+
+.scrollbar-chevrons {
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.scrollbar-chevrons:hover {
+  opacity: 1;
+}
+
+.scrollbar-chevron {
+  opacity: 0.8;
+}
+
+.scrollbar-chevron:hover {
+  opacity: 1 !important;
+  background: rgba(5, 47, 74, 0.8) !important;
+  transform: scale(1.15);
+  box-shadow: 0 0 6px rgba(59, 130, 246, 0.4);
+}
+
+.scrollbar-chevron:active {
+  opacity: 1 !important;
+  background: rgba(59, 130, 246, 0.8) !important;
+  transform: scale(0.9);
+}
+
+.scrollbar-chevrons__dot {
+  transition: top 0.1s ease-out, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.scrollbar-chevrons:hover .scrollbar-chevrons__dot {
+  transform: scale(1.3);
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.7);
+}
+
+/* Wrapper needs position relative for absolute positioning of chevrons */
+.scrollbar-chevrons-wrapper {
+  position: relative;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes diagonal-move {
+  0% {
+    background-position: 0 0;
+  }
+
+  100% {
+    background-position: 100px -100px;
+  }
+}
+
+
+@keyframes page-banner-scroll {
+  from {
+    background-position-x: 0px;
+  }
+
+  to {
+    background-position-x: 10000px;
+  }
+}
+
+.animate-page-banner-scroll {
+  animation: page-banner-scroll 360s linear infinite;
+}
+
+.animate-diagonal-pattern {
+  animation: diagonal-move 3s linear infinite;
+}
+
+@keyframes heartbeat {
+  0% {
+    transform: scale(1);
+  }
+
+  25% {
+    transform: scale(1.1);
+  }
+
+  40% {
+    transform: scale(1);
+  }
+
+  60% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse-slow {
+
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.5;
+    transform: scale(1.05);
+  }
+}
+
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s ease-in-out infinite;
+}
+
+/* Page Banner Patterns */
+@keyframes pattern-dots {
+  0% {
+    background-position: 0 0;
+  }
+
+  100% {
+    background-position: 40px -40px;
+  }
+}
+
+@keyframes pattern-waves {
+  0% {
+    background-position: 0 0;
+  }
+
+  100% {
+    background-position: 10px -10px;
+  }
+}
+
+.pattern-diagonal {
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.05) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0.05) 75%, transparent 75%, transparent);
+  background-size: 50px 50px;
+  animation: diagonal-move 3s linear infinite;
+}
+
+.pattern-dots {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.25) 3px, transparent 3px);
+  background-size: 40px 40px;
+  animation: pattern-dots 3s linear infinite;
+}
+
+.pattern-waves {
+  background-image:
+    linear-gradient(45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.1) 75%, rgba(255, 255, 255, 0.1)),
+    linear-gradient(-45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.1) 75%, rgba(255, 255, 255, 0.1));
+  background-size: 10px 10px;
+  animation: pattern-waves 1s linear infinite;
+}
+
+.pattern-solid {
+  background: transparent;
+}
+
+@keyframes slide-in-left {
+  0% {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-in-right {
+  0% {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-left {
+  animation: slide-in-left 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes gpu-scroll {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.animate-gpu-scroll {
+  animation: gpu-scroll 120s linear infinite;
+  will-change: transform;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 1.5s infinite;
+}
+
+/* Horizontal video scroll container - force scrollbar visible; uses universal scrollbar style */
+.horizontal-video-scroll {
+  overflow-x: scroll !important;
+  overflow-y: hidden !important;
+}
+
+/* Group carousel uses universal scrollbar; optional track margin override */
+.group-carousel-scroll::-webkit-scrollbar-track {
+  margin: 0 8px;
+}
+
+/* Hide scrollbar utility */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

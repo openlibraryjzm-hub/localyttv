@@ -1,0 +1,368 @@
+{
+  "bundles": [
+    {
+      "id": "bundle-1",
+      "name": "Bundle 1"
+    },
+    {
+      "id": "bundle-1766464454756",
+      "name": "Bundle 2"
+    }
+  ],
+  "containers": [
+    {
+      "id": "container-1",
+      "bundleId": "bundle-1",
+      "name": "Container 1",
+      "points": [
+        {
+          "x": 165.90341186523438,
+          "y": 218.7272720336914
+        },
+        {
+          "x": 549.9034118652344,
+          "y": 252.7272720336914
+        },
+        {
+          "x": 548.9034118652344,
+          "y": 282.7272720336914
+        },
+        {
+          "x": 164.90341186523438,
+          "y": 318.7272720336914
+        }
+      ],
+      "color": "#1a1a1a",
+      "contentColor": "#1a1a1a",
+      "fontColor": "#ffffff",
+      "aboveContainerId": null,
+      "belowContainerId": null,
+      "aboveTeleportContainerId": null,
+      "belowTeleportContainerId": null,
+      "teleportType": null
+    },
+    {
+      "id": "container-1766464212868",
+      "bundleId": "bundle-1",
+      "name": "Container 2",
+      "points": [
+        {
+          "x": 192.87109375,
+          "y": 323.3515625
+        },
+        {
+          "x": 547.87109375,
+          "y": 283.3515625
+        },
+        {
+          "x": 549.87109375,
+          "y": 307.3515625
+        },
+        {
+          "x": 227.87109375,
+          "y": 385.3515625
+        }
+      ],
+      "color": "#1a1a1a",
+      "contentColor": "#1a1a1a",
+      "fontColor": "#ffffff",
+      "aboveContainerId": null,
+      "belowContainerId": null,
+      "aboveTeleportContainerId": null,
+      "belowTeleportContainerId": null,
+      "teleportType": null
+    },
+    {
+      "id": "container-1766464226148",
+      "bundleId": "bundle-1",
+      "name": "Container 3",
+      "points": [
+        {
+          "x": 279.87109375,
+          "y": 376.3515625
+        },
+        {
+          "x": 554.87109375,
+          "y": 308.3515625
+        },
+        {
+          "x": 554.87109375,
+          "y": 326.3515625
+        },
+        {
+          "x": 304.87109375,
+          "y": 421.3515625
+        }
+      ],
+      "color": "#1a1a1a",
+      "contentColor": "#1a1a1a",
+      "fontColor": "#ffffff",
+      "aboveContainerId": null,
+      "belowContainerId": null,
+      "aboveTeleportContainerId": null,
+      "belowTeleportContainerId": null,
+      "teleportType": null
+    },
+    {
+      "id": "container-1766464336788",
+      "bundleId": "bundle-1",
+      "name": "Container 4",
+      "points": [
+        {
+          "x": 373.87109375,
+          "y": 400.3515625
+        },
+        {
+          "x": 554.87109375,
+          "y": 327.3515625
+        },
+        {
+          "x": 562.87109375,
+          "y": 345.3515625
+        },
+        {
+          "x": 393.87109375,
+          "y": 431.3515625
+        }
+      ],
+      "color": "#1a1a1a",
+      "contentColor": "#1a1a1a",
+      "fontColor": "#ffffff",
+      "aboveContainerId": null,
+      "belowContainerId": null,
+      "aboveTeleportContainerId": null,
+      "belowTeleportContainerId": null,
+      "teleportType": null
+    },
+    {
+      "id": "container-1766464350348",
+      "bundleId": "bundle-1",
+      "name": "Container 5",
+      "points": [
+        {
+          "x": 449.87109375,
+          "y": 405.3515625
+        },
+        {
+          "x": 562.87109375,
+          "y": 346.3515625
+        },
+        {
+          "x": 575.87109375,
+          "y": 363.3515625
+        },
+        {
+          "x": 479.87109375,
+          "y": 438.3515625
+        }
+      ],
+      "color": "#1a1a1a",
+      "contentColor": "#1a1a1a",
+      "fontColor": "#ffffff",
+      "aboveContainerId": null,
+      "belowContainerId": null,
+      "aboveTeleportContainerId": null,
+      "belowTeleportContainerId": null,
+      "teleportType": null
+    },
+    {
+      "id": "container-1766464368228",
+      "bundleId": "bundle-1",
+      "name": "Container 6",
+      "points": [
+        {
+          "x": 530.87109375,
+          "y": 395.3515625
+        },
+        {
+          "x": 575.87109375,
+          "y": 367.3515625
+        },
+        {
+          "x": 588.87109375,
+          "y": 388.3515625
+        },
+        {
+          "x": 553.87109375,
+          "y": 420.3515625
+        }
+      ],
+      "color": "#1a1a1a",
+      "contentColor": "#1a1a1a",
+      "fontColor": "#ffffff",
+      "aboveContainerId": null,
+      "belowContainerId": null,
+      "aboveTeleportContainerId": null,
+      "belowTeleportContainerId": null,
+      "teleportType": null
+    },
+    {
+      "id": "container-1766464396812",
+      "bundleId": "bundle-1",
+      "name": "Container 7",
+      "points": [
+        {
+          "x": 162.87109375,
+          "y": 137.3515625
+        },
+        {
+          "x": 548.87109375,
+          "y": 212.3515625
+        },
+        {
+          "x": 549.87109375,
+          "y": 252.3515625
+        },
+        {
+          "x": 167.87109375,
+          "y": 212.3515625
+        }
+      ],
+      "color": "#1a1a1a",
+      "contentColor": "#1a1a1a",
+      "fontColor": "#ffffff",
+      "aboveContainerId": null,
+      "belowContainerId": null,
+      "aboveTeleportContainerId": null,
+      "belowTeleportContainerId": null,
+      "teleportType": "top"
+    },
+    {
+      "id": "container-1766464417820",
+      "bundleId": "bundle-1",
+      "name": "Container 8",
+      "points": [
+        {
+          "x": 558.87109375,
+          "y": 420.3515625
+        },
+        {
+          "x": 597.87109375,
+          "y": 388.3515625
+        },
+        {
+          "x": 603.87109375,
+          "y": 402.3515625
+        },
+        {
+          "x": 589.87109375,
+          "y": 421.3515625
+        }
+      ],
+      "color": "#1a1a1a",
+      "contentColor": "#1a1a1a",
+      "fontColor": "#ffffff",
+      "aboveContainerId": null,
+      "belowContainerId": null,
+      "aboveTeleportContainerId": null,
+      "belowTeleportContainerId": null,
+      "teleportType": "bottom"
+    },
+    {
+      "id": "container-1766464457148",
+      "bundleId": "bundle-1766464454756",
+      "name": "",
+      "points": [
+        {
+          "x": 4.87109375,
+          "y": 217.3515625
+        },
+        {
+          "x": 164.87109375,
+          "y": 216.3515625
+        },
+        {
+          "x": 165.87109375,
+          "y": 317.3515625
+        },
+        {
+          "x": 7.87109375,
+          "y": 317.3515625
+        }
+      ],
+      "color": "#1a1a1a",
+      "contentColor": "#0c1bed",
+      "fontColor": "#ffffff",
+      "aboveContainerId": null,
+      "belowContainerId": null,
+      "aboveTeleportContainerId": null,
+      "belowTeleportContainerId": null,
+      "teleportType": null
+    },
+    {
+      "id": "container-1766464581044",
+      "bundleId": "bundle-1766464454756",
+      "name": "Container 2",
+      "points": [
+        {
+          "x": 9.87109375,
+          "y": 320.3515625
+        },
+        {
+          "x": 168.87109375,
+          "y": 318.3515625
+        },
+        {
+          "x": 103.87109375,
+          "y": 333.3515625
+        },
+        {
+          "x": 53.87109375,
+          "y": 332.3515625
+        }
+      ],
+      "color": "#1a1a1a",
+      "contentColor": "#1a1a1a",
+      "fontColor": "#ffffff",
+      "aboveContainerId": null,
+      "belowContainerId": null,
+      "aboveTeleportContainerId": null,
+      "belowTeleportContainerId": null,
+      "teleportType": "bottom"
+    },
+    {
+      "id": "container-1766464599548",
+      "bundleId": "bundle-1766464454756",
+      "name": "Container 3",
+      "points": [
+        {
+          "x": 39.87109375,
+          "y": 198.3515625
+        },
+        {
+          "x": 119.87109375,
+          "y": 198.3515625
+        },
+        {
+          "x": 162.87109375,
+          "y": 216.3515625
+        },
+        {
+          "x": 4.87109375,
+          "y": 216.3515625
+        }
+      ],
+      "color": "#1a1a1a",
+      "contentColor": "#1a1a1a",
+      "fontColor": "#ffffff",
+      "aboveContainerId": null,
+      "belowContainerId": null,
+      "aboveTeleportContainerId": null,
+      "belowTeleportContainerId": null,
+      "teleportType": "top"
+    }
+  ],
+  "viewportBox": {
+    "x": 4.5,
+    "y": 209,
+    "width": 599,
+    "height": 234
+  },
+  "hitbox": null,
+  "defaultColor": "#1a1a1a",
+  "hoverColor": null,
+  "cascadeDelay": 0.4,
+  "bundleItems": {},
+  "visibleStartIndex": {},
+  "exportedAt": "2026-01-04T23:55:35.217Z"
+}

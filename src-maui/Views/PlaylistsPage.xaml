@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Yttv.ViewModels"
+             xmlns:comp="clr-namespace:Yttv.Components"
+             x:Class="Yttv.Views.PlaylistsPage">
+
+    <Grid RowDefinitions="Auto, *">
+        <!-- Tabs -->
+        <HorizontalStackLayout Grid.Row="0" Spacing="20" Padding="10">
+            <Button Text="ALL" Style="{StaticResource GlassButtonStyle}" />
+            <Button Text="UNSORTED" Style="{StaticResource GlassButtonStyle}" />
+            <Button Text="GROUPS" Style="{StaticResource GlassButtonStyle}" />
+        </HorizontalStackLayout>
+
+        <!-- Playlist Grid -->
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Playlist.AllPlaylists}">
+            <CollectionView.ItemsLayout>
+                <GridItemsLayout Orientation="Vertical" Span="2" />
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <comp:PlaylistCard />
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentView>

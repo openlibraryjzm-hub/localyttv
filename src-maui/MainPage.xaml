@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Yttv.ViewModels"
+             xmlns:comp="clr-namespace:Yttv.Components"
+             xmlns:views="clr-namespace:Yttv.Views"
+             x:Class="Yttv.MainPage"
+             BackgroundColor="{StaticResource AppBackground}">
+
+    <Grid>
+        <Label Text="HELLO YTTV - MINIMAL BOOT" 
+               FontSize="32" 
+               TextColor="Blue" 
+               HorizontalOptions="Center" 
+               VerticalOptions="Center" />
+        
+        <!--
+        <Grid RowDefinitions="200,*">
+            <Grid Grid.Row="0">
+                <Image Source="banner_default.png" Aspect="AspectFill" />
+            </Grid>
+            <Grid Grid.Row="1" ColumnDefinitions="*,*">
+                <comp:YouTubePlayerView Grid.Column="0" VideoId="{Binding Playlist.CurrentVideo.VideoId}" />
+            </Grid>
+        </Grid>
+        -->
+    </Grid>
+
+</ContentPage>

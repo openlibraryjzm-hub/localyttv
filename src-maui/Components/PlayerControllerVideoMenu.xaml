@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Yttv.ViewModels"
+             x:Class="Yttv.Components.PlayerControllerVideoMenu">
+
+    <Border Style="{StaticResource GlassBorderStyle}" WidthRequest="300" HorizontalOptions="Start">
+        <HorizontalStackLayout Spacing="20" HorizontalOptions="Center">
+            <!-- Previous Video -->
+            <Button Text="&lt;" 
+                    Command="{Binding Playlist.PreviousVideoCommand}" 
+                    Style="{StaticResource GlassLabelStyle}" 
+                    FontSize="24" 
+                    BackgroundColor="Transparent" />
+            
+            <!-- Cycle Folder / Play -->
+            <Button Text="▶" 
+                    Command="{Binding Playlist.CycleFolderFilterCommand}" 
+                    Style="{StaticResource GlassLabelStyle}" 
+                    FontSize="24" 
+                    BackgroundColor="Transparent" />
+
+            <!-- Next Video -->
+            <Button Text="&gt;" 
+                    Command="{Binding Playlist.NextVideoCommand}" 
+                    Style="{StaticResource GlassLabelStyle}" 
+                    FontSize="24" 
+                    BackgroundColor="Transparent" />
+        </HorizontalStackLayout>
+    </Border>
+</ContentView>

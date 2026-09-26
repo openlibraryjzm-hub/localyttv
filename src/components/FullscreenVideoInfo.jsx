@@ -10,18 +10,18 @@ import PlaylistCard from './PlaylistCard';
 
 const TEXT_PRIMARY = {
   color: 'white',
-  textShadow: '0 2px 4px rgba(0,0,0,0.4)',
+  textShadow: '-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0 3px 6px rgba(0,0,0,0.9)',
 };
 
 const TEXT_SECONDARY = {
-  color: '#e2e8f0', // slate-200
-  textShadow: '0 1px 2px rgba(0,0,0,0.3)',
+  color: '#ffffff',
+  textShadow: '-1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0 2px 4px rgba(0,0,0,0.9)',
 };
 
 const ICON_STYLE = {
   display: 'inline-flex',
   color: 'white',
-  filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))'
+  filter: 'drop-shadow(-1px -1px 0 #000) drop-shadow(1px -1px 0 #000) drop-shadow(-1px 1px 0 #000) drop-shadow(1px 1px 0 #000) drop-shadow(0 3px 6px rgba(0,0,0,0.8))'
 };
 
 /** Parse tags from JSON string or return empty array */
@@ -271,14 +271,14 @@ const FullscreenVideoInfo = () => {
                 </div>
 
                 {/* Channel Info & Metadata Area under Thumbnail */}
-                <div className="mt-3 mx-1 p-4 bg-black/40 backdrop-blur-md rounded-2xl border border-white/15 shadow-xl flex flex-col gap-3">
+                <div className="mt-3 px-1 flex flex-col gap-3 bg-transparent">
                   {/* Row 1: Channel Author Avatar, Name, External Link */}
                   <div className="flex items-center justify-between gap-2 w-full">
                     {/* Avatar on the left */}
                     <img
                       src={isValidProfileImg ? profileImg : fallbackSrc}
                       alt={author}
-                      className="w-16 h-16 rounded-full border-2 border-sky-400/60 object-cover shadow-xl bg-slate-800 shrink-0"
+                      className="w-16 h-16 rounded-full border-2 border-black/80 object-cover shadow-2xl bg-slate-900 shrink-0"
                       onError={(e) => {
                         e.target.onerror = null;
                         e.target.src = fallbackSrc;
@@ -300,7 +300,7 @@ const FullscreenVideoInfo = () => {
                           href={channelUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="p-2.5 rounded-full bg-white/15 hover:bg-white/30 border border-white/20 transition-all text-white flex items-center justify-center shrink-0 hover:scale-110 active:scale-95 shadow-lg"
+                          className="p-2.5 rounded-full bg-black/40 hover:bg-black/60 border border-white/30 transition-all text-white flex items-center justify-center shrink-0 hover:scale-110 active:scale-95 shadow-lg"
                           title="Open Channel"
                         >
                           <ExternalLink size={18} />
@@ -312,7 +312,7 @@ const FullscreenVideoInfo = () => {
                   </div>
 
                   {/* Row 2: View Count and Upload Date */}
-                  <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-2xl font-black uppercase tracking-wide text-white text-center border-t border-white/10 pt-2.5 mt-1" style={TEXT_PRIMARY}>
+                  <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-2xl font-black uppercase tracking-wide text-white text-center border-t border-black/30 pt-2.5 mt-1" style={TEXT_PRIMARY}>
                     {viewCountText && <span className="text-white">{viewCountText} views</span>}
                     {viewCountText && formattedDate && <span className="opacity-40 text-slate-400">•</span>}
                     {formattedDate && <span className="text-slate-100">{formattedDate}</span>}
@@ -484,11 +484,11 @@ const FullscreenVideoInfo = () => {
 
         {/* Video Controls - Fixed at bottom */}
         {!fullscreenInfoBlanked && video && (
-          <div className="shrink-0 w-full mt-3 px-4 py-2.5 bg-slate-900/90 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl flex items-center justify-between gap-4 relative transition-all duration-300 z-20">
+          <div className="shrink-0 w-full mt-3 px-1 py-1 bg-transparent flex items-center justify-between gap-3 relative transition-all duration-300 z-20">
             {/* Subtitles & Track Config Button */}
             <button
               onClick={() => setActiveTab(activeTab === 'subtitles' ? 'playlist' : 'subtitles')}
-              className={`group shrink-0 w-12 h-12 flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 relative rounded-full ${activeTab === 'subtitles' || activeSubtitleId ? 'bg-sky-500/40 border border-sky-400/60 shadow-lg' : ''}`}
+              className={`group shrink-0 w-12 h-12 flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 relative rounded-full bg-black/40 hover:bg-black/60 border border-white/30 backdrop-blur-md shadow-xl ${activeTab === 'subtitles' || activeSubtitleId ? 'bg-sky-500/40 border-sky-400' : ''}`}
               title="Subtitles & Track Config"
             >
               <span style={ICON_STYLE}>
@@ -497,19 +497,19 @@ const FullscreenVideoInfo = () => {
             </button>
 
             {/* Volume Control (Icon + Slider) */}
-            <div className="flex items-center gap-2.5 flex-1 min-w-[100px]">
+            <div className="flex items-center gap-2.5 flex-1 min-w-[100px] px-2 py-1 rounded-2xl bg-black/40 border border-white/20 backdrop-blur-md shadow-xl">
               <button
                 onClick={() => handleVolumeChange({ target: { value: volume === 0 ? 100 : 0 } })}
-                className="transition-all shrink-0 w-10 h-10 flex items-center justify-center hover:scale-110 active:scale-95"
+                className="transition-all shrink-0 w-8 h-8 flex items-center justify-center hover:scale-110 active:scale-95"
                 title="Mute/Unmute"
               >
                 <span style={ICON_STYLE}>
                   {volume === 0 ? (
-                    <VolumeX size={26} color="white" strokeWidth={2.5} />
+                    <VolumeX size={24} color="white" strokeWidth={2.5} />
                   ) : volume < 50 ? (
-                    <Volume1 size={26} color="white" strokeWidth={2.5} />
+                    <Volume1 size={24} color="white" strokeWidth={2.5} />
                   ) : (
-                    <Volume2 size={26} color="white" strokeWidth={2.5} />
+                    <Volume2 size={24} color="white" strokeWidth={2.5} />
                   )}
                 </span>
               </button>
@@ -519,7 +519,7 @@ const FullscreenVideoInfo = () => {
                 max="100"
                 value={volume}
                 onChange={handleVolumeChange}
-                className="w-full h-2 bg-white/25 rounded-lg appearance-none cursor-pointer accent-sky-400 transition-opacity outline-none opacity-90 hover:opacity-100"
+                className="w-full h-2 bg-black/60 border border-white/20 rounded-lg appearance-none cursor-pointer accent-sky-400 transition-opacity outline-none opacity-90 hover:opacity-100"
                 title={`Volume: ${volume}%`}
               />
             </div>
@@ -527,7 +527,7 @@ const FullscreenVideoInfo = () => {
             {/* Content Mode Toggle (Info vs Playlist) */}
             <button
               onClick={() => setActiveTab(activeTab === 'info' ? 'playlist' : 'info')}
-              className="group shrink-0 w-12 h-12 flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 relative"
+              className="group shrink-0 w-12 h-12 flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 relative rounded-full bg-black/40 hover:bg-black/60 border border-white/30 backdrop-blur-md shadow-xl"
               title={activeTab === 'info' ? "Show Playlist" : "Show Video Info"}
             >
               <span style={ICON_STYLE}>
@@ -542,7 +542,7 @@ const FullscreenVideoInfo = () => {
             {/* Shield Toggle Capsule */}
             <button
               onClick={toggleScreenProtector}
-              className={`group shrink-0 w-16 h-8 rounded-full flex items-center transition-all duration-300 relative border border-white/20 px-0.5 shadow-lg ${screenProtectorActive ? 'bg-green-500/80' : 'bg-slate-800/70'}`}
+              className={`group shrink-0 w-16 h-8 rounded-full flex items-center transition-all duration-300 relative border border-white/30 px-0.5 shadow-xl ${screenProtectorActive ? 'bg-green-500/80' : 'bg-black/50'}`}
               title={screenProtectorActive ? "Disable Shield (Enable Embed UI)" : "Enable Shield (Hide Embed UI)"}
               style={{ backdropFilter: 'blur(4px)' }}
             >

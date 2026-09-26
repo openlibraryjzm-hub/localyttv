@@ -273,26 +273,26 @@ const FullscreenVideoInfo = () => {
                 {/* Channel Info & Metadata Area under Thumbnail */}
                 <div className="mt-3 mx-1 p-4 bg-black/40 backdrop-blur-md rounded-2xl border border-white/15 shadow-xl flex flex-col gap-3">
                   {/* Row 1: Channel Author Avatar, Name, External Link */}
-                  <div className="flex items-center justify-between gap-3 w-full">
-                    <div className="flex items-center gap-3.5 min-w-0 flex-1">
-                      {/* Avatar */}
-                      <img
-                        src={isValidProfileImg ? profileImg : fallbackSrc}
-                        alt={author}
-                        className="w-16 h-16 rounded-full border-2 border-sky-400/60 object-cover shadow-xl bg-slate-800 shrink-0"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = fallbackSrc;
-                        }}
-                      />
+                  <div className="flex items-center justify-between gap-2 w-full">
+                    {/* Avatar on the left */}
+                    <img
+                      src={isValidProfileImg ? profileImg : fallbackSrc}
+                      alt={author}
+                      className="w-16 h-16 rounded-full border-2 border-sky-400/60 object-cover shadow-xl bg-slate-800 shrink-0"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = fallbackSrc;
+                      }}
+                    />
 
-                      {/* Channel Name */}
-                      <span className="text-xl font-black uppercase text-white truncate w-full tracking-wide" style={TEXT_PRIMARY} title={author}>
+                    {/* Centered Channel Name */}
+                    <div className="flex-1 min-w-0 px-2 flex items-center justify-center text-center">
+                      <span className="text-xl font-black uppercase text-white truncate tracking-wide text-center" style={TEXT_PRIMARY} title={author}>
                         {author}
                       </span>
                     </div>
 
-                    {/* External Link */}
+                    {/* External Link on the right */}
                     {(() => {
                       const channelUrl = getChannelUrl(video);
                       return channelUrl ? (
@@ -305,7 +305,9 @@ const FullscreenVideoInfo = () => {
                         >
                           <ExternalLink size={18} />
                         </a>
-                      ) : null;
+                      ) : (
+                        <div className="w-10 shrink-0" />
+                      );
                     })()}
                   </div>
 

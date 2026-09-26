@@ -3,6 +3,7 @@
 The Fullscreen Video Info panel is a dedicated component that appears in the right margin of the layout when the app is in **fullscreen mode**. It displays metadata for the currently playing video (thumbnail, author, view count, date, description, tags) and keeps layout logic out of `LayoutShell.jsx`. When the user opens a splitscreen page (e.g. from PlayerController or a tab), the panel can blank instantly before the transition.
 
 **Related Documentation:**
+- **Blurred Backdrop System**: See `blurred-banner-backdrop-system.md` for details on the shared atmospheric blurred App Banner backdrop pattern
 - **Layout**: See `ui-layout.md` for fullscreen grid, fullscreen player width, and fullscreen↔splitscreen transition
 - **Video Player**: See `videoplayer.md` for main player and progress
 - **Player Controller**: See `advanced-player-controller.md` for top-menu video metadata (author, view count, year)
@@ -16,15 +17,13 @@ The Fullscreen Video Info panel is a dedicated component that appears in the rig
 
 When the app is in fullscreen view (no side menu), users see a right-hand margin next to the video player. In that margin (order top to bottom):
 
-- **Background:** A **heavily blurred** version of the current **fullscreen app banner** fills the panel behind the content. The same banner config as the top-of-app banner is used (fullscreen banner + preset override when banner nav is active); image, scale, and position match. Blur is applied via CSS `filter: blur(28px)` and a slight scale to avoid edge artifacts. The banner can be a static image or GIF (GIFs animate in the blur). See `app-banner.md` for banner configuration.
+- **Background:** Uses the **Atmospheric Blurred App Banner Backdrop System** (`atlas/design/blurred-banner-backdrop-system.md`). A heavily blurred App Banner background (`filter: blur(28px)`, `transform: scale(1.15)`) overlays a solid container backdrop (`bg-slate-950`). The effective banner configuration (fullscreen banner + preset override when banner nav is active) is resolved dynamically via `useConfigStore`.
 
 - **Thumbnail**: Current video thumbnail at the very top (16:9, rounded, shadow) without overlays.
 
 - **Channel Info & Metadata Area**: Positioned directly underneath the video thumbnail with a clean vertical spacing:
-  - **Row 1 (Channel Details)**: Circular channel profile avatar on the left, the channel author name directly to its right, and an external link button to the right of the channel name.
-  - **Row 2 (Metadata Stats)**: View count and upload date displayed cleanly below Row 1.
-    - View count shows fully comma-separated numbers (e.g. `6,500,000`).
-    - Upload date is formatted as `Month Day, Year` (e.g. `May 6, 2025`).
+  - **Row 1 (Channel Details)**: Circular channel profile avatar on the left, centered channel author name, and an external link button on the right.
+  - **Row 2 (Metadata Stats)**: Prominently centered view count and upload date text (`text-2xl font-black`) with 1px black stroke outlines and drop shadows for high contrast over any banner image.
 
 - **Playlist Tab**: Shows the parent playlist's metadata and video previews. The playlist card is horizontally indented (`px-5` offset) to be slightly less wide than the video thumbnail, creating visual hierarchy. By default, the panel initializes with the playlist card visible.
 

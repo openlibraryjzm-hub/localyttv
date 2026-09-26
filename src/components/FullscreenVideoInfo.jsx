@@ -270,59 +270,57 @@ const FullscreenVideoInfo = () => {
                   ) : null}
                 </div>
 
-                {/* Channel Info & Metadata Area under Thumbnail */}
-                <div className="mt-3 px-1 flex flex-col gap-3 bg-transparent">
-                  {/* Row 1: Channel Author Avatar, Name, External Link */}
-                  <div className="flex items-center justify-between gap-2 w-full">
-                    {/* Avatar on the left */}
+                {/* 3 Solid Header Bars (Matching PlaylistCard Header Aesthetic) */}
+                <div className="mt-3 px-2.5 flex flex-col gap-2">
+                  {/* Bar 1: Discord-Style Author Header Card */}
+                  <div className="border-2 border-[#052F4A] rounded-xl p-2.5 bg-slate-100 shadow-md relative overflow-hidden h-[68px] flex items-center gap-3 px-3.5 shrink-0">
                     <img
                       src={isValidProfileImg ? profileImg : fallbackSrc}
                       alt={author}
-                      className="w-16 h-16 rounded-full border-2 border-black/80 object-cover shadow-2xl bg-slate-900 shrink-0"
+                      className="w-12 h-12 rounded-full border-2 border-[#052F4A] object-cover bg-slate-900 shrink-0 shadow-sm"
                       onError={(e) => {
                         e.target.onerror = null;
                         e.target.src = fallbackSrc;
                       }}
                     />
 
-                    {/* Centered Channel Name */}
-                    <div className="flex-1 min-w-0 px-2 flex items-center justify-center text-center">
-                      <span className="text-xl font-black uppercase text-white truncate tracking-wide text-center" style={TEXT_PRIMARY} title={author}>
-                        {author}
-                      </span>
-                    </div>
-
-                    {/* External Link on the right */}
-                    {(() => {
-                      const channelUrl = getChannelUrl(video);
-                      return channelUrl ? (
-                        <a
-                          href={channelUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="p-2 rounded-full bg-transparent transition-all text-white flex items-center justify-center shrink-0 hover:scale-110 active:scale-95"
-                          title="Open Channel"
-                        >
-                          <span style={ICON_STYLE}>
-                            <ExternalLink size={20} />
-                          </span>
-                        </a>
-                      ) : (
-                        <div className="w-10 shrink-0" />
-                      );
-                    })()}
+                    <span className="font-black text-lg text-[#052F4A] truncate flex-1 leading-tight" title={author}>
+                      {author}
+                    </span>
                   </div>
 
-                  {/* Row 2: View Count and Upload Date */}
-                  <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-2xl font-black uppercase tracking-wide text-white text-center border-t border-black/30 pt-2.5 mt-1" style={TEXT_PRIMARY}>
-                    {viewCountText && <span className="text-white">{viewCountText} views</span>}
-                    {viewCountText && formattedDate && <span className="opacity-40 text-slate-400">•</span>}
-                    {formattedDate && <span className="text-slate-100">{formattedDate}</span>}
+                  {/* Bar 2: View Count and Upload Date */}
+                  <div className="border-2 border-[#052F4A] rounded-md p-1 bg-slate-100 shadow-sm relative overflow-hidden h-[36px] flex items-center justify-start gap-2 px-3.5 text-[#052F4A] shrink-0">
+                    <span className="font-bold text-xs uppercase tracking-wide truncate">
+                      {viewCountText && <span>{viewCountText} views</span>}
+                      {viewCountText && formattedDate && <span className="mx-1.5 opacity-50">•</span>}
+                      {formattedDate && <span>{formattedDate}</span>}
+                    </span>
                   </div>
+
+                  {/* Bar 3: View on YouTube Button */}
+                  {(() => {
+                    const ytUrl = video.video_url || video.videoUrl || (video.video_id ? `https://www.youtube.com/watch?v=${video.video_id}` : null);
+                    return (
+                      <a
+                        href={ytUrl || '#'}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => {
+                          if (!ytUrl) e.preventDefault();
+                        }}
+                        className="border-2 border-[#052F4A] rounded-md p-1 bg-slate-100 hover:bg-sky-50 shadow-sm relative overflow-hidden h-[36px] flex items-center justify-start gap-2.5 px-3.5 text-[#052F4A] hover:text-sky-600 font-bold text-xs uppercase tracking-wider transition-all active:scale-95 cursor-pointer select-none shrink-0"
+                        title="View on YouTube"
+                      >
+                        <ExternalLink size={16} strokeWidth={2.5} />
+                        <span>View on YouTube</span>
+                      </a>
+                    );
+                  })()}
                 </div>
 
                 {/* Tab Content */}
-                <div className="px-0 min-h-0 flex-1 mt-4">
+                <div className="px-0 min-h-0 flex-1 mt-2">
                   {activeTab === 'subtitles' ? (
                     /* Subtitles & Track Config Tab */
                     <div className="w-full px-2 mt-1 flex flex-col gap-3">
@@ -430,7 +428,7 @@ const FullscreenVideoInfo = () => {
                   ) : (
                     /* Playlist Tab */
                     currentPlaylistId && (
-                      <div className="w-full px-1 mt-3 flex justify-center">
+                      <div className="w-full px-1 mt-0 flex justify-center">
                         <div className="w-full">
                           {(() => {
                             const playlistObj = allPlaylists.find(p => String(p.id) === String(currentPlaylistId));

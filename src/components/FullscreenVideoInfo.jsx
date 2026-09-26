@@ -271,24 +271,26 @@ const FullscreenVideoInfo = () => {
                 </div>
 
                 {/* Channel Info & Metadata Area under Thumbnail */}
-                <div className="mt-3 px-2 flex flex-col gap-1.5">
+                <div className="mt-3 mx-1 p-3 bg-black/30 backdrop-blur-md rounded-2xl border border-white/10 shadow-xl flex flex-col gap-2">
                   {/* Row 1: Channel Author Avatar, Name, External Link */}
-                  <div className="flex items-center gap-3">
-                    {/* Avatar */}
-                    <img
-                      src={isValidProfileImg ? profileImg : fallbackSrc}
-                      alt={author}
-                      className="w-10 h-10 rounded-full border border-white/20 object-cover shadow-lg bg-slate-800 shrink-0"
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = fallbackSrc;
-                      }}
-                    />
+                  <div className="flex items-center justify-between gap-3 w-full">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      {/* Avatar */}
+                      <img
+                        src={isValidProfileImg ? profileImg : fallbackSrc}
+                        alt={author}
+                        className="w-12 h-12 rounded-full border-2 border-sky-400/40 object-cover shadow-lg bg-slate-800 shrink-0"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = fallbackSrc;
+                        }}
+                      />
 
-                    {/* Channel Name */}
-                    <span className="text-sm font-black uppercase text-white truncate max-w-[200px]" style={TEXT_PRIMARY} title={author}>
-                      {author}
-                    </span>
+                      {/* Channel Name */}
+                      <span className="text-base font-black uppercase text-white truncate w-full" style={TEXT_PRIMARY} title={author}>
+                        {author}
+                      </span>
+                    </div>
 
                     {/* External Link */}
                     {(() => {
@@ -298,19 +300,19 @@ const FullscreenVideoInfo = () => {
                           href={channelUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 transition-all text-white flex items-center justify-center shrink-0 hover:scale-105 active:scale-95"
+                          className="p-2 rounded-full bg-white/10 hover:bg-white/20 border border-white/15 transition-all text-white flex items-center justify-center shrink-0 hover:scale-105 active:scale-95 shadow-md"
                           title="Open Channel"
                         >
-                          <ExternalLink size={14} />
+                          <ExternalLink size={15} />
                         </a>
                       ) : null;
                     })()}
                   </div>
 
                   {/* Row 2: View Count and Upload Date */}
-                  <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-slate-300/80 pl-1" style={TEXT_SECONDARY}>
+                  <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-200/90 pl-1" style={TEXT_SECONDARY}>
                     {viewCountText && <span>{viewCountText} views</span>}
-                    {viewCountText && formattedDate && <span className="opacity-40">•</span>}
+                    {viewCountText && formattedDate && <span className="opacity-50">•</span>}
                     {formattedDate && <span>{formattedDate}</span>}
                   </div>
                 </div>
@@ -424,7 +426,7 @@ const FullscreenVideoInfo = () => {
                   ) : (
                     /* Playlist Tab */
                     currentPlaylistId && (
-                      <div className="w-full px-5 mt-2 flex justify-center">
+                      <div className="w-full px-1 mt-3 flex justify-center">
                         <div className="w-full">
                           {(() => {
                             const playlistObj = allPlaylists.find(p => String(p.id) === String(currentPlaylistId));
@@ -480,32 +482,32 @@ const FullscreenVideoInfo = () => {
 
         {/* Video Controls - Fixed at bottom */}
         {!fullscreenInfoBlanked && video && (
-          <div className="shrink-0 pt-0 pb-0 pl-0 pr-0 bg-transparent flex items-center w-full gap-2 relative transition-all duration-300 z-20">
+          <div className="shrink-0 w-full mt-2 px-3 py-2 bg-slate-900/80 backdrop-blur-xl border border-white/15 rounded-2xl shadow-2xl flex items-center justify-between gap-3 relative transition-all duration-300 z-20">
             {/* Subtitles & Track Config Button */}
             <button
               onClick={() => setActiveTab(activeTab === 'subtitles' ? 'playlist' : 'subtitles')}
-              className={`group shrink-0 w-11 h-11 flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 relative rounded-full ${activeTab === 'subtitles' || activeSubtitleId ? 'bg-sky-500/30 border border-sky-400/50' : ''}`}
+              className={`group shrink-0 w-10 h-10 flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 relative rounded-full ${activeTab === 'subtitles' || activeSubtitleId ? 'bg-sky-500/30 border border-sky-400/50' : ''}`}
               title="Subtitles & Track Config"
             >
               <span style={ICON_STYLE}>
-                <Subtitles size={24} color={activeTab === 'subtitles' || activeSubtitleId ? "#38bdf8" : "white"} strokeWidth={2} />
+                <Subtitles size={22} color={activeTab === 'subtitles' || activeSubtitleId ? "#38bdf8" : "white"} strokeWidth={2} />
               </span>
             </button>
 
             {/* Volume Control (Icon + Slider) */}
-            <div className="flex items-center gap-1.5 flex-1 min-w-[70px] max-w-[150px]">
+            <div className="flex items-center gap-2 flex-1 min-w-[80px]">
               <button
                 onClick={() => handleVolumeChange({ target: { value: volume === 0 ? 100 : 0 } })}
-                className="transition-all shrink-0 w-11 h-11 flex items-center justify-center hover:scale-110 active:scale-95"
+                className="transition-all shrink-0 w-8 h-8 flex items-center justify-center hover:scale-110 active:scale-95"
                 title="Mute/Unmute"
               >
                 <span style={ICON_STYLE}>
                   {volume === 0 ? (
-                    <VolumeX size={26} color="white" strokeWidth={2.5} />
+                    <VolumeX size={22} color="white" strokeWidth={2.5} />
                   ) : volume < 50 ? (
-                    <Volume1 size={26} color="white" strokeWidth={2.5} />
+                    <Volume1 size={22} color="white" strokeWidth={2.5} />
                   ) : (
-                    <Volume2 size={26} color="white" strokeWidth={2.5} />
+                    <Volume2 size={22} color="white" strokeWidth={2.5} />
                   )}
                 </span>
               </button>
@@ -515,7 +517,7 @@ const FullscreenVideoInfo = () => {
                 max="100"
                 value={volume}
                 onChange={handleVolumeChange}
-                className="w-full h-1 bg-white/20 rounded-lg appearance-none cursor-pointer accent-white transition-opacity outline-none opacity-80 hover:opacity-100"
+                className="w-full h-1.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-sky-400 transition-opacity outline-none opacity-85 hover:opacity-100"
                 title={`Volume: ${volume}%`}
               />
             </div>
@@ -523,14 +525,14 @@ const FullscreenVideoInfo = () => {
             {/* Content Mode Toggle (Info vs Playlist) */}
             <button
               onClick={() => setActiveTab(activeTab === 'info' ? 'playlist' : 'info')}
-              className="group shrink-0 w-11 h-11 flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 relative"
+              className="group shrink-0 w-10 h-10 flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 relative"
               title={activeTab === 'info' ? "Show Playlist" : "Show Video Info"}
             >
               <span style={ICON_STYLE}>
                 {activeTab === 'info' ? (
-                  <ListMusic size={26} color="white" strokeWidth={2.5} />
+                  <ListMusic size={22} color="white" strokeWidth={2.5} />
                 ) : (
-                  <Info size={26} color="white" strokeWidth={2.5} />
+                  <Info size={22} color="white" strokeWidth={2.5} />
                 )}
               </span>
             </button>
@@ -538,17 +540,17 @@ const FullscreenVideoInfo = () => {
             {/* Shield Toggle Capsule */}
             <button
               onClick={toggleScreenProtector}
-              className={`group shrink-0 w-14 h-7 rounded-full flex items-center transition-all duration-300 relative border border-white/20 px-0.5 shadow-lg ${screenProtectorActive ? 'bg-green-500/80' : 'bg-slate-800/60'}`}
+              className={`group shrink-0 w-12 h-6 rounded-full flex items-center transition-all duration-300 relative border border-white/20 px-0.5 shadow-lg ${screenProtectorActive ? 'bg-green-500/80' : 'bg-slate-800/60'}`}
               title={screenProtectorActive ? "Disable Shield (Enable Embed UI)" : "Enable Shield (Hide Embed UI)"}
               style={{ backdropFilter: 'blur(4px)' }}
             >
               <div
-                className={`w-6 h-6 rounded-full bg-white shadow-md transition-transform duration-300 flex items-center justify-center ${screenProtectorActive ? 'translate-x-7' : 'translate-x-0'}`}
+                className={`w-5 h-5 rounded-full bg-white shadow-md transition-transform duration-300 flex items-center justify-center ${screenProtectorActive ? 'translate-x-6' : 'translate-x-0'}`}
               >
                 {screenProtectorActive ? (
-                  <Shield size={14} fill="currentColor" className="text-green-600" />
+                  <Shield size={12} fill="currentColor" className="text-green-600" />
                 ) : (
-                  <ShieldOff size={14} className="text-slate-800" />
+                  <ShieldOff size={12} className="text-slate-800" />
                 )}
               </div>
             </button>

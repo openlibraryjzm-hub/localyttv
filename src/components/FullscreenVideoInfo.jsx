@@ -97,7 +97,7 @@ const FullscreenVideoInfo = () => {
         const [metaList, folders, previews] = await Promise.all([
           getAllPlaylistMetadata(),
           getFoldersForPlaylist(currentPlaylistId),
-          getPlaylistItemsPreview(currentPlaylistId, 4)
+          getPlaylistItemsPreview(currentPlaylistId, 15)
         ]);
 
         const meta = metaList.find(m => String(m.playlist_id) === String(currentPlaylistId));

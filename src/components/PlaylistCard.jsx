@@ -41,6 +41,7 @@ const MiniPreviewItem = ({
   showImg,
   isVideo,
   isTweet,
+  isCover = false,
   onVideoSelect,
   handleMiniVideoRightClick,
   setMiniImageErrors,
@@ -57,7 +58,9 @@ const MiniPreviewItem = ({
   return (
     <div
       key={slotKey}
-      className="aspect-video relative rounded-md overflow-hidden bg-black/50 border-2 border-[#052F4A] hover:ring-2 hover:ring-sky-500 transition-all cursor-pointer group/mini shadow-md"
+      className={`aspect-video relative rounded-md overflow-hidden bg-black/50 border-2 border-[#052F4A] hover:ring-2 hover:ring-sky-500 transition-all cursor-pointer group/mini shadow-md ${
+        isCover ? "ring-2 ring-sky-400 border-sky-400" : ""
+      }`}
       {...longPress}
       onContextMenu={(e) => handleMiniVideoRightClick(e, item, index)}
       title={getPreviewItemTitle(item)}
@@ -147,7 +150,7 @@ const PlaylistCard = ({
     if (!previewThumbnail?.isShuffled) {
       if (isFolderCard && folderColorFilter) {
         getVideosInFolder(playlist.id, folderColorFilter).then(items => {
-          setLocalPreviewVideos(items.slice(0, 4));
+          setLocalPreviewVideos(items.slice(0, 15));
         }).catch(err => console.error("Failed to load initial folder preview videos", err));
       } else {
         setLocalPreviewVideos(initialPreviewVideos);
@@ -368,7 +371,7 @@ const PlaylistCard = ({
         const randomVideo = items[Math.floor(Math.random() * items.length)];
         setPreviewThumbnail(previewThumbnailFromItem(randomVideo));
         const shuffledItems = [...items].sort(() => 0.5 - Math.random());
-        setLocalPreviewVideos(shuffledItems.slice(0, 4));
+        setLocalPreviewVideos(shuffledItems.slice(0, 16));
       } else {
         const orbsAndBanners = (initialPreviewVideos || []).filter(
           (item) => item.isOrb || item.isBannerPreset
@@ -379,7 +382,7 @@ const PlaylistCard = ({
         const randomItem = pool[Math.floor(Math.random() * pool.length)];
         setPreviewThumbnail(previewThumbnailFromItem(randomItem));
         const shuffled = [...pool].sort(() => 0.5 - Math.random());
-        setLocalPreviewVideos(shuffled.slice(0, 4));
+        setLocalPreviewVideos(shuffled.slice(0, 15));
       }
     } catch (error) {
       console.error("Failed to shuffle thumbnail:", error);
@@ -392,11 +395,11 @@ const PlaylistCard = ({
     try {
       const filterToUse = activeFolderFilter || (isFolderCard ? folderColorFilter : null);
       if (filterToUse) {
-        const items = (await getVideosInFolder(playlist.id, filterToUse)).slice(0, 4);
+        const items = (await getVideosInFolder(playlist.id, filterToUse)).slice(0, 15);
         setLocalPreviewVideos(items);
       } else {
-        // Restore default order: first 4 of combined list (orbs + banners + videos)
-        setLocalPreviewVideos(initialPreviewVideos.slice(0, 4));
+        // Restore default order: first 15 of combined list (orbs + banners + videos)
+        setLocalPreviewVideos(initialPreviewVideos.slice(0, 15));
       }
     } catch (error) {
       console.error("Failed to reset preview videos:", error);
@@ -547,6 +550,94 @@ const PlaylistCard = ({
     (s) => s.folder.folder_color === hoveredPieSegment,
   );
 
+  const cardMenuOptions = [
+    {
+      label: "Open in Playlist Uploader",
+      icon: <Upload size={16} className="text-sky-400" />,
+      action: "openUploader",
+    },
+    {
+      label: isExpanded ? "Collapse Folders" : "Expand Folders",
+      icon: (
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={isExpanded ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"} />
+        </svg>
+      ),
+      action: "toggleFolders",
+    },
+    {
+      label: "Export Playlist",
+      icon: (
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+      ),
+      action: "export",
+    },
+    {
+      label: "Assign to group",
+      icon: (
+        <svg className="w-4 h-4 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+        </svg>
+      ),
+      action: "openAssignToGroup",
+    },
+    ...(isInAnyCarousel
+      ? [
+          {
+            label: groupIdsForPlaylist.length > 1 ? "Remove from carousels" : "Remove from carousel",
+            icon: (
+              <svg className="w-4 h-4 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+              </svg>
+            ),
+            action: "removeFromCarousel",
+          },
+        ]
+      : []),
+    ...(!inCarousel
+      ? [
+          {
+            label: isHidden ? "Unhide" : "Hide",
+            icon: isHidden ? <Eye size={16} className="text-sky-500" /> : <EyeOff size={16} className="text-sky-500" />,
+            action: isHidden ? "unhide" : "hide",
+          },
+        ]
+      : []),
+    {
+      label: deletingPlaylistId === playlist.id ? "Deleting..." : "Delete",
+      danger: true,
+      icon:
+        deletingPlaylistId === playlist.id ? (
+          <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+        ) : (
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        ),
+      action: "delete",
+      disabled: deletingPlaylistId === playlist.id,
+    },
+  ];
+
+  const handleCardMenuOptionClick = (option) => {
+    if (option.action === "openUploader") handleExportPlaylist?.(playlist.id, playlist.name);
+    else if (option.action === "toggleFolders") togglePlaylistExpand?.(playlist.id);
+    else if (option.action === "export") handleExportPlaylist?.(playlist.id, playlist.name);
+    else if (option.action === "delete") handleDeletePlaylist?.(playlist.id, playlist.name, { stopPropagation: () => {} });
+    else if (option.action === "openAssignToGroup") onAssignToGroupClick?.();
+    else if (option.action === "removeFromCarousel") {
+      groupIdsForPlaylist.forEach((gid) => removePlaylistFromGroup(gid, playlist.id));
+    } else if (option.action === "hide") {
+      hidePlaylist?.(playlist.id);
+    } else if (option.action === "unhide") {
+      unhidePlaylist?.(playlist.id);
+    }
+  };
+
   return (
     <div
       onClick={handleCardClick}
@@ -561,14 +652,14 @@ const PlaylistCard = ({
       data-playlist-name={playlist.name}
     >
       <div
-        className={`rounded-xl h-full flex flex-col ${inCarousel ? 'bg-white' : 'bg-slate-100/90 border-2 border-slate-700/50 hover:border-sky-500/50 transition-colors'} ${size === 'small' ? 'p-0 overflow-hidden' : 'pt-1.25 pb-0.25 px-1.5'} ${String(playlist.id) === String(currentPlaylistId) ? "active-playlist-marker" : ""}`}
+        className={`rounded-xl h-full flex flex-col ${inCarousel ? 'bg-white' : size === 'small' ? 'bg-slate-100/90 border-2 border-slate-700/50 hover:border-sky-500/50 transition-colors' : 'bg-transparent border-0 shadow-none'} ${size === 'small' ? 'p-0 overflow-hidden' : 'pt-1.25 pb-0.25 px-1.5'} ${String(playlist.id) === String(currentPlaylistId) ? "active-playlist-marker" : ""}`}
         data-active-playlist={
           String(playlist.id) === String(currentPlaylistId) ? "true" : "false"
         }
       >
         {/* Title bar – only in large size; small carousel uses title below thumbnail (VideoCard-style) */}
         {size !== 'small' && (
-          <div className={`mb-1.25 flex items-center justify-between border-2 border-[#052F4A] rounded-md p-1 bg-slate-100/90 shadow-sm relative overflow-hidden h-[32px]`}>
+          <div className={`mb-1.25 flex items-center justify-between border-2 border-[#052F4A] rounded-md p-1 bg-slate-100 shadow-sm relative overflow-hidden h-[32px]`}>
             <h3
               className="font-bold truncate transition-colors px-2 flex-1 text-center text-base"
               style={{ color: "#052F4A" }}
@@ -683,326 +774,45 @@ const PlaylistCard = ({
                     }}
                   />
                 </div>
+                <div data-card-menu="true">
+                  <CardMenu
+                    options={cardMenuOptions}
+                    onOptionClick={handleCardMenuOptionClick}
+                  />
+                </div>
               </div>
             </div>
           </div>
         )}
 
-        <div
-          className={`overflow-hidden relative group ${size === 'small' ? 'rounded-t-xl' : 'rounded-lg mt-auto'} ${!inCarousel ? 'border-2 border-[#052F4A]' : ''}`}
-          style={{
-            width: "100%",
-            paddingBottom: "56.25%",
-            backgroundColor:
-              displayedThumbnailUrl &&
-                displayedThumbnailUrl.includes("twimg.com")
-                ? "#e0f2fe"
-                : "#0f172a",
-          }}
-          title={previewThumbnail?.title || getPreviewItemTitle(localPreviewVideos[0])}
-        >
-          {displayedThumbnailUrl ? (
-            displayedThumbnailUrl.includes("twimg.com") ? (
-              <ImageHoverPreview
-                src={displayedThumbnailUrl}
-                previewSrc={displayedThumbnailUrl?.replace(
-                  /name=[a-z]+/,
-                  "name=large",
-                )}
-                delay={500}
-              >
-                <img
-                  src={displayedThumbnailUrl}
-                  alt={playlist.name}
-                  onError={() => setImageError(true)}
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "contain",
-                    display: "block",
-                  }}
-                />
-              </ImageHoverPreview>
-            ) : (
+        {size === 'small' && (
+          <div
+            className="overflow-hidden relative group rounded-t-xl"
+            style={{
+              width: "100%",
+              paddingBottom: "56.25%",
+              backgroundColor: displayedThumbnailUrl?.includes("twimg.com") ? "#e0f2fe" : "#0f172a",
+            }}
+          >
+            {displayedThumbnailUrl && (
               <img
                 src={displayedThumbnailUrl}
                 alt={playlist.name}
                 onError={() => setImageError(true)}
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  display: "block",
-                }}
+                className="absolute inset-0 w-full h-full object-cover"
               />
-            )
-          ) : (
+            )}
             <div
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
+              className="absolute top-2 right-2 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200 z-30"
+              onClick={(e) => e.stopPropagation()}
             >
-              <svg
-                className="w-12 h-12 text-slate-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              </svg>
+              <CardMenu
+                options={cardMenuOptions}
+                onOptionClick={handleCardMenuOptionClick}
+              />
             </div>
-          )}
-
-          {(size !== 'small') && (showInfo || globalInfoToggle) && (previewThumbnail?.title || getPreviewItemTitle(localPreviewVideos[0])) && (
-            <div
-              className="absolute bottom-0 left-0 right-0 bg-black/80 px-2 py-1.5 z-20"
-              style={{ backdropFilter: "blur(4px)" }}
-            >
-              <p className="text-white text-sm font-medium truncate">
-                {previewThumbnail?.title || getPreviewItemTitle(localPreviewVideos[0])}
-              </p>
-            </div>
-          )}
-
-          {size !== 'small' && (
-            <div className="absolute bottom-2 left-2 z-30 flex items-center gap-2 group/folder-area">
-              {!isFolderCard && (
-                <button
-                  onClick={onFolderModeToggle ? (e) => { e.stopPropagation(); onFolderModeToggle(playlist.id); } : toggleFolderList}
-                  className="transition-transform hover:scale-110 drop-shadow-md group/btn"
-                  title={`${activeFolderCount} folders with content`}
-                >
-                  <div className="relative flex items-center justify-center">
-                    <Folder
-                      size={32}
-                      className={`transition-colors ${isListOpen ? "text-sky-500" : activeFolderFilter ? "" : "text-[#052F4A] opacity-90 group-hover/btn:text-sky-600"}`}
-                      fill={
-                        activeFolderFilter
-                          ? getFolderColorById(activeFolderFilter).hex
-                          : "currentColor"
-                      }
-                      stroke="white"
-                      strokeWidth={2}
-                    />
-                    <span className="absolute inset-x-0 bottom-0 top-[3px] flex items-center justify-center text-white text-[10px] font-bold">
-                      {activeFolderCount}
-                    </span>
-                    {activeFolderFilter && (
-                      <div
-                        className="absolute -top-2 -right-2 bg-red-600 rounded-full p-0.5 shadow-md hover:bg-red-500 cursor-pointer border border-white/20 hover:scale-110 transition-transform"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setActiveFolderFilter(null);
-                        }}
-                        title="Clear folder filter"
-                      >
-                        <X size={12} strokeWidth={3} className="text-white" />
-                      </div>
-                    )}
-                  </div>
-                </button>
-              )}
-
-              <span className="text-white text-[10px] font-bold bg-black/60 px-1.5 py-0.5 rounded-md backdrop-blur-sm" title={orbCount + bannerCount > 0 ? `${videoCount} video(s), ${orbCount} orb(s), ${bannerCount} banner(s)` : undefined}>
-                {orbCount + bannerCount > 0
-                  ? `${videoCount} video${videoCount !== 1 ? "s" : ""}${orbCount ? `, ${orbCount} orb${orbCount !== 1 ? "s" : ""}` : ""}${bannerCount ? `, ${bannerCount} banner${bannerCount !== 1 ? "s" : ""}` : ""}`
-                  : `${itemCount} video${itemCount !== 1 ? "s" : ""}`}
-              </span>
-            </div>
-          )}
-
-          {size !== 'small' && (
-            <button
-              onClick={handleSetAsCover}
-              className="absolute bottom-2 right-2 w-8 h-8 rounded-full bg-[#052F4A]/90 hover:bg-sky-500 text-white flex items-center justify-center md:opacity-0 md:group-hover:opacity-100 transition-all duration-200 z-30 shadow-lg hover:scale-110 border border-white/20"
-              title="Set as playlist cover"
-            >
-              <Check size={18} strokeWidth={3} />
-            </button>
-          )}
-
-          <div
-            className="absolute top-2 right-2 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200 z-30"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <CardMenu
-              options={[
-                {
-                  label: "Open in Playlist Uploader",
-                  icon: <Upload size={16} className="text-sky-400" />,
-                  action: "openUploader",
-                },
-                {
-                  label: isExpanded ? "Collapse Folders" : "Expand Folders",
-                  icon: (
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d={isExpanded ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"}
-                      />
-                    </svg>
-                  ),
-                  action: "toggleFolders",
-                },
-                {
-                  label: "Export Playlist",
-                  icon: (
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                      />
-                    </svg>
-                  ),
-                  action: "export",
-                },
-                {
-                  label: "Assign to group",
-                  icon: (
-                    <svg
-                      className="w-4 h-4 text-sky-500"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-                      />
-                    </svg>
-                  ),
-                  action: "openAssignToGroup",
-                },
-                ...(isInAnyCarousel
-                  ? [
-                    {
-                      label: groupIdsForPlaylist.length > 1 ? "Remove from carousels" : "Remove from carousel",
-                      icon: (
-                        <svg
-                          className="w-4 h-4 text-sky-500"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
-                          />
-                        </svg>
-                      ),
-                      action: "removeFromCarousel",
-                    },
-                  ]
-                  : []),
-                ...(!inCarousel
-                  ? [
-                    {
-                      label: isHidden ? "Unhide" : "Hide",
-                      icon: isHidden ? <Eye size={16} className="text-sky-500" /> : <EyeOff size={16} className="text-sky-500" />,
-                      action: isHidden ? "unhide" : "hide",
-                    },
-                  ]
-                  : []),
-                {
-                  label:
-                    deletingPlaylistId === playlist.id
-                      ? "Deleting..."
-                      : "Delete",
-                  danger: true,
-                  icon:
-                    deletingPlaylistId === playlist.id ? (
-                      <svg
-                        className="w-4 h-4 animate-spin"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                        />
-                      </svg>
-                    ) : (
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                        />
-                      </svg>
-                    ),
-                  action: "delete",
-                  disabled: deletingPlaylistId === playlist.id,
-                },
-              ]}
-              onOptionClick={(option) => {
-                if (option.action === "openUploader")
-                  handleExportPlaylist?.(playlist.id, playlist.name);
-                else if (option.action === "toggleFolders")
-                  togglePlaylistExpand?.(playlist.id);
-                else if (option.action === "export")
-                  handleExportPlaylist?.(playlist.id, playlist.name);
-                else if (option.action === "delete")
-                  handleDeletePlaylist?.(playlist.id, playlist.name, {
-                    stopPropagation: () => { },
-                  });
-                else if (option.action === "openAssignToGroup")
-                  onAssignToGroupClick?.();
-                else if (option.action === "removeFromCarousel") {
-                  groupIdsForPlaylist.forEach((gid) => removePlaylistFromGroup(gid, playlist.id));
-                } else if (option.action === "hide") {
-                  hidePlaylist?.(playlist.id);
-                } else if (option.action === "unhide") {
-                  unhidePlaylist?.(playlist.id);
-                }
-              }}
-            />
           </div>
-        </div>
+        )}
 
         {/* Small carousel: title below thumbnail (VideoCard-style minimal) */}
         {size === 'small' && (
@@ -1266,16 +1076,17 @@ const PlaylistCard = ({
           </div>
         )}
 
-        {/* Mini Preview Strip – hidden in small size (carousel thumbnail-only mode) */}
+        {/* Mini Preview Grid – 15 items (3 cols x 5 rows) for large size, hidden in small size */}
         {size !== 'small' && (
-          <div className="mt-1 grid grid-cols-4 gap-1 px-1 pb-0">
-            {localPreviewVideos.slice(0, 4).map((item, index) => {
+          <div className="mt-1 grid grid-cols-3 gap-1 px-1 pb-0">
+            {localPreviewVideos.slice(0, 15).map((item, index) => {
               const slotKey = getPreviewItemKey(item, index);
               const thumbSrc = getPreviewItemThumbnail(item);
               const thumbFailed = miniImageErrors.has(slotKey);
               const showImg = thumbSrc && !thumbFailed;
               const isVideo = !item.isOrb && !item.isBannerPreset;
               const isTweet = isVideo && item.thumbnail_url?.includes("twimg.com");
+              const isCover = slotKey === previewThumbnail?.originalItem?.id || slotKey === previewThumbnail?.originalItem?.video_id || (displayedThumbnailUrl && (thumbSrc === displayedThumbnailUrl));
               
               return (
                 <MiniPreviewItem
@@ -1287,6 +1098,7 @@ const PlaylistCard = ({
                   showImg={showImg}
                   isVideo={isVideo}
                   isTweet={isTweet}
+                  isCover={isCover}
                   onVideoSelect={onVideoSelect}
                   handleMiniVideoRightClick={handleMiniVideoRightClick}
                   setMiniImageErrors={setMiniImageErrors}
@@ -1295,7 +1107,7 @@ const PlaylistCard = ({
               );
             })}
             {Array.from({
-              length: Math.max(0, 4 - localPreviewVideos.length),
+              length: Math.max(0, (localPreviewVideos.length > 0 ? Math.min(15, Math.max(3, Math.ceil(localPreviewVideos.length / 3) * 3)) : 3) - localPreviewVideos.length),
             }).map((_, i) => (
               <div
                 key={`empty-${i}`}

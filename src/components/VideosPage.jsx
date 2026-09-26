@@ -180,6 +180,17 @@ const VideosPage = ({ onVideoSelect, onSecondPlayerSelect }) => {
     setPlaylistVideoFilter
   } = useConfigStore();
 
+  // Resolve effective banner for background
+  let effectiveBanner = fullscreenBanner;
+  if (bannerNavBannerId && !bannerPreviewMode && bannerPresets?.length) {
+    const preset = bannerPresets.find(p => p.id === bannerNavBannerId);
+    if (preset?.fullscreenBanner) effectiveBanner = preset.fullscreenBanner;
+  }
+  const bannerImage = effectiveBanner?.image || '/banner.PNG';
+  const bannerScale = effectiveBanner?.scale ?? 100;
+  const bannerVertical = effectiveBanner?.verticalPosition ?? 0;
+  const bannerHorizontal = effectiveBanner?.horizontalOffset ?? 0;
+
 
 
   // Helper to get inspect label
@@ -1675,8 +1686,31 @@ const VideosPage = ({ onVideoSelect, onSecondPlayerSelect }) => {
   }, []);
 
   return (
-    <div className="w-full h-full flex flex-col">
-      {/* Video Grid - 3 per row */}
+    <div className="w-full h-full flex flex-col relative overflow-hidden bg-slate-950">
+      {/* Blurred App Banner Background Layer */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none z-0 overflow-hidden"
+      >
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            backgroundImage: `url(${bannerImage})`,
+            backgroundPosition: `${bannerHorizontal}% ${bannerVertical}%`,
+            backgroundRepeat: 'repeat-x',
+            backgroundSize: `${bannerScale}vw auto`,
+            filter: 'blur(36px)',
+            transform: 'scale(1.25)',
+            opacity: 0.85,
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40" />
+      </div>
+
+      {/* Main Page Content Layer */}
+      <div className="relative z-10 flex-1 flex flex-col min-h-0">
+        {/* Video Grid - 3 per row */}
       {showUploader ? (
         <div className="flex-1 overflow-y-auto p-4 bg-transparent">
           <PlaylistUploader
@@ -2466,7 +2500,8 @@ const VideosPage = ({ onVideoSelect, onSecondPlayerSelect }) => {
         onSelect={handlePlaylistSelect}
         title={actionType === 'move' ? 'Move to Playlist' : 'Copy to Playlist'}
       />
-    </div >
+      </div>
+    </div>
   );
 };
 

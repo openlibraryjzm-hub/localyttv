@@ -310,10 +310,10 @@ const FullscreenVideoInfo = () => {
                   </div>
 
                   {/* Row 2: View Count and Upload Date */}
-                  <div className="flex items-center gap-3 text-sm font-extrabold uppercase tracking-wider text-slate-200/90 pl-1" style={TEXT_SECONDARY}>
-                    {viewCountText && <span>{viewCountText} views</span>}
-                    {viewCountText && formattedDate && <span className="opacity-60">•</span>}
-                    {formattedDate && <span>{formattedDate}</span>}
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-2xl font-black uppercase tracking-wide text-white pl-1 border-t border-white/10 pt-2.5 mt-1" style={TEXT_PRIMARY}>
+                    {viewCountText && <span className="text-sky-300 drop-shadow-[0_2px_8px_rgba(56,189,248,0.5)]">{viewCountText} views</span>}
+                    {viewCountText && formattedDate && <span className="opacity-40 text-slate-400">•</span>}
+                    {formattedDate && <span className="text-slate-100">{formattedDate}</span>}
                   </div>
                 </div>
 

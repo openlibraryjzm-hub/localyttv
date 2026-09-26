@@ -136,7 +136,7 @@ export const getPlaylistItems = async (playlistId) => {
   }
 };
 
-export const getPlaylistItemsPreview = async (playlistId, limit = 4) => {
+export const getPlaylistItemsPreview = async (playlistId, limit = 8) => {
   try {
     const result = await invoke('get_playlist_items_preview', { playlistId, limit });
     return result || [];

@@ -84,7 +84,26 @@ const PlaylistsPage = ({ onVideoSelect }) => {
   const setPrismPage = setGlobalActivePage;
   const storeTotalPages = globalTotalPages;
   const { setViewMode, viewMode, inspectMode, setFullscreenInfoBlanked } = useLayoutStore();
-  const { customPageBannerImage, bannerHeight, bannerBgSize } = useConfigStore();
+  const { 
+    customPageBannerImage, 
+    bannerHeight, 
+    bannerBgSize,
+    fullscreenBanner,
+    bannerNavBannerId,
+    bannerPresets,
+    bannerPreviewMode,
+  } = useConfigStore();
+
+  let effectiveBanner = fullscreenBanner;
+  if (bannerNavBannerId && !bannerPreviewMode && bannerPresets?.length) {
+    const preset = bannerPresets.find((p) => p.id === bannerNavBannerId);
+    if (preset?.fullscreenBanner) effectiveBanner = preset.fullscreenBanner;
+  }
+
+  const bannerImage = effectiveBanner?.image || '/banner.PNG';
+  const bannerScale = effectiveBanner?.scale ?? 100;
+  const bannerVertical = effectiveBanner?.verticalPosition ?? 0;
+  const bannerHorizontal = effectiveBanner?.horizontalOffset ?? 0;
   const { setCurrentPage: setCurrentNavPage } = useNavigationStore();
 
   // Reset page when switching folders
@@ -97,7 +116,7 @@ const PlaylistsPage = ({ onVideoSelect }) => {
   pieDataRef.current.playlistFolders = playlistFolders;
   const { setPlaylistItems, currentPlaylistItems, currentPlaylistId, currentVideoIndex, setCurrentFolder, setPreviewPlaylist, setAllPlaylists } = usePlaylistStore();
   const { pinnedVideos: allPinnedVideos, priorityPinIds } = usePinStore();
-  const { orbFavorites, bannerPresets, hiddenPlaylists } = useConfigStore();
+  const { orbFavorites, hiddenPlaylists } = useConfigStore();
 
   // Combined preview items per playlist: orbs + banners assigned to this playlist, then DB preview videos
   const combinedPreviewItems = useMemo(() => {
@@ -514,7 +533,7 @@ const PlaylistsPage = ({ onVideoSelect }) => {
     await Promise.all(playlistsToLoad.map(async (p) => {
       try {
         if (!playlistPreviewVideos[p.id]) { // Only load if missing
-          const items = await getPlaylistItemsPreview(p.id, 4);
+          const items = await getPlaylistItemsPreview(p.id, 8);
           previews[p.id] = items;
         }
       } catch (e) {
@@ -820,7 +839,27 @@ const PlaylistsPage = ({ onVideoSelect }) => {
   };
 
   return (
-    <div className="w-full h-full flex flex-col relative">
+    <div className="w-full h-full flex flex-col relative overflow-hidden bg-slate-950">
+      {/* Blurred App Banner Background System */}
+      <div aria-hidden="true" className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            backgroundImage: `url(${bannerImage})`,
+            backgroundPosition: `${bannerHorizontal}% ${bannerVertical}%`,
+            backgroundRepeat: 'repeat-x',
+            backgroundSize: `${bannerScale}vw auto`,
+            filter: 'blur(36px)',
+            transform: 'scale(1.25)',
+            opacity: 0.85,
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40" />
+      </div>
+
+      {/* Main Page Content Layer */}
+      <div className="relative z-10 flex-1 flex flex-col min-h-0">
       {showBulkImporter ? (
         <BulkPlaylistImporter
           onImportComplete={handleBulkImportComplete}
@@ -1358,7 +1397,8 @@ const PlaylistsPage = ({ onVideoSelect }) => {
         );
       })()}
 
-    </div >
+      </div>
+    </div>
   );
 };
 

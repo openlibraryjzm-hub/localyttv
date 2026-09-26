@@ -50,6 +50,7 @@ const MiniPreviewItem = ({
   showImg,
   isVideo,
   isTweet,
+  isCover = false,
   onVideoSelect,
   handleMiniVideoRightClick,
   setMiniImageErrors,
@@ -63,12 +64,14 @@ const MiniPreviewItem = ({
     }
   );
 
-  const isOrb = item.isOrb;
+  const isOrb = item?.isOrb;
 
   return (
     <div
       key={slotKey}
       className={`relative aspect-square overflow-hidden transition-all cursor-pointer group/mini shadow-sm border ${
+        isCover ? "ring-2 ring-sky-400 border-sky-400" : ""
+      } ${
         isOrb 
           ? "rounded-full border-amber-500/30 bg-amber-900/20 hover:border-amber-400 hover:ring-4 hover:ring-amber-500/20" 
           : "rounded-xl border-[#052F4A]/30 bg-slate-900/40 hover:border-sky-500/50 hover:ring-4 hover:ring-sky-500/20"
@@ -303,7 +306,7 @@ const LongPlaylistCard = ({
     const calculateTotalPages = async () => {
       const pool = await getSortedPool();
       if (active) {
-        setTotalPlaylistPages(Math.max(1, Math.ceil(pool.length / 50)));
+        setTotalPlaylistPages(Math.max(1, Math.ceil(pool.length / 8)));
       }
     };
     calculateTotalPages();
@@ -325,15 +328,15 @@ const LongPlaylistCard = ({
         const pool = await getSortedPool();
         if (pool.length === 0) return;
         
-        const startIndex = (newPage - 1) * 50;
-        const endIndex = startIndex + 50;
+        const startIndex = (newPage - 1) * 8;
+        const endIndex = startIndex + 8;
         const pagePool = pool.slice(startIndex, endIndex);
         if (pagePool.length === 0) return;
 
         const randomItem = pagePool[Math.floor(Math.random() * pagePool.length)];
         setPreviewThumbnail(previewThumbnailFromItem(randomItem));
         const shuffled = [...pagePool].sort(() => 0.5 - Math.random());
-        setLocalPreviewVideos(shuffled.slice(0, 4));
+        setLocalPreviewVideos(shuffled.slice(0, 8));
       } catch (error) {
         console.error("Failed to auto-shuffle on page change:", error);
       }
@@ -527,15 +530,15 @@ const LongPlaylistCard = ({
       const pool = await getSortedPool();
       if (pool.length === 0) return;
       
-      const startIndex = (shufflePage - 1) * 50;
-      const endIndex = startIndex + 50;
+      const startIndex = (shufflePage - 1) * 8;
+      const endIndex = startIndex + 8;
       const pagePool = pool.slice(startIndex, endIndex);
       if (pagePool.length === 0) return;
 
       const randomItem = pagePool[Math.floor(Math.random() * pagePool.length)];
       setPreviewThumbnail(previewThumbnailFromItem(randomItem));
       const shuffled = [...pagePool].sort(() => 0.5 - Math.random());
-      setLocalPreviewVideos(shuffled.slice(0, 4));
+      setLocalPreviewVideos(shuffled.slice(0, 8));
     } catch (error) {
       console.error("Failed to shuffle thumbnail:", error);
     }
@@ -544,7 +547,7 @@ const LongPlaylistCard = ({
   const handleResetShuffle = async (e) => {
     e.stopPropagation();
     setPreviewThumbnail(null);
-    setLocalPreviewVideos(initialPreviewVideos.slice(0, 4));
+    setLocalPreviewVideos(initialPreviewVideos.slice(0, 8));
   };
 
   const handleSetAsCover = async (e) => {
@@ -640,14 +643,14 @@ const LongPlaylistCard = ({
         e.stopPropagation();
         handleExportPlaylist?.(playlist.id, playlist.name);
       }}
-      className="group relative w-full rounded-2xl overflow-hidden bg-slate-100/80 border-2 border-[#052F4A]/10 hover:border-sky-500/40 transition-all duration-300 shadow-xl hover:shadow-sky-500/10 cursor-pointer p-1"
+      className="group relative w-full bg-transparent border-0 shadow-none cursor-pointer p-1"
       data-active-playlist={String(playlist.id) === String(currentPlaylistId) ? "true" : "false"}
     >
         {/* Background Glow Effect */}
         <div className="absolute inset-0 bg-gradient-to-br from-sky-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
 
         {/* Top Header: Info Metrics, Centered Title & Action Controls */}
-        <div className="w-full flex flex-col md:flex-row items-center justify-between gap-3 px-4 pt-3 pb-2 relative z-10 border-b border-[#052F4A]/10">
+        <div className="w-full flex flex-col md:flex-row items-center justify-between gap-3 px-4 py-2.5 relative z-10 bg-slate-100 border-2 border-[#052F4A] rounded-xl shadow-md">
             {/* Info Bar (Metrics) */}
             <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white/50 border border-[#052F4A]/10 shadow-sm backdrop-blur-sm">
                 <div className="flex items-center gap-2.5">
@@ -860,147 +863,134 @@ const LongPlaylistCard = ({
             </div>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-3 p-2 relative z-10">
-            {/* Left Column: Thumbnail */}
-            <div className="w-full md:w-1/2 flex flex-col">
-                {/* Main Thumbnail */}
-                <div className="aspect-video relative rounded-xl overflow-hidden shadow-lg border-2 border-[#052F4A]/20 bg-slate-900 group/main-thumb">
-                    {displayedThumbnailUrl ? (
-                        <img 
-                            src={displayedThumbnailUrl} 
-                            alt={playlist.name}
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover/main-thumb:scale-105"
-                            onError={() => setImageError(true)}
-                        />
-                    ) : (
-                        <div className="w-full h-full flex items-center justify-center text-slate-600">
-                             <Play size={48} className="opacity-20" />
-                        </div>
-                    )}
-                </div>
-            </div>
+        <div className="p-3 relative z-10">
+            {isMenuOpen ? (
+                <div className="bg-slate-800/95 backdrop-blur-md rounded-2xl p-4 border border-slate-700/50 shadow-2xl animate-in zoom-in-95 duration-200 h-full flex items-center" data-card-action="true">
+                    <div className="flex items-center gap-4 w-full">
+                        <div className="relative w-28 h-28 flex-shrink-0" ref={(el) => {
+                            if (el && pieChartRef.current !== el) {
+                                pieChartRef.current = el;
+                                const wheelHandler = (e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    const segments = pieDataRef.current.folders || [];
+                                    if (segments.length === 0) return;
+                                    const currentHovered = pieDataRef.current.hoveredSegment;
+                                    const currentIndex = segments.findIndex((s) => s.folder_color === currentHovered);
+                                    let newIndex;
+                                    if (e.deltaY > 0) newIndex = currentIndex < segments.length - 1 ? currentIndex + 1 : 0;
+                                    else newIndex = currentIndex > 0 ? currentIndex - 1 : segments.length - 1;
+                                    setHoveredPieSegment(segments[newIndex].folder_color);
+                                };
+                                el.addEventListener("wheel", wheelHandler, { passive: false });
+                            }
+                        }}>
+                            <svg viewBox="-100 -100 200 200" className="transform -rotate-90 w-full h-full">
+                                {pieSegments.map((segment) => {
+                                    const outerRadius = 85;
+                                    const innerRadius = 40;
+                                    const startRad = (segment.startAngle * Math.PI) / 180;
+                                    const endRad = (segment.endAngle * Math.PI) / 180;
+                                    const x1 = Math.cos(startRad) * outerRadius;
+                                    const y1 = Math.sin(startRad) * outerRadius;
+                                    const x2 = Math.cos(endRad) * outerRadius;
+                                    const y2 = Math.sin(endRad) * outerRadius;
+                                    const x3 = Math.cos(endRad) * innerRadius;
+                                    const y3 = Math.sin(endRad) * innerRadius;
+                                    const x4 = Math.cos(startRad) * innerRadius;
+                                    const y4 = Math.sin(startRad) * innerRadius;
+                                    const largeArcFlag = segment.angle > 180 ? 1 : 0;
+                                    const isHovered = hoveredPieSegment === segment.folder.folder_color;
 
-            {/* Right Column: Content Grid */}
-            <div className="w-full md:w-1/2 flex flex-col min-w-0 justify-between py-1 px-1">
-                {/* Main Content: Pie Menu or Mini Grid */}
-                <div className="flex-1">
-                    {isMenuOpen ? (
-                        <div className="bg-slate-800/95 backdrop-blur-md rounded-2xl p-4 border border-slate-700/50 shadow-2xl animate-in zoom-in-95 duration-200 h-full flex items-center" data-card-action="true">
-                            <div className="flex items-center gap-4 w-full">
-                                <div className="relative w-28 h-28 flex-shrink-0" ref={(el) => {
-                                    if (el && pieChartRef.current !== el) {
-                                        pieChartRef.current = el;
-                                        const wheelHandler = (e) => {
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                            const segments = pieDataRef.current.folders || [];
-                                            if (segments.length === 0) return;
-                                            const currentHovered = pieDataRef.current.hoveredSegment;
-                                            const currentIndex = segments.findIndex((s) => s.folder_color === currentHovered);
-                                            let newIndex;
-                                            if (e.deltaY > 0) newIndex = currentIndex < segments.length - 1 ? currentIndex + 1 : 0;
-                                            else newIndex = currentIndex > 0 ? currentIndex - 1 : segments.length - 1;
-                                            setHoveredPieSegment(segments[newIndex].folder_color);
-                                        };
-                                        el.addEventListener("wheel", wheelHandler, { passive: false });
-                                    }
-                                }}>
-                                    <svg viewBox="-100 -100 200 200" className="transform -rotate-90 w-full h-full">
-                                        {pieSegments.map((segment) => {
-                                            const outerRadius = 85;
-                                            const innerRadius = 40;
-                                            const startRad = (segment.startAngle * Math.PI) / 180;
-                                            const endRad = (segment.endAngle * Math.PI) / 180;
-                                            const x1 = Math.cos(startRad) * outerRadius;
-                                            const y1 = Math.sin(startRad) * outerRadius;
-                                            const x2 = Math.cos(endRad) * outerRadius;
-                                            const y2 = Math.sin(endRad) * outerRadius;
-                                            const x3 = Math.cos(endRad) * innerRadius;
-                                            const y3 = Math.sin(endRad) * innerRadius;
-                                            const x4 = Math.cos(startRad) * innerRadius;
-                                            const y4 = Math.sin(startRad) * innerRadius;
-                                            const largeArcFlag = segment.angle > 180 ? 1 : 0;
-                                            const isHovered = hoveredPieSegment === segment.folder.folder_color;
-
-                                            return (
-                                                <path
-                                                    key={segment.folder.folder_color}
-                                                    d={`M ${x1} ${y1} A ${outerRadius} ${outerRadius} 0 ${largeArcFlag} 1 ${x2} ${y2} L ${x3} ${y3} A ${innerRadius} ${innerRadius} 0 ${largeArcFlag} 0 ${x4} ${y4} Z`}
-                                                    fill={segment.folderColorData.hex}
-                                                    className="cursor-pointer transition-all duration-300"
-                                                    style={{
-                                                        opacity: hoveredPieSegment && !isHovered ? 0.3 : 1,
-                                                        transform: isHovered ? "scale(1.08)" : "scale(1)",
-                                                        filter: isHovered ? `drop-shadow(0 0 12px ${segment.folderColorData.hex})` : 'none',
-                                                    }}
-                                                    onClick={async () => {
-                                                        const items = await getVideosInFolder(playlist.id, segment.folder.folder_color);
-                                                        setPlaylistItems(items, playlist.id, { playlist_id: playlist.id, folder_color: segment.folder.folder_color }, playlist.name);
-                                                        if (items.length > 0 && onVideoSelect) onVideoSelect(items[0].video_url);
-                                                    }}
-                                                />
-                                            );
-                                        })}
-                                    </svg>
-                                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                                        <span className="text-xl font-black text-white leading-none">{totalVideosInFolders}</span>
-                                        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">Tagged</span>
-                                    </div>
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    {hoveredSegmentData ? (
-                                        <div className="animate-in fade-in slide-in-from-left-2 duration-200">
-                                            <div className="flex items-center gap-2 mb-1">
-                                                <div className="w-3 h-3 rounded-full shadow-[0_0_10px_rgba(255,255,255,0.2)]" style={{ backgroundColor: hoveredSegmentData.folderColorData.hex }} />
-                                                <h4 className="text-lg font-bold text-white truncate">{hoveredSegmentData.displayName}</h4>
-                                            </div>
-                                            <div className="flex items-baseline gap-1.5">
-                                                <span className="text-2xl font-black text-sky-400">{hoveredSegmentData.videoCount}</span>
-                                                <span className="text-[10px] font-bold text-slate-500 uppercase">Videos</span>
-                                            </div>
-                                            <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1">
-                                                {hoveredSegmentData.percentage.toFixed(1)}%
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <p className="text-slate-500 text-sm italic">Explore folders</p>
-                                    )}
-                                </div>
-                                <button 
-                                    onClick={() => setIsMenuOpen(false)}
-                                    className="p-3 text-slate-400 hover:text-white transition-colors"
-                                >
-                                    <X size={24} />
-                                </button>
+                                    return (
+                                        <path
+                                            key={segment.folder.folder_color}
+                                            d={`M ${x1} ${y1} A ${outerRadius} ${outerRadius} 0 ${largeArcFlag} 1 ${x2} ${y2} L ${x3} ${y3} A ${innerRadius} ${innerRadius} 0 ${largeArcFlag} 0 ${x4} ${y4} Z`}
+                                            fill={segment.folderColorData.hex}
+                                            className="cursor-pointer transition-all duration-300"
+                                            style={{
+                                                opacity: hoveredPieSegment && !isHovered ? 0.3 : 1,
+                                                transform: isHovered ? "scale(1.08)" : "scale(1)",
+                                                filter: isHovered ? `drop-shadow(0 0 12px ${segment.folderColorData.hex})` : 'none',
+                                            }}
+                                            onClick={async () => {
+                                                const items = await getVideosInFolder(playlist.id, segment.folder.folder_color);
+                                                setPlaylistItems(items, playlist.id, { playlist_id: playlist.id, folder_color: segment.folder.folder_color }, playlist.name);
+                                                if (items.length > 0 && onVideoSelect) onVideoSelect(items[0].video_url);
+                                            }}
+                                        />
+                                    );
+                                })}
+                            </svg>
+                            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                                <span className="text-xl font-black text-white leading-none">{totalVideosInFolders}</span>
+                                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">Tagged</span>
                             </div>
                         </div>
-                    ) : (
-                        /* Mini Previews Grid: Standardized square slots for uniform height */
-                        <div className="grid grid-cols-2 gap-3 h-full">
-                            {localPreviewVideos.slice(0, 4).map((item, index) => {
-                                const slotKey = getPreviewItemKey(item, index);
-                                return (
-                                    <div key={slotKey} data-card-action="true" className="flex items-center justify-center">
-                                        <MiniPreviewItem
-                                            item={item}
-                                            index={index}
-                                            slotKey={slotKey}
-                                            thumbSrc={getPreviewItemThumbnail(item)}
-                                            showImg={!!getPreviewItemThumbnail(item) && !miniImageErrors.has(slotKey)}
-                                            isVideo={!item.isOrb && !item.isBannerPreset}
-                                            isTweet={!item.isOrb && !item.isBannerPreset && item.thumbnail_url?.includes("twimg.com")}
-                                            onVideoSelect={onVideoSelect}
-                                            handleMiniVideoRightClick={handleMiniVideoRightClick}
-                                            setMiniImageErrors={setMiniImageErrors}
-                                            getPreviewItemTitle={getPreviewItemTitle}
-                                        />
+                        <div className="flex-1 min-w-0">
+                            {hoveredSegmentData ? (
+                                <div className="animate-in fade-in slide-in-from-left-2 duration-200">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <div className="w-3 h-3 rounded-full shadow-[0_0_10px_rgba(255,255,255,0.2)]" style={{ backgroundColor: hoveredSegmentData.folderColorData.hex }} />
+                                        <h4 className="text-lg font-bold text-white truncate">{hoveredSegmentData.displayName}</h4>
                                     </div>
-                                );
-                            })}
+                                    <div className="flex items-baseline gap-1.5">
+                                        <span className="text-2xl font-black text-sky-400">{hoveredSegmentData.videoCount}</span>
+                                        <span className="text-[10px] font-bold text-slate-500 uppercase">Videos</span>
+                                    </div>
+                                    <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-1">
+                                        {hoveredSegmentData.percentage.toFixed(1)}%
+                                    </div>
+                                </div>
+                            ) : (
+                                <p className="text-slate-500 text-sm italic">Explore folders</p>
+                            )}
                         </div>
-                    )}
+                        <button 
+                            onClick={() => setIsMenuOpen(false)}
+                            className="p-3 text-slate-400 hover:text-white transition-colors"
+                        >
+                            <X size={24} />
+                        </button>
+                    </div>
                 </div>
-            </div>
+            ) : (
+                /* Full 2x4 Mini Previews Grid (8 Slots) */
+                <div className="grid grid-cols-4 gap-2.5 w-full">
+                    {localPreviewVideos.slice(0, 8).map((item, index) => {
+                        const slotKey = getPreviewItemKey(item, index);
+                        const thumbSrc = getPreviewItemThumbnail(item);
+                        const showImg = !!thumbSrc && !miniImageErrors.has(slotKey);
+                        const isVideo = !item.isOrb && !item.isBannerPreset;
+                        const isTweet = !item.isOrb && !item.isBannerPreset && item.thumbnail_url?.includes("twimg.com");
+                        const isCover = Boolean(
+                            item && displayedThumbnailUrl && (
+                                thumbSrc === displayedThumbnailUrl ||
+                                (item.thumbnail_url && displayedThumbnailUrl.includes(item.video_id))
+                            )
+                        );
+
+                        return (
+                            <div key={slotKey} data-card-action="true" className="flex items-center justify-center">
+                                <MiniPreviewItem
+                                    item={item}
+                                    index={index}
+                                    slotKey={slotKey}
+                                    thumbSrc={thumbSrc}
+                                    showImg={showImg}
+                                    isVideo={isVideo}
+                                    isTweet={isTweet}
+                                    isCover={isCover}
+                                    onVideoSelect={onVideoSelect}
+                                    handleMiniVideoRightClick={handleMiniVideoRightClick}
+                                    setMiniImageErrors={setMiniImageErrors}
+                                    getPreviewItemTitle={getPreviewItemTitle}
+                                />
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
         </div>
     </div>
   );

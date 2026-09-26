@@ -246,11 +246,12 @@ export default function PlayerControllerVideoMenu(props) {
           width: `${menuWidth}px`,
           height: `${menuHeight}px`
         }}>
-          {/* Blurred App Banner Backdrop Layer */}
+          {/* Solid App Banner Gradient Backdrop Layer */}
           <div 
             aria-hidden="true" 
-            className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none z-0 border border-white/25 shadow-2xl"
+            className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none z-0 border border-white/20 shadow-2xl bg-slate-950"
           >
+            {/* Blurred App Banner Image Layer */}
             <div style={{
               position: 'absolute',
               inset: 0,
@@ -258,9 +259,12 @@ export default function PlayerControllerVideoMenu(props) {
               backgroundPosition: `${bannerHorizontal}% ${bannerVertical}%`,
               backgroundRepeat: 'repeat-x',
               backgroundSize: `${bannerScale}vw auto`,
-              filter: 'blur(28px)',
-              transform: 'scale(1.15)',
+              filter: 'blur(36px)',
+              opacity: 0.85,
+              transform: 'scale(1.25)',
             }} />
+            {/* Depth Gradient Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40" />
           </div>
           {showColorPicker && <button onClick={() => {
             setShowColorPicker(null);

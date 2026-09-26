@@ -203,7 +203,7 @@ export default function PlayerControllerPlaylistMenu(props) {
   const setShowPlaylists = usePlaylistStore(state => state.setShowPlaylists);
 
   return (
-    <div className={`flex items-center ${viewMode === 'full' ? 'justify-end' : 'justify-center'} origin-right scale-90`}>
+    <div className="flex items-center justify-end origin-right scale-105">
       {/* PLAYLIST SECTION */}
       <div className="flex items-center gap-4 relative z-10 flex-shrink-0">
         <div className="absolute right-full mr-4 transition-transform" style={{
@@ -223,7 +223,7 @@ export default function PlayerControllerPlaylistMenu(props) {
             </div>}
           </div>
         </div>
-        <div className={`shadow-2xl flex flex-col relative overflow-visible transition-all duration-300 group/playlist origin-right scale-105 ${isEditMode ? 'ring-4 ring-sky-400/30' : 'bg-transparent rounded-2xl'}`} style={{
+        <div className={`shadow-2xl flex flex-col relative overflow-visible transition-all duration-300 group/playlist ${isEditMode ? 'ring-4 ring-sky-400/30' : 'bg-transparent rounded-2xl'}`} style={{
           width: `${menuWidth}px`,
           height: `${menuHeight}px`
         }}>

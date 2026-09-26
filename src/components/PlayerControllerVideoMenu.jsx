@@ -240,7 +240,7 @@ export default function PlayerControllerVideoMenu(props) {
   };
 
   return (
-    <div className="flex items-center justify-start origin-left scale-90">
+    <div className="flex items-center justify-start origin-left scale-105">
       <div className="flex items-center gap-4 relative z-10 flex-shrink-0">
         <div className={`shadow-2xl flex flex-col relative overflow-visible transition-all duration-300 ${isEditMode ? 'ring-4 ring-sky-400/30' : 'bg-transparent rounded-2xl'}`} style={{
           width: `${menuWidth}px`,

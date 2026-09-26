@@ -223,7 +223,7 @@ export default function PlayerControllerPlaylistMenu(props) {
             </div>}
           </div>
         </div>
-        <div className={`shadow-2xl flex flex-col relative overflow-visible transition-all duration-300 group/playlist ${isEditMode ? 'ring-4 ring-sky-400/30' : 'bg-transparent rounded-2xl'}`} style={{
+        <div className={`shadow-2xl flex flex-col relative overflow-visible transition-all duration-300 group/playlist origin-right scale-105 ${isEditMode ? 'ring-4 ring-sky-400/30' : 'bg-transparent rounded-2xl'}`} style={{
           width: `${menuWidth}px`,
           height: `${menuHeight}px`
         }}>

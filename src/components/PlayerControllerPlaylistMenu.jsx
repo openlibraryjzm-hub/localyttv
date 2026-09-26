@@ -242,7 +242,6 @@ export default function PlayerControllerPlaylistMenu(props) {
               filter: 'blur(28px)',
               transform: 'scale(1.15)',
             }} />
-            <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
           </div>
           <div 
             className="flex-grow flex flex-col items-center justify-center px-4 relative z-10 overflow-x-visible overflow-y-hidden w-full h-full min-h-0" 

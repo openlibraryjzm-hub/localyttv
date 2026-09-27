@@ -306,7 +306,7 @@ const LongPlaylistCard = ({
     const calculateTotalPages = async () => {
       const pool = await getSortedPool();
       if (active) {
-        setTotalPlaylistPages(Math.max(1, Math.ceil(pool.length / 8)));
+        setTotalPlaylistPages(Math.max(1, Math.ceil(pool.length / 4)));
       }
     };
     calculateTotalPages();
@@ -328,15 +328,15 @@ const LongPlaylistCard = ({
         const pool = await getSortedPool();
         if (pool.length === 0) return;
         
-        const startIndex = (newPage - 1) * 8;
-        const endIndex = startIndex + 8;
+        const startIndex = (newPage - 1) * 4;
+        const endIndex = startIndex + 4;
         const pagePool = pool.slice(startIndex, endIndex);
         if (pagePool.length === 0) return;
 
         const randomItem = pagePool[Math.floor(Math.random() * pagePool.length)];
         setPreviewThumbnail(previewThumbnailFromItem(randomItem));
         const shuffled = [...pagePool].sort(() => 0.5 - Math.random());
-        setLocalPreviewVideos(shuffled.slice(0, 8));
+        setLocalPreviewVideos(shuffled.slice(0, 4));
       } catch (error) {
         console.error("Failed to auto-shuffle on page change:", error);
       }
@@ -530,15 +530,15 @@ const LongPlaylistCard = ({
       const pool = await getSortedPool();
       if (pool.length === 0) return;
       
-      const startIndex = (shufflePage - 1) * 8;
-      const endIndex = startIndex + 8;
+      const startIndex = (shufflePage - 1) * 4;
+      const endIndex = startIndex + 4;
       const pagePool = pool.slice(startIndex, endIndex);
       if (pagePool.length === 0) return;
 
       const randomItem = pagePool[Math.floor(Math.random() * pagePool.length)];
       setPreviewThumbnail(previewThumbnailFromItem(randomItem));
       const shuffled = [...pagePool].sort(() => 0.5 - Math.random());
-      setLocalPreviewVideos(shuffled.slice(0, 8));
+      setLocalPreviewVideos(shuffled.slice(0, 4));
     } catch (error) {
       console.error("Failed to shuffle thumbnail:", error);
     }
@@ -547,7 +547,7 @@ const LongPlaylistCard = ({
   const handleResetShuffle = async (e) => {
     e.stopPropagation();
     setPreviewThumbnail(null);
-    setLocalPreviewVideos(initialPreviewVideos.slice(0, 8));
+    setLocalPreviewVideos(initialPreviewVideos.slice(0, 4));
   };
 
   const handleSetAsCover = async (e) => {
@@ -955,9 +955,9 @@ const LongPlaylistCard = ({
                     </div>
                 </div>
             ) : (
-                /* Full 2x4 Mini Previews Grid (8 Slots) */
+                /* 1x4 Mini Previews Grid (4 Slots) */
                 <div className="grid grid-cols-4 gap-2.5 w-full">
-                    {localPreviewVideos.slice(0, 8).map((item, index) => {
+                    {localPreviewVideos.slice(0, 4).map((item, index) => {
                         const slotKey = getPreviewItemKey(item, index);
                         const thumbSrc = getPreviewItemThumbnail(item);
                         const showImg = !!thumbSrc && !miniImageErrors.has(slotKey);
@@ -996,4 +996,4 @@ const LongPlaylistCard = ({
   );
 };
 
-export default LongPlaylistCard;
+export default React.memo(LongPlaylistCard);

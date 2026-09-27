@@ -751,6 +751,53 @@ impl Database {
         Ok(items)
     }
 
+    pub fn get_all_playlist_items_previews(
+        &self,
+        limit: i64,
+    ) -> Result<HashMap<i64, Vec<PlaylistItem>>> {
+        let mut stmt = self.conn.prepare(
+            "SELECT id, playlist_id, video_url, video_id, title, thumbnail_url, position, added_at, is_local, author, view_count, published_at, profile_image_url, drumstick_rating, duration_seconds, description, tags, like_count, comment_count 
+             FROM (
+                 SELECT pi.*, ROW_NUMBER() OVER (PARTITION BY playlist_id ORDER BY position ASC) as rn
+                 FROM playlist_items pi
+             )
+             WHERE rn <= ?1
+             ORDER BY playlist_id, position ASC"
+        )?;
+
+        let mut map: HashMap<i64, Vec<PlaylistItem>> = HashMap::new();
+        let rows = stmt.query_map(params![limit], |row| {
+            Ok(PlaylistItem {
+                id: row.get(0)?,
+                playlist_id: row.get(1)?,
+                video_url: row.get(2)?,
+                video_id: row.get(3)?,
+                title: row.get(4)?,
+                thumbnail_url: row.get(5)?,
+                position: row.get(6)?,
+                added_at: row.get(7)?,
+                is_local: row.get::<_, i32>(8)? != 0,
+                author: row.get(9).unwrap_or(None),
+                view_count: row.get(10).unwrap_or(None),
+                published_at: row.get(11).unwrap_or(None),
+                profile_image_url: row.get(12).unwrap_or(None),
+                drumstick_rating: row.get(13).unwrap_or(0),
+                duration_seconds: row.get(14).unwrap_or(None),
+                description: row.get(15).unwrap_or(None),
+                tags: row.get(16).unwrap_or(None),
+                like_count: row.get(17).unwrap_or(None),
+                comment_count: row.get(18).unwrap_or(None),
+            })
+        })?;
+
+        for item_res in rows {
+            let item = item_res?;
+            map.entry(item.playlist_id).or_default().push(item);
+        }
+
+        Ok(map)
+    }
+
     // Playlist Sources operations
     pub fn add_playlist_source(
         &self,

@@ -85,6 +85,7 @@ pub fn run() {
             commands::add_video_to_playlist,
             commands::get_playlist_items,
             commands::get_playlist_items_preview,
+            commands::get_all_playlist_items_previews,
             commands::get_playlists_for_video_ids,
             commands::remove_video_from_playlist,
             commands::reorder_playlist_item,

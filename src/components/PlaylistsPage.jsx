@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { createPlaylist, getAllPlaylists, getPlaylistItems, deletePlaylist, deletePlaylistByName, getAllFoldersWithVideos, exportPlaylist, getFoldersForPlaylist, toggleStuckFolder, getAllStuckFolders, getVideosInFolder, getAllVideoProgress, getAllPlaylistMetadata, addVideoToPlaylist, getFolderMetadata, getPlaylistItemsPreview, updatePlaylist, reorderPlaylistItem } from '../api/playlistApi';
+import { createPlaylist, getAllPlaylists, getPlaylistItems, deletePlaylist, deletePlaylistByName, getAllFoldersWithVideos, exportPlaylist, getFoldersForPlaylist, toggleStuckFolder, getAllStuckFolders, getVideosInFolder, getAllVideoProgress, getAllPlaylistMetadata, addVideoToPlaylist, getFolderMetadata, getPlaylistItemsPreview, getAllPlaylistItemsPreviews, updatePlaylist, reorderPlaylistItem } from '../api/playlistApi';
 import { getThumbnailUrl } from '../utils/youtubeUtils';
 import { usePlaylistStore } from '../store/playlistStore';
 import { useConfigStore } from '../store/configStore';
@@ -118,43 +118,24 @@ const PlaylistsPage = ({ onVideoSelect }) => {
   const { pinnedVideos: allPinnedVideos, priorityPinIds } = usePinStore();
   const { orbFavorites, hiddenPlaylists } = useConfigStore();
 
-  // Combined preview items per playlist: orbs + banners assigned to this playlist, then DB preview videos
+  // Combined preview items per playlist: strictly YouTube video items (no Orbs, Banners, or Playlist/Folder Trackers)
   const combinedPreviewItems = useMemo(() => {
     const out = {};
     if (!playlists?.length) return out;
-    const orbList = Array.isArray(orbFavorites) ? orbFavorites : [];
-    const bannerList = Array.isArray(bannerPresets) ? bannerPresets : [];
     playlists.forEach((p) => {
-      const pid = p.id;
-      const pidStr = String(pid);
-      // Match VideosPage: only include if playlistIds exists and contains this playlist (no "show on all")
-      const orbIncludesPid = (orb) =>
-        Array.isArray(orb.playlistIds) && orb.playlistIds.map(String).includes(pidStr);
-      const bannerIncludesPid = (preset) =>
-        Array.isArray(preset.playlistIds) && preset.playlistIds.map(String).includes(pidStr);
-      const assignedOrbs = orbList
-        .filter(orbIncludesPid)
-        .map((orb) => ({
-          ...orb,
-          id: `orb-${orb.id}`,
-          originalId: orb.id,
-          isOrb: true,
-          title: orb.name,
-        }));
-      const assignedBanners = bannerList
-        .filter(bannerIncludesPid)
-        .map((preset) => ({
-          ...preset,
-          id: `banner-${preset.id}`,
-          originalId: preset.id,
-          isBannerPreset: true,
-          title: preset.name,
-        }));
-      const videos = playlistPreviewVideos[pid] || [];
-      out[pid] = [...assignedOrbs, ...assignedBanners, ...videos];
+      const videos = playlistPreviewVideos[p.id] || [];
+      out[p.id] = videos.filter(
+        (v) =>
+          v &&
+          !v.isOrb &&
+          !v.isBannerPreset &&
+          !v.isPlaylist &&
+          !v.isFolderTracker &&
+          !v.video_url?.startsWith('local:device_folder:')
+      );
     });
     return out;
-  }, [playlists, playlistPreviewVideos, orbFavorites, bannerPresets]);
+  }, [playlists, playlistPreviewVideos]);
 
   // Derived filtered lists for pagination (moved here to use combinedPreviewItems)
   const sortedPlaylists = useMemo(() => {
@@ -529,24 +510,14 @@ const PlaylistsPage = ({ onVideoSelect }) => {
     }
   }, [playlists]);
 
-  const loadPreviews = async (playlistsToLoad) => {
-    const previews = {};
-    // Load per playlist to avoid one big blocking call, but ideally use batched API if available
-    // Since getPlaylistItems is efficient enough for local DB, we iterate
-    // Using simple loop to throttle slightly if needed, or Promise.all for speed
-    await Promise.all(playlistsToLoad.map(async (p) => {
-      try {
-        if (!playlistPreviewVideos[p.id]) { // Only load if missing
-          const items = await getPlaylistItemsPreview(p.id, 8);
-          previews[p.id] = items;
-        }
-      } catch (e) {
-        console.error("Failed to load preview for", p.id, e);
+  const loadPreviews = async () => {
+    try {
+      const batchedPreviews = await getAllPlaylistItemsPreviews(4);
+      if (batchedPreviews && Object.keys(batchedPreviews).length > 0) {
+        setPlaylistPreviewVideos(batchedPreviews);
       }
-    }));
-
-    if (Object.keys(previews).length > 0) {
-      setPlaylistPreviewVideos(prev => ({ ...prev, ...previews }));
+    } catch (e) {
+      console.error("Failed to load batched previews", e);
     }
   };
 
@@ -596,27 +567,6 @@ const PlaylistsPage = ({ onVideoSelect }) => {
         const metadataMap = new Map();
         if (Array.isArray(metadataList)) {
           metadataList.forEach(m => metadataMap.set(m.playlist_id, m));
-        }
-
-        // Also pre-load folders for playlists to determine if expand option should be shown
-        // We can use the loaded 'folders' state if available, or fetch it.
-        // But loadFolders is called separately.
-        // We need 'playlistFolders' map populated.
-        // Since loadFolders now uses getAllFoldersWithVideos, we can derive playlistFolders from that.
-        // Use a separate call here or wait for folder state?
-        // Let's do a batch fetch of folders here too to be safe and populate playlistFolders
-        try {
-          const allFolders = await getAllFoldersWithVideos();
-          if (Array.isArray(allFolders)) {
-            const pFolders = {};
-            allFolders.forEach(f => {
-              if (!pFolders[f.playlist_id]) pFolders[f.playlist_id] = [];
-              pFolders[f.playlist_id].push(f);
-            });
-            setPlaylistFolders(pFolders);
-          }
-        } catch (e) {
-          console.warn("Failed to load folders for map", e);
         }
 
         for (const playlist of data) {

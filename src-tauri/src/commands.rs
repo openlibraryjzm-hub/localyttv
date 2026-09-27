@@ -192,6 +192,16 @@ pub fn get_playlist_items_preview(
 }
 
 #[tauri::command]
+pub fn get_all_playlist_items_previews(
+    db: State<Mutex<Database>>,
+    limit: i64,
+) -> Result<std::collections::HashMap<i64, Vec<PlaylistItem>>, String> {
+    let db = db.lock().map_err(|e| e.to_string())?;
+    db.get_all_playlist_items_previews(limit)
+        .map_err(|e| e.to_string())
+}
+
+#[tauri::command]
 pub fn get_playlists_for_video_ids(
     db: State<Mutex<Database>>,
     video_ids: Vec<String>,

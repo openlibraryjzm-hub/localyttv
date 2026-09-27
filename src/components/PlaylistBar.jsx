@@ -43,6 +43,7 @@ import EditPlaylistModal from './EditPlaylistModal';
  * Prism: All (white) + Unsorted (black) + 16 folder colors. Segments for colors that have a group carousel (by folderColorId).
  */
 const PlaylistBar = ({
+  playlists = [],
   onAddClick,
   groupColorIds = [],
   allPlaylistCount = 0,
@@ -117,19 +118,21 @@ const PlaylistBar = ({
 
   const [prismOnlyPopulated, setPrismOnlyPopulated] = useState(true);
   const groupColorIdSet = useMemo(() => new Set(groupColorIds), [groupColorIds]);
+  const validPlaylistIdSet = useMemo(() => new Set((playlists || []).map(p => Number(p.id))), [playlists]);
+
   // All + Unsorted (black, if any) + colors that have a group carousel (by folderColorId) with >= 1 items
   const prismPopulatedSegments = useMemo(() => {
     const segments = [{ type: 'all', id: null, count: allPlaylistCount, label: null, hex: null }];
     if (unsortedCount >= 1) segments.push({ type: 'unsorted', id: 'unsorted', count: unsortedCount, label: null, hex: '#000000' });
     FOLDER_COLORS.forEach((color) => {
       const group = groups.find(g => g.folderColorId === color.id && (g.page || 1) === currentPage);
-      const count = group ? group.playlistIds.length : 0;
+      const count = group ? (group.playlistIds || []).filter(id => validPlaylistIdSet.has(Number(id))).length : 0;
       if (count >= 1) {
         segments.push({ type: 'color', id: color.id, count, label: group ? group.name : color.name, hex: color.hex });
       }
     });
     return segments;
-  }, [groups, currentPage, allPlaylistCount, unsortedCount]);
+  }, [groups, currentPage, allPlaylistCount, unsortedCount, validPlaylistIdSet]);
 
   const handleUpdateGroupName = (data) => {
     const group = groups.find(g => g.folderColorId === prismMenuContextFolder && (g.page || 1) === currentPage);

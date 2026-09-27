@@ -585,6 +585,7 @@ const PlaylistsPage = ({ onVideoSelect }) => {
       if (Array.isArray(data)) {
         setPlaylists(data);
         setAllPlaylists(data);
+        usePlaylistGroupStore.getState().cleanStalePlaylistIds(data.map(p => p.id));
 
         // Process metadata
         const thumbnailMap = {};
@@ -939,6 +940,7 @@ const PlaylistsPage = ({ onVideoSelect }) => {
 
           <div ref={scrollContainerRef} className="flex-1 overflow-y-auto pt-0 overflow-x-hidden bg-transparent relative">
             <PlaylistBar
+              playlists={playlists}
               onAddClick={() => setShowPlaylistUploader(true)}
               groupColorIds={playlistGroups.filter((g) => (g.page || 1) === prismPage).map((g) => g.folderColorId).filter(Boolean)}
               allPlaylistCount={effectiveAllCount}

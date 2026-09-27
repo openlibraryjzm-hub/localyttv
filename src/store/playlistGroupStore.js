@@ -152,6 +152,17 @@ export const usePlaylistGroupStore = create(
                     });
                 },
 
+                cleanStalePlaylistIds: (validPlaylistIds) => {
+                    if (!Array.isArray(validPlaylistIds)) return;
+                    const validSet = new Set(validPlaylistIds.map(Number));
+                    set((state) => ({
+                        groups: state.groups.map((g) => ({
+                            ...g,
+                            playlistIds: (g.playlistIds || []).filter((id) => validSet.has(Number(id))),
+                        })),
+                    }));
+                },
+
                 isPlaylistInGroup: (playlistId, groupId) => {
                     const g = get().groups.find((x) => x.id === groupId);
                     return g ? g.playlistIds.includes(Number(playlistId)) : false;

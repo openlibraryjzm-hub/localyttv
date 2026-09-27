@@ -177,6 +177,8 @@ const VideoCardThreeDotMenu = forwardRef(({
       <button
         ref={buttonRef}
         onClick={handleToggle}
+        onMouseDown={(e) => e.stopPropagation()}
+        onMouseUp={(e) => e.stopPropagation()}
         className={`p-2 rounded-full hover:bg-black/50 text-white/90 transition-all backdrop-blur-sm ${triggerClassName} ${isOpen ? 'bg-black/60 text-white' : ''}`}
         title="More options"
         data-card-action="true"
@@ -194,6 +196,10 @@ const VideoCardThreeDotMenu = forwardRef(({
               left: position.left,
               width: 240,
             }}
+            onMouseDown={(e) => e.stopPropagation()}
+            onMouseUp={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
+            onTouchEnd={(e) => e.stopPropagation()}
             onClick={(e) => e.stopPropagation()}
           >
             {/* 1. Pins */}
@@ -321,6 +327,10 @@ const VideoCardThreeDotMenu = forwardRef(({
                 top: gridPosition.top,
                 left: gridPosition.left,
               }}
+              onMouseDown={(e) => e.stopPropagation()}
+              onMouseUp={(e) => e.stopPropagation()}
+              onTouchStart={(e) => e.stopPropagation()}
+              onTouchEnd={(e) => e.stopPropagation()}
               onClick={(e) => e.stopPropagation()}
             >
               <div className="relative w-[180px] h-[180px] rounded-lg overflow-hidden pointer-events-auto">

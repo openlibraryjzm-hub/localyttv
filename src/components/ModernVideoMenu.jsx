@@ -98,6 +98,8 @@ const ModernVideoMenu = ({ options, onOptionClick, triggerClassName = '' }) => {
             <button
                 ref={buttonRef}
                 onClick={handleToggle}
+                onMouseDown={(e) => e.stopPropagation()}
+                onMouseUp={(e) => e.stopPropagation()}
                 className={`p-2 rounded-full hover:bg-black/50 text-white/90 transition-all backdrop-blur-sm ${triggerClassName} ${isOpen ? 'bg-black/60 text-white' : ''}`}
                 title="More options"
                 data-card-action="true"
@@ -113,6 +115,10 @@ const ModernVideoMenu = ({ options, onOptionClick, triggerClassName = '' }) => {
                         top: position.top,
                         left: position.left,
                     }}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onMouseUp={(e) => e.stopPropagation()}
+                    onTouchStart={(e) => e.stopPropagation()}
+                    onTouchEnd={(e) => e.stopPropagation()}
                     onClick={(e) => e.stopPropagation()}
                 >
                     {options.map((option, index) => {

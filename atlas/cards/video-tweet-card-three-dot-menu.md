@@ -34,6 +34,7 @@ The menu is a **vertical standard popup** with these sections from top to bottom
 - **Trigger (Right-Click Context Menu)**: Right-click the card and the menu will follow the exact mouse coordinates, functioning just like a native OS context menu.
 - **Folder Grid Pop-out**: Clicking "Colored Folders..." opens the color grid adjacent to the menu without closing the main menu.
 - **Close**: Click outside or scroll; menu closes.
+- **Event Isolation**: Menu and pop-out portal containers stop propagation of mouse/touch events (`onMouseDown`, `onMouseUp`, `onTouchStart`, `onTouchEnd`, `onClick`). Because React synthetic events bubble up through the component hierarchy across Portals, event isolation ensures interacting with menu options does not trigger card-level click listeners (such as `useLongPress` video selection/playback).
 - **Bulk tag mode**: When the Videos page is in bulk tag mode, the 3-dot menu is **hidden** on cards; folder assignment is done via the bulk-tag strip on the card instead.
 
 ---

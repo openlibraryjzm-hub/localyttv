@@ -60,6 +60,7 @@ const VideoCardInner = ({
 
   const handleContextMenu = (e) => {
     if (e && e.preventDefault) e.preventDefault();
+    if (e && e.stopPropagation) e.stopPropagation();
     if (!bulkTagMode && menuRef.current) {
       menuRef.current.openAt(e.clientX, e.clientY);
     }

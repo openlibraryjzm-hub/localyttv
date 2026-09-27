@@ -120,6 +120,8 @@ pub fn run() {
             commands::get_video_subtitles,
             commands::read_subtitle_vtt,
             commands::select_subtitle_file,
+            commands::get_setting,
+            commands::set_setting,
         ])
         .on_window_event(|window, event| {
             if let tauri::WindowEvent::CloseRequested { api, .. } = event {

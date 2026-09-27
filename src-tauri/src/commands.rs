@@ -884,3 +884,23 @@ pub async fn select_subtitle_file(app: tauri::AppHandle) -> Result<Option<String
     }
 }
 
+// Key-Value Settings commands
+#[tauri::command]
+pub fn get_setting(db: State<Mutex<Database>>, key: String) -> Result<String, String> {
+    let db = db.lock().map_err(|e| e.to_string())?;
+    db.get_setting(&key)
+        .map_err(|e| e.to_string())
+        .map(|v| v.unwrap_or_default())
+}
+
+#[tauri::command]
+pub fn set_setting(
+    db: State<Mutex<Database>>,
+    key: String,
+    value: String,
+) -> Result<bool, String> {
+    let db = db.lock().map_err(|e| e.to_string())?;
+    db.set_setting(&key, &value).map_err(|e| e.to_string())
+}
+
+

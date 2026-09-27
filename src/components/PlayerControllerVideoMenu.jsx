@@ -219,13 +219,13 @@ export default function PlayerControllerVideoMenu(props) {
           setValidationError('API Key is valid but cannot find test video details.');
         }
       } else {
-        const errData = await response.json();
+        const errData = await response.json().catch(() => ({}));
         setValidationStatus('error');
         setValidationError(errData?.error?.message || `HTTP ${response.status}`);
       }
     } catch (error) {
       setValidationStatus('error');
-      setValidationError(error.message || 'Network error.');
+      setValidationError(error.message || 'Network error or failed to save API key.');
     }
   };
 

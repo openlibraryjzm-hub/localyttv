@@ -317,6 +317,26 @@ CREATE TABLE IF NOT EXISTS folder_metadata (
 
 ---
 
+### 7. `settings`
+
+**Purpose**: Key-value storage for app-level configurations (such as `youtube_api_key`)
+
+**Schema:**
+```sql
+CREATE TABLE IF NOT EXISTS settings (
+    key TEXT PRIMARY KEY,
+    value TEXT NOT NULL
+)
+```
+
+**Columns:**
+- `key` (TEXT PRIMARY KEY) - Setting key identifier (e.g. `youtube_api_key`)
+- `value` (TEXT NOT NULL) - Setting value payload
+
+**Indexes**: Primary key index on `key`
+
+---
+
 ## Relationships Diagram
 
 ```
@@ -331,6 +351,7 @@ playlists (1) ──< (many) playlist_items
 
 watch_history (standalone)
 video_progress (standalone, keyed by video_id)
+settings (standalone key-value store)
 ```
 
 ## Foreign Key Constraints

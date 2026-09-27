@@ -29,7 +29,7 @@ The top solid header bar houses real-time interaction controls:
 
 - **Preview Grid Toggle (`Grid3x3`)**: Toggles playlist preview modes.
 - **Reset Shuffle (`RotateCcw`)**: Appears when a shuffle state is active; resets cover and preview slots back to default order.
-- **Shuffle (`Shuffle`)**: Randomly shuffles the playlist pool (or active folder filter) and updates the top 15 preview items.
+- **Shuffle (`Shuffle`)**: Randomly shuffles the playlist pool (or active folder filter) and updates the top preview items.
 - **Quick Add (`Plus` Dropdown)**: 
   - **Open in Uploader**: Launches the Playlist Uploader modal.
   - **Quick Add / Add & Play**: Adds clipboard content to the playlist directly in the background or immediately initiates playback.
@@ -40,16 +40,16 @@ The top solid header bar houses real-time interaction controls:
 
 ### 4. Interactive Previews (Shuffle, Reset & Swap)
 
-- **Shuffle**: Draws from the full pool (orbs + banners + videos or active folder filter) and updates the top 15 preview slots.
-- **Reset**: Reverts the preview thumbnail and top 15 slots back to the initial combined list order.
-- **Swap / Manual Cover**: Right-clicking any mini thumbnail item in the 15-item grid swaps it into the active cover state.
+- **Shuffle**: Draws from the full pool (orbs + banners + videos or active folder filter) and updates preview slots.
+- **Reset**: Reverts the preview thumbnail and top slots back to the initial combined list order.
+- **Swap / Manual Cover**: Right-clicking any mini thumbnail item in the grid swaps it into the active cover state.
 - **Set as Cover**: Saves the currently active thumbnail URL as the permanent database cover image for the playlist.
 
 ---
 
 ## Long Playlist Card (Horizontal Tablet Variant)
 
-The **LongPlaylistCard** is a horizontal variant designed for tablet layouts. It features a solid top header bar (`bg-slate-100 border-2 border-[#052F4A] rounded-xl shadow-md`), a dual-column layout, and an 8-item ($2 \times 4$) mini thumbnail preview grid floating over the page backdrop.
+The **LongPlaylistCard** is a high-density horizontal variant designed for tablet and desktop views. It features a solid top header bar (`bg-slate-100 border-2 border-[#052F4A] rounded-xl shadow-md`), a dual-column layout, a 4-item ($1 \times 4$) mini thumbnail preview grid floating over the page backdrop, and a built-in **Skeleton Loading State System** for DB fetch and network image downloading.
 
 For detailed architecture on this variant, see:
 - **[Long Playlist Card Documentation](long-playlist-card.md)**
@@ -59,6 +59,6 @@ For detailed architecture on this variant, see:
 ## File Manifest
 
 - **`src/components/PlaylistCard.jsx`**: Renders the standard card with solid header bar and floating 15-item ($3 \times 5$) mini grid.
-- **`src/components/LongPlaylistCard.jsx`**: Renders the horizontal tablet card with 8-item ($2 \times 4$) preview grid.
-- **`src/components/PlaylistsPage.jsx`**: Main page rendering cards over the atmospheric blurred banner backdrop.
+- **`src/components/LongPlaylistCard.jsx`**: Renders the horizontal card with 4-item ($1 \times 4$) video preview grid, memoized with `React.memo` and equipped with skeleton loading states.
+- **`src/components/PlaylistsPage.jsx`**: Main page rendering cards over the atmospheric blurred banner backdrop in a vertical scrolling grid.
 - **`src/components/FullscreenVideoInfo.jsx`**: Fullscreen right-margin panel rendering `PlaylistCard` in `large` size mode.

@@ -1,6 +1,6 @@
 # Playlists Page
 
-The Playlists Page is the primary organizational hub for the application, displaying user-created playlists and colored folders in a single-row horizontal scrolling grid set against an atmospheric blurred app banner backdrop.
+The Playlists Page is the primary organizational hub for the application, displaying user-created playlists and colored folders set against an atmospheric blurred app banner backdrop.
 
 ---
 
@@ -15,31 +15,43 @@ The Playlists Page is the primary organizational hub for the application, displa
 
 ---
 
-### Horizontal Scrolling Grid Architecture
-- **Single-Row Layout**: Displays a single horizontal row of fixed-width cards (500px).
-- **Wheel Translation**: Vertical mouse wheel scrolling is captured and converted into horizontal translation. Vertical page overflow is disabled (`overflow-y-hidden`).
-- **Sticky Toolbar**: Top toolbar below the page header containing:
+### Vertical Scrolling Card Grid Architecture
+- **Vertical Layout**: Playlist cards are rendered in a clean, vertical scrolling grid (`grid grid-cols-1 gap-6`), providing a unified navigation experience across All Playlists, Unsorted Playlists, and Colored Folder Prism selections.
+- **Top Playlist Bar (Prism Segment Bar)**: Top navigation bar displaying colored folder prism segments (White = All, Black = Unsorted, 16 colored folder groups). Selecting any colored segment filters the vertical scrolling list to playlists assigned to that group.
+- **Sticky Toolbar & Header Controls**: Top toolbar below the page header containing:
   - **Left Side**: Toggle Mode button (Tabs View vs Presets View) and scrollable tab buttons.
   - **Right Side**: Folder inline toggle and Add Playlist modal trigger.
 - **Floating Playlist Cards**:
-  - Both `PlaylistCard` and `LongPlaylistCard` feature **solid anchor top header bars** (`bg-slate-100 border-2 border-[#052F4A]`) housing titles and management controls.
+  - `LongPlaylistCard` features a **solid anchor top header bar** (`bg-slate-100 border-2 border-[#052F4A]`) housing titles and management controls.
   - Non-header card bodies are transparent (`bg-transparent border-0 shadow-none`), letting mini preview grids float directly over the atmospheric blurred backdrop.
 
 ---
 
-## 2. Colored Folders Integration
+## 2. Performance & Data Flow Architecture
+
+### Batched Preview Query (`getAllPlaylistItemsPreviews`)
+- **Single-Query Fetch**: Initial playlist item previews are loaded via 1 batched IPC database command using SQLite window functions (`ROW_NUMBER() OVER (PARTITION BY playlist_id ORDER BY position ASC)`).
+- **Filtered Video Previews**: Previews filter out local device folders, Orbs, Banner Presets, Playlist Link Cards, and Folder Trackers, presenting YouTube video thumbnails in the mini-preview strip.
+- **Skeleton Loading System**:
+  - **DB Fetch Skeletons**: Pre-data fetching renders 4 animated pulsing skeleton slots (`bg-slate-900/60 animate-pulse rounded-xl`) to maintain card heights without layout shift while backend queries resolve.
+  - **Network Image Download Placeholders**: `MiniPreviewItem` tracks image load state using DOM element `ref` inspection (`el.complete`) and `onLoad` handlers, displaying a dark pulsing background until image bytes finish downloading.
+  - **Empty Placeholders**: Empty playlists display 4 subtle dashed slot outlines (`border-dashed border-[#052F4A]/15`).
+
+---
+
+## 3. Colored Folders Integration
 
 Users interact with colored folders via three distinct modes:
 
-1. **Sticky Folders (Horizontal)**: Pinned folders appear in the main horizontal scroll immediately after their parent playlist card.
-2. **Inline Expansion (Horizontal)**: Triggered via "Expand Folders" in the card's 3-dot menu; injects all member folders into the horizontal row.
-3. **Folder Reel View (Vertical Overlay)**: Activated via the preview toggle; presents a focused vertical reel overlay of folder contents without leaving the page.
+1. **Prism Folder Filter (PlaylistBar)**: Selecting a folder color segment on the top `PlaylistBar` filters the vertical list to show playlists belonging to that folder color group on the active page.
+2. **Inline Expansion**: Triggered via "Expand Folders" in the card's 3-dot menu; displays folder distribution sub-views.
+3. **Pie Chart Folder View**: Toggling the folder icon on `LongPlaylistCard` replaces the mini-thumbnail grid with an interactive radial SVG visualization of folder tag distribution.
 
 ---
 
 ## File Manifest
 
-- **`src/components/PlaylistsPage.jsx`**: Top-level page component managing horizontal scroll, tab filters, and banner backdrop integration.
-- **`src/components/PlaylistCard.jsx`**: Standard card component with solid header and floating 15-item ($3 \times 5$) grid.
-- **`src/components/LongPlaylistCard.jsx`**: Horizontal tablet card component with solid header and floating 8-item ($2 \times 4$) grid.
+- **`src/components/PlaylistsPage.jsx`**: Top-level page component managing vertical scrolling card grid, tab filters, prism folder selection, and batched IPC data loading.
+- **`src/components/LongPlaylistCard.jsx`**: High-density horizontal card component with solid header, 4-item ($1 \times 4$) video preview grid, and skeleton loading state system.
+- **`src/components/PlaylistBar.jsx`**: Top colored folder prism segment navigation bar.
 - **`src/components/TabBar.jsx`**: Tab navigation bar component.

@@ -56,6 +56,12 @@ const MiniPreviewItem = ({
   setMiniImageErrors,
   getPreviewItemTitle
 }) => {
+  const [imgLoaded, setImgLoaded] = useState(false);
+
+  useEffect(() => {
+    setImgLoaded(false);
+  }, [thumbSrc]);
+
   const longPress = useLongPress(
     (e) => handleMiniVideoRightClick(e, item, index),
     (e) => {
@@ -82,14 +88,22 @@ const MiniPreviewItem = ({
     >
       {isOrb ? (
         /* Orb Rendering: Centered Circle */
-        <div className="w-full h-full flex items-center justify-center">
+        <div className="w-full h-full flex items-center justify-center relative">
             {showImg ? (
-                <img
-                    src={thumbSrc}
-                    alt=""
-                    className="w-full h-full object-cover rounded-full transition-all duration-500 group-hover/mini:scale-110"
-                    onError={() => setMiniImageErrors((prev) => new Set(prev).add(slotKey))}
-                />
+                <>
+                    {!imgLoaded && (
+                        <div className="absolute inset-0 rounded-full bg-amber-900/40 animate-pulse border border-amber-500/30" />
+                    )}
+                    <img
+                        src={thumbSrc}
+                        alt=""
+                        onLoad={() => setImgLoaded(true)}
+                        className={`w-full h-full object-cover rounded-full transition-all duration-500 group-hover/mini:scale-110 ${
+                            imgLoaded ? "opacity-100" : "opacity-0"
+                        }`}
+                        onError={() => setMiniImageErrors((prev) => new Set(prev).add(slotKey))}
+                    />
+                </>
             ) : (
                 <div className="w-full h-full flex items-center justify-center rounded-full bg-amber-900/40 text-amber-200 border-2 border-amber-500/30">
                     <span className="text-[8px] font-bold uppercase tracking-wider">Orb</span>
@@ -104,12 +118,20 @@ const MiniPreviewItem = ({
             {/* Thumbnail: Aspect Video on Top */}
             <div className="relative aspect-video w-full overflow-hidden flex-shrink-0 bg-slate-900">
                 {showImg ? (
-                    <img
-                        src={thumbSrc}
-                        alt=""
-                        className="w-full h-full object-cover transition-all duration-500 group-hover/mini:scale-105"
-                        onError={() => setMiniImageErrors((prev) => new Set(prev).add(slotKey))}
-                    />
+                    <>
+                        {!imgLoaded && (
+                            <div className="absolute inset-0 bg-slate-800 animate-pulse" />
+                        )}
+                        <img
+                            src={thumbSrc}
+                            alt=""
+                            onLoad={() => setImgLoaded(true)}
+                            className={`w-full h-full object-cover transition-all duration-500 group-hover/mini:scale-105 ${
+                                imgLoaded ? "opacity-100" : "opacity-0"
+                            }`}
+                            onError={() => setMiniImageErrors((prev) => new Set(prev).add(slotKey))}
+                        />
+                    </>
                 ) : (
                     <div className="w-full h-full flex items-center justify-center text-slate-600 bg-slate-800/40">
                          <span className="text-[10px] font-bold uppercase">{item.isBannerPreset ? "Banner" : "Video"}</span>
@@ -126,7 +148,7 @@ const MiniPreviewItem = ({
         </div>
       )}
 
-      {isVideo && showImg && (
+      {isVideo && showImg && imgLoaded && (
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/mini:opacity-100 bg-black/20 transition-opacity">
           <div className="w-8 h-8 rounded-full bg-sky-500/80 flex items-center justify-center backdrop-blur-sm shadow-lg">
             <Play size={14} className="text-white fill-current translate-x-0.5" />
@@ -957,38 +979,66 @@ const LongPlaylistCard = ({
             ) : (
                 /* 1x4 Mini Previews Grid (4 Slots) */
                 <div className="grid grid-cols-4 gap-2.5 w-full">
-                    {localPreviewVideos.slice(0, 4).map((item, index) => {
-                        const slotKey = getPreviewItemKey(item, index);
-                        const thumbSrc = getPreviewItemThumbnail(item);
-                        const showImg = !!thumbSrc && !miniImageErrors.has(slotKey);
-                        const isVideo = !item.isOrb && !item.isBannerPreset;
-                        const isTweet = !item.isOrb && !item.isBannerPreset && item.thumbnail_url?.includes("twimg.com");
-                        const isCover = Boolean(
-                            item && displayedThumbnailUrl && (
-                                thumbSrc === displayedThumbnailUrl ||
-                                (item.thumbnail_url && displayedThumbnailUrl.includes(item.video_id))
-                            )
-                        );
+                    {localPreviewVideos.length === 0 ? (
+                        itemCount > 0 || videoCount > 0 ? (
+                            /* Pulsing Skeleton Loading Slots */
+                            Array.from({ length: 4 }).map((_, idx) => (
+                                <div
+                                    key={`skeleton-${idx}`}
+                                    className="relative aspect-square overflow-hidden rounded-xl border border-[#052F4A]/20 bg-slate-900/60 p-1.5 flex flex-col justify-between animate-pulse shadow-sm"
+                                >
+                                    <div className="w-full aspect-video rounded-lg bg-slate-800/80" />
+                                    <div className="flex-1 mt-1.5 flex flex-col justify-center gap-1">
+                                        <div className="w-full h-2 rounded bg-slate-800/80" />
+                                        <div className="w-2/3 h-2 rounded bg-slate-800/60" />
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            /* Empty Playlist Placeholders */
+                            Array.from({ length: 4 }).map((_, idx) => (
+                                <div
+                                    key={`empty-slot-${idx}`}
+                                    className="relative aspect-square overflow-hidden rounded-xl border border-dashed border-[#052F4A]/15 bg-slate-100/40 flex flex-col items-center justify-center text-slate-400 select-none"
+                                >
+                                    <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400/60">Empty</span>
+                                </div>
+                            ))
+                        )
+                    ) : (
+                        localPreviewVideos.slice(0, 4).map((item, index) => {
+                            const slotKey = getPreviewItemKey(item, index);
+                            const thumbSrc = getPreviewItemThumbnail(item);
+                            const showImg = !!thumbSrc && !miniImageErrors.has(slotKey);
+                            const isVideo = !item.isOrb && !item.isBannerPreset;
+                            const isTweet = !item.isOrb && !item.isBannerPreset && item.thumbnail_url?.includes("twimg.com");
+                            const isCover = Boolean(
+                                item && displayedThumbnailUrl && (
+                                    thumbSrc === displayedThumbnailUrl ||
+                                    (item.thumbnail_url && displayedThumbnailUrl.includes(item.video_id))
+                                )
+                            );
 
-                        return (
-                            <div key={slotKey} data-card-action="true" className="flex items-center justify-center">
-                                <MiniPreviewItem
-                                    item={item}
-                                    index={index}
-                                    slotKey={slotKey}
-                                    thumbSrc={thumbSrc}
-                                    showImg={showImg}
-                                    isVideo={isVideo}
-                                    isTweet={isTweet}
-                                    isCover={isCover}
-                                    onVideoSelect={onVideoSelect}
-                                    handleMiniVideoRightClick={handleMiniVideoRightClick}
-                                    setMiniImageErrors={setMiniImageErrors}
-                                    getPreviewItemTitle={getPreviewItemTitle}
-                                />
-                            </div>
-                        );
-                    })}
+                            return (
+                                <div key={slotKey} data-card-action="true" className="flex items-center justify-center">
+                                    <MiniPreviewItem
+                                        item={item}
+                                        index={index}
+                                        slotKey={slotKey}
+                                        thumbSrc={thumbSrc}
+                                        showImg={showImg}
+                                        isVideo={isVideo}
+                                        isTweet={isTweet}
+                                        isCover={isCover}
+                                        onVideoSelect={onVideoSelect}
+                                        handleMiniVideoRightClick={handleMiniVideoRightClick}
+                                        setMiniImageErrors={setMiniImageErrors}
+                                        getPreviewItemTitle={getPreviewItemTitle}
+                                    />
+                                </div>
+                            );
+                        })
+                    )}
                 </div>
             )}
         </div>

@@ -91,18 +91,19 @@ const MiniPreviewItem = ({
         <div className="w-full h-full flex items-center justify-center relative">
             {showImg ? (
                 <>
-                    {!imgLoaded && (
-                        <div className="absolute inset-0 rounded-full bg-amber-900/40 animate-pulse border border-amber-500/30" />
-                    )}
                     <img
                         src={thumbSrc}
                         alt=""
+                        ref={(el) => {
+                            if (el?.complete) setImgLoaded(true);
+                        }}
                         onLoad={() => setImgLoaded(true)}
-                        className={`w-full h-full object-cover rounded-full transition-all duration-500 group-hover/mini:scale-110 ${
-                            imgLoaded ? "opacity-100" : "opacity-0"
-                        }`}
+                        className="w-full h-full object-cover rounded-full transition-all duration-500 group-hover/mini:scale-110"
                         onError={() => setMiniImageErrors((prev) => new Set(prev).add(slotKey))}
                     />
+                    {!imgLoaded && (
+                        <div className="absolute inset-0 rounded-full bg-amber-900/40 animate-pulse border border-amber-500/30 pointer-events-none" />
+                    )}
                 </>
             ) : (
                 <div className="w-full h-full flex items-center justify-center rounded-full bg-amber-900/40 text-amber-200 border-2 border-amber-500/30">
@@ -119,18 +120,19 @@ const MiniPreviewItem = ({
             <div className="relative aspect-video w-full overflow-hidden flex-shrink-0 bg-slate-900">
                 {showImg ? (
                     <>
-                        {!imgLoaded && (
-                            <div className="absolute inset-0 bg-slate-800 animate-pulse" />
-                        )}
                         <img
                             src={thumbSrc}
                             alt=""
+                            ref={(el) => {
+                                if (el?.complete) setImgLoaded(true);
+                            }}
                             onLoad={() => setImgLoaded(true)}
-                            className={`w-full h-full object-cover transition-all duration-500 group-hover/mini:scale-105 ${
-                                imgLoaded ? "opacity-100" : "opacity-0"
-                            }`}
+                            className="w-full h-full object-cover transition-all duration-500 group-hover/mini:scale-105"
                             onError={() => setMiniImageErrors((prev) => new Set(prev).add(slotKey))}
                         />
+                        {!imgLoaded && (
+                            <div className="absolute inset-0 bg-slate-800 animate-pulse pointer-events-none" />
+                        )}
                     </>
                 ) : (
                     <div className="w-full h-full flex items-center justify-center text-slate-600 bg-slate-800/40">

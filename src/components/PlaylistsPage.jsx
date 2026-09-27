@@ -123,7 +123,7 @@ const PlaylistsPage = ({ onVideoSelect }) => {
     const out = {};
     if (!playlists?.length) return out;
     playlists.forEach((p) => {
-      const videos = playlistPreviewVideos[p.id] || [];
+      const videos = playlistPreviewVideos[p.id] || playlistPreviewVideos[String(p.id)] || [];
       out[p.id] = videos.filter(
         (v) =>
           v &&

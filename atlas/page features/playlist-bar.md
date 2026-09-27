@@ -90,8 +90,8 @@ This document describes the **Playlists page sticky toolbar** (`PlaylistBar.jsx`
 ## 6. Relation to PlaylistsPage and Group Carousels
 
 - **PlaylistsPage** computes `groupColorIds = playlistGroups.map(g => g.folderColorId).filter(Boolean)` from `playlistGroupStore` and passes it to PlaylistBar.
-- Selecting a **color segment** sets `selectedPrismFolder` to that color id. PlaylistsPage then uses `getGroupByColorId(selectedPrismFolder)` to get the group and renders a single **GroupPlaylistCarousel** for that group (large carousel when viewing a single folder).
-- **All** and **Unsorted** show a 2-column grid of PlaylistCards (all playlists, or only playlists in no group). No carousels in those views.
+- Selecting a **color segment** sets `selectedPrismFolder` to that color id. PlaylistsPage then filters and displays all playlists assigned to that group in the standard vertical-scrolling grid using `LongPlaylistCard`s.
+- **All** and **Unsorted** show all playlists, or only playlists in no group, in the same vertical grid layout.
 - Creating a new carousel (e.g. “New carousel” button or assigning a playlist to a colored placeholder in **PlaylistGroupColumn**) adds a group with a `folderColorId`; that color then appears in the prism (in populated-only mode) and can be selected to view that carousel.
 
 ---

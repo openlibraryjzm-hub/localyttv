@@ -82,25 +82,6 @@ The application features custom-styled scrollbars for a cohesive visual experien
 - **Firefox Support**: Uses `scrollbar-width: thin` with matching colors
 - **CSS Location**: `src/App.css` (lines 78-129)
 
-**5: Scrollbar Navigation Chevrons**
-A compact navigation capsule positioned adjacent to the scrollbar for quick scroll-to-top/bottom functionality:
-
-- **Component**: `src/components/ScrollbarChevrons.jsx`
-- **Visual Design**: Tightly packed vertical capsule containing:
-  - **Up Chevron** (top): Double-click to scroll to page top
-  - **Tracking Dot** (middle): Blue dot that aligns with scrollbar thumb center
-  - **Down Chevron** (bottom): Double-click to scroll to page bottom
-- **Positioning**: Fixed position, -4px from scrollbar (nearly touching)
-- **Thumb Tracking**: The capsule moves with the scrollbar thumb, keeping the dot aligned with the thumb's center
-- **Sizing**:
-  - Button size: 14x14px
-  - Dot size: 6px
-  - Gap between elements: 4px
-  - Total capsule height: ~42px
-- **Visibility**: Only appears when content is scrollable
-- **Styling**: Navy blue buttons with light stroke chevrons, blue glowing dot
-- **Hover Effects**: Buttons scale up and glow on hover (CSS in `src/App.css`)
-- **Integration**: Rendered via React portal, mounted in `LayoutShell.jsx` within side menu content
 
 ---
 
@@ -121,10 +102,6 @@ Users see a side menu panel that appears on the right side of the screen when in
      - **Location**: Integrated into the Top Navigation header, to the left of the Back button.
      - **Components**: Up Chevron, Central Dot Button (scroll-to-active), Down Chevron.
      - **Functionality**: Smoothly scrolls the active side menu page content. The central dot attempts to center the currently active item (playing video or playlist).
-   - **Scrollbar Chevrons** (Floating Capsule):
-     - **Location**: Positioned next to the scrollbar, tracking the thumb position.
-     - **Components**: Compact vertical capsule with Up Chevron, Tracking Dot, Down Chevron.
-     - **Functionality**: Double-click chevrons to scroll to top/bottom. Dot tracks scrollbar thumb center.
   - **Close Side Menu Button**: "Close Side Menu" button (X) aligned to the right. Clicking it returns to full-screen mode (hides side menu).
 
 - **Folder Selector** (Videos page only): Below the tabs, a row of 17 colored dots:
@@ -149,7 +126,6 @@ Users see a side menu panel that appears on the right side of the screen when in
 - `src/LayoutShell.jsx`: Main layout component that manages side menu positioning
 - `src/components/TopNavigation.jsx`: Tab navigation bar component
 - `src/components/FolderSelector.jsx`: Folder color selector component (Videos page only)
-- `src/components/ScrollbarChevrons.jsx`: Scrollbar navigation capsule (chevron-dot-chevron)
 - `src/components/SideMenuScrollControls.jsx`: Header scroll controls (up/down/active buttons)
 - `src/App.jsx`: Orchestrates page routing and side menu content
 

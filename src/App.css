@@ -152,49 +152,6 @@ html,
   -webkit-border-radius: 0 !important;
 }
 
-/* ============================================
-   SCROLLBAR CHEVRON CONTROLS
-   ============================================ */
-
-.scrollbar-chevrons {
-  opacity: 0.6;
-  transition: opacity 0.2s ease;
-}
-
-.scrollbar-chevrons:hover {
-  opacity: 1;
-}
-
-.scrollbar-chevron {
-  opacity: 0.8;
-}
-
-.scrollbar-chevron:hover {
-  opacity: 1 !important;
-  background: rgba(5, 47, 74, 0.8) !important;
-  transform: scale(1.15);
-  box-shadow: 0 0 6px rgba(59, 130, 246, 0.4);
-}
-
-.scrollbar-chevron:active {
-  opacity: 1 !important;
-  background: rgba(59, 130, 246, 0.8) !important;
-  transform: scale(0.9);
-}
-
-.scrollbar-chevrons__dot {
-  transition: top 0.1s ease-out, transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.scrollbar-chevrons:hover .scrollbar-chevrons__dot {
-  transform: scale(1.3);
-  box-shadow: 0 0 8px rgba(59, 130, 246, 0.7);
-}
-
-/* Wrapper needs position relative for absolute positioning of chevrons */
-.scrollbar-chevrons-wrapper {
-  position: relative;
-}
 
 /* ============================================
    ANIMATIONS

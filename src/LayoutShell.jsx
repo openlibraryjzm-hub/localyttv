@@ -3,7 +3,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useLayoutStore } from './store/layoutStore';
 import { useConfigStore } from './store/configStore';
 import WindowControls from './components/WindowControls';
-import ScrollbarChevrons from './components/ScrollbarChevrons';
 import FullscreenVideoInfo from './components/FullscreenVideoInfo';
 
 import './LayoutShell.css';
@@ -306,20 +305,16 @@ const LayoutShell = ({
 
                   {/* Side Menu Content */}
                   <div
-                    className={`layout-shell__side-menu-content scrollbar-chevrons-wrapper ${showDebugBounds ? 'debug-bounds debug-bounds--side-menu-content' : ''}`}
+                    className={`layout-shell__side-menu-content ${showDebugBounds ? 'debug-bounds debug-bounds--side-menu-content' : ''}`}
                     data-debug-label="Side Menu Content"
                   >
                     {!showDebugBounds && (
-                      <>
-                        {sideMenu || (
-                          <div className="placeholder placeholder--side-menu">
-                            <span className="placeholder__label">Side Menu</span>
-                            <span className="placeholder__subtitle">Playlists, File Nav, etc.</span>
-                          </div>
-                        )}
-                        {/* Scrollbar Navigation Chevrons */}
-                        <ScrollbarChevrons scrollbarWidth={10} />
-                      </>
+                      sideMenu || (
+                        <div className="placeholder placeholder--side-menu">
+                          <span className="placeholder__label">Side Menu</span>
+                          <span className="placeholder__subtitle">Playlists, File Nav, etc.</span>
+                        </div>
+                      )
                     )}
                   </div>
                 </div>

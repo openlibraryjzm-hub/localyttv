@@ -3,6 +3,7 @@ import { usePinStore } from '../store/pinStore';
 import { usePlaylistStore } from '../store/playlistStore';
 import { useLayoutStore } from '../store/layoutStore';
 import { useNavigationStore } from '../store/navigationStore';
+import { useConfigStore } from '../store/configStore';
 import VideoCard from './VideoCard';
 
 import StickyVideoCarousel, { SplatterIcon } from './StickyVideoCarousel';
@@ -15,6 +16,23 @@ const PinsPage = ({ onVideoSelect }) => {
     const { inspectMode } = useLayoutStore();
     const { setCurrentPage } = useNavigationStore();
     const [isPriorityExpanded, setIsPriorityExpanded] = useState(true);
+
+    const {
+        fullscreenBanner,
+        bannerPreviewMode,
+        bannerNavBannerId,
+        bannerPresets,
+    } = useConfigStore();
+
+    let effectiveBanner = fullscreenBanner;
+    if (bannerNavBannerId && !bannerPreviewMode && bannerPresets?.length) {
+        const preset = bannerPresets.find(p => p.id === bannerNavBannerId);
+        if (preset?.fullscreenBanner) effectiveBanner = preset.fullscreenBanner;
+    }
+    const bannerImage = effectiveBanner?.image || '/banner.PNG';
+    const bannerScale = effectiveBanner?.scale ?? 100;
+    const bannerVertical = effectiveBanner?.verticalPosition ?? 0;
+    const bannerHorizontal = effectiveBanner?.horizontalOffset ?? 0;
 
     // Helper to get inspect label
     const getInspectTitle = (label) => inspectMode ? label : undefined;
@@ -196,27 +214,50 @@ const PinsPage = ({ onVideoSelect }) => {
     };
 
     return (
-        <div className="w-full h-full flex flex-col bg-transparent">
-            <div className="flex-1 overflow-y-auto relative custom-scrollbar">
-                <BottomNavigation />
-                <div className="p-4 pt-0">
-                    {/* Link to Tasks page */}
-                    <button
-                        type="button"
-                        onClick={() => setCurrentPage('tasks')}
-                        className="flex items-center gap-2 mb-6 px-4 py-3 rounded-lg bg-white/10 hover:bg-white/20 border border-black/10 text-[#052F4A] font-medium transition-colors w-full sm:w-auto"
-                    >
-                        <ListTodo size={20} />
-                        <span>Tasks</span>
-                        <ChevronRight size={18} className="opacity-70" />
-                    </button>
+        <div className="w-full h-full flex flex-col relative overflow-hidden bg-slate-950">
+            {/* Blurred App Banner Background Layer */}
+            <div
+                aria-hidden="true"
+                className="absolute inset-0 pointer-events-none z-0 overflow-hidden"
+            >
+                <div
+                    style={{
+                        position: 'absolute',
+                        inset: 0,
+                        backgroundImage: `url(${bannerImage})`,
+                        backgroundPosition: `${bannerHorizontal}% ${bannerVertical}%`,
+                        backgroundRepeat: 'repeat-x',
+                        backgroundSize: `${bannerScale}vw auto`,
+                        filter: 'blur(36px)',
+                        transform: 'scale(1.25)',
+                        opacity: 0.85,
+                    }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40" />
+            </div>
 
-                    {renderContent()}
+            {/* Main Content Layer */}
+            <div className="relative z-10 flex-1 flex flex-col min-h-0">
+                <div className="flex-1 overflow-y-auto relative custom-scrollbar">
+                    <BottomNavigation />
+                    <div className="p-4 pt-0">
+                        {/* Link to Tasks page */}
+                        <button
+                            type="button"
+                            onClick={() => setCurrentPage('tasks')}
+                            className="flex items-center gap-2 mb-6 px-4 py-3 rounded-lg bg-white/10 hover:bg-white/20 border border-black/10 text-[#052F4A] font-medium transition-colors w-full sm:w-auto"
+                        >
+                            <ListTodo size={20} />
+                            <span>Tasks</span>
+                            <ChevronRight size={18} className="opacity-70" />
+                        </button>
+
+                        {renderContent()}
+                    </div>
                 </div>
             </div>
         </div>
     );
-
 };
 
 export default PinsPage;

@@ -16,10 +16,11 @@ The Fullscreen Video Info panel is a dedicated component that appears in the rig
 |  +-------------------------------------------------+  |
 |  | [Content Layer: z-10]                           |  |
 |  |                                                 |  |
-|  |  1. Video Thumbnail (16:9, rounded, shadow)     |  |
-|  |  2. Channel Info & Metadata (Avatar, View Count) |  |
-|  |  3. Playlist Card (Solid Header + 15 Mini Grid) |  |
-|  |  4. Bottom Controls (Volume Slider & Playback)  |  |
+|  |  1. Channel Info & Metadata (Avatar, View Count) |  |
+|  |  2. Playlist Card (Solid Header)                |  |
+|  |  3. Video Thumbnail (16:9, rounded, shadow)     |  |
+|  |  4. 15 Mini Thumbnail Grid                      |  |
+|  |  5. Bottom Controls (Volume Slider & Playback)  |  |
 |  +-------------------------------------------------+  |
 +-------------------------------------------------------+
 ```
@@ -33,7 +34,6 @@ The Fullscreen Video Info panel is a dedicated component that appears in the rig
 
 ### 2. Layout Sections (Top to Bottom)
 
-- **Main Video Thumbnail**: 16:9 aspect ratio thumbnail at the top of the panel with rounded corners and border shadow.
 - **Channel Info & Metadata Card**:
   - A single solid light card (`bg-slate-100 border-2 border-[#052F4A] rounded-2xl p-3 shadow-md`).
   - **Left**: Circular author avatar (48px) with a dark navy border.
@@ -45,7 +45,8 @@ The Fullscreen Video Info panel is a dedicated component that appears in the rig
   - Renders a **2-row solid Playlist Header Card** (`bg-slate-100 border-2 border-[#052F4A] rounded-2xl p-1 shadow-md h-[68px]` matching Author Card height):
     - **Row 1**: Playlist Title + Grid / Shuffle / Add action buttons.
     - **Row 2**: Content type indicators (`🎬 Videos`, `🔮 Orbs`, `🖼️ Banners`) on left + Colored folder distribution pill badges (`[🔴 4] [🔵 2]`) on right.
-  - **Mini Thumbnail Grid**: 15 preview items ($3 \text{ columns} \times 5 \text{ rows}$, `grid-cols-3 gap-1`) floating directly underneath the 2-row Header Card.
+  - **Main Video Thumbnail**: 16:9 aspect ratio thumbnail positioned directly underneath the 2-row Playlist Header Card (and above the 15 mini thumbnail grid).
+  - **Mini Thumbnail Grid**: 15 preview items ($3 \text{ columns} \times 5 \text{ rows}$, `grid-cols-3 gap-1`) floating directly underneath the Main Video Thumbnail.
 - **Bottom Control Dock Card**:
   - A unified solid light card (`bg-slate-100 border-2 border-[#052F4A] rounded-2xl px-3 py-2 shadow-md mx-2.5 mb-2.5`).
   - **Left**: Volume control section with Mute button (`#052F4A`) and custom range slider.

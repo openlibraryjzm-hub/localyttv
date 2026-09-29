@@ -7,6 +7,7 @@ import { useLayoutStore } from '../store/layoutStore';
 import { usePlaylistStore } from '../store/playlistStore';
 import { useNavigationStore } from '../store/navigationStore';
 import { usePinStore } from '../store/pinStore';
+import { useConfigStore } from '../store/configStore';
 import Card from './Card';
 import CardThumbnail from './CardThumbnail';
 import CardContent from './CardContent';
@@ -314,42 +315,52 @@ const HistoryPage = ({ onVideoSelect, onSecondPlayerSelect }) => {
     });
   }, [history, playlistMap, filteredPlaylist]);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center w-full h-full">
-        <p className="text-slate-400">Loading history...</p>
-      </div>
-    );
-  }
+  const {
+    fullscreenBanner,
+    bannerPreviewMode,
+    bannerNavBannerId,
+    bannerPresets,
+  } = useConfigStore();
 
-  if (history.length === 0) {
-    return (
-      <div className="flex items-center justify-center w-full h-full">
-        <p className="text-slate-400">No watch history yet</p>
-      </div>
-    );
+  let effectiveBanner = fullscreenBanner;
+  if (bannerNavBannerId && !bannerPreviewMode && bannerPresets?.length) {
+    const preset = bannerPresets.find(p => p.id === bannerNavBannerId);
+    if (preset?.fullscreenBanner) effectiveBanner = preset.fullscreenBanner;
   }
+  const bannerImage = effectiveBanner?.image || '/banner.PNG';
+  const bannerScale = effectiveBanner?.scale ?? 100;
+  const bannerVertical = effectiveBanner?.verticalPosition ?? 0;
+  const bannerHorizontal = effectiveBanner?.horizontalOffset ?? 0;
 
-  if (filteredHistory.length === 0 && filteredPlaylist) {
-    return (
-      <div className="w-full h-full flex flex-col bg-transparent">
-        <div className="flex-1 overflow-y-auto p-6">
-          <div className="text-center text-slate-400 py-12">
-            No videos from "{filteredPlaylist}" in watch history.
-          </div>
+  const renderContent = () => {
+    if (loading) {
+      return (
+        <div className="flex items-center justify-center w-full h-full p-12">
+          <p className="text-slate-400">Loading history...</p>
         </div>
-      </div>
-    );
-  }
+      );
+    }
 
-  return (
-    <div className="w-full h-full flex flex-col bg-transparent">
-      <div className="flex-1 overflow-y-auto relative">
-        <BottomNavigation />
-        <div className="p-6 pt-0">
+    if (history.length === 0) {
+      return (
+        <div className="flex items-center justify-center w-full h-full p-12">
+          <p className="text-slate-400">No watch history yet</p>
+        </div>
+      );
+    }
 
-          <div className="flex flex-col space-y-3 max-w-5xl mx-auto">
-            {filteredHistory.map((item) => {
+    if (filteredHistory.length === 0 && filteredPlaylist) {
+      return (
+        <div className="text-center text-slate-400 py-12">
+          No videos from "{filteredPlaylist}" in watch history.
+        </div>
+      );
+    }
+
+    return (
+      <div className="px-3 py-1">
+        <div className="flex flex-col space-y-3 w-full">
+          {filteredHistory.map((item) => {
               const thumbnailUrl = item.thumbnail_url || getThumbnailUrl(item.video_id, 'medium');
 
               // Check if this video is currently playing
@@ -367,18 +378,17 @@ const HistoryPage = ({ onVideoSelect, onSecondPlayerSelect }) => {
               const isPriorityPinnedVideo = pinnedVideo && priorityPinIds.includes(pinnedVideo.id);
 
               return (
-                <Card
+                <div
                   key={item.id}
                   onClick={() => handleVideoClick(item)}
-                  className={`flex flex-row gap-5 p-3 bg-slate-800/40 hover:bg-slate-800/80 rounded-xl transition-all group w-full border-2 ${isCurrentlyPlaying
+                  className={`flex flex-row gap-5 p-3.5 bg-slate-100 hover:bg-slate-200/95 rounded-2xl transition-all cursor-pointer group w-full border-2 shadow-md ${isCurrentlyPlaying
                     ? 'border-red-500 ring-4 ring-red-500 ring-offset-2 ring-offset-slate-900 shadow-[0_0_40px_rgba(239,68,68,1),inset_0_0_40px_rgba(239,68,68,0.8)]'
-                    : 'border-slate-700/50 hover:border-slate-600/70'
+                    : 'border-[#052F4A]'
                     }`}
                   title={getInspectTitle(`History video: ${item.title || 'Untitled'}`)}
-                  variant="minimal"
                 >
                   {/* Left: Thumbnail */}
-                  <div className={`w-64 shrink-0 aspect-video rounded-lg overflow-hidden border-2 border-black relative shadow-md group-hover:shadow-xl transition-all ${isCurrentlyPlaying ? 'ring-4 ring-red-500 ring-offset-2 ring-offset-black shadow-[0_0_40px_rgba(239,68,68,1),inset_0_0_40px_rgba(239,68,68,0.8)]' : ''
+                  <div className={`w-64 shrink-0 aspect-video rounded-xl overflow-hidden border-2 border-[#052F4A] relative shadow-md group-hover:shadow-xl transition-all ${isCurrentlyPlaying ? 'ring-4 ring-red-500 ring-offset-2 ring-offset-black shadow-[0_0_40px_rgba(239,68,68,1),inset_0_0_40px_rgba(239,68,68,0.8)]' : ''
                     }`}>
                     <CardThumbnail
                       src={thumbnailUrl}
@@ -412,105 +422,7 @@ const HistoryPage = ({ onVideoSelect, onSecondPlayerSelect }) => {
                       </h3>
                     </div>
                     <div className="flex flex-col gap-2 text-sm">
-                      {/* Playlist badges - separate row on top */}
-                      {playlistMap[item.video_id] && playlistMap[item.video_id].length > 0 && (
-                        <div className="flex flex-wrap items-center gap-2">
-                          {playlistMap[item.video_id].map((playlistName, idx) => {
-                            // Find playlist to get ID
-                            const playlist = allPlaylists.find(p => p.name === playlistName);
-                            const playlistId = playlist?.id;
-
-                            // Get folder colors for this video in this playlist
-                            const folderColors = playlistId && folderMap[item.video_id]?.[playlistId] || [];
-                            const firstFolderColor = folderColors.length > 0 ? folderColors[0] : null;
-                            const folderColorInfo = firstFolderColor ? getFolderColorById(firstFolderColor) : null;
-
-                            // Get folder name (custom name or color name)
-                            const folderName = firstFolderColor && playlistId && folderNameMap[item.video_id]?.[playlistId]?.[firstFolderColor]
-                              ? folderNameMap[item.video_id][playlistId][firstFolderColor]
-                              : (folderColorInfo ? folderColorInfo.name : null);
-
-                            // Badge text: playlist name - folder name (or just playlist name if no folder)
-                            const badgeText = folderName
-                              ? `${playlistName} - ${folderName}`
-                              : playlistName;
-
-                            // Use folder color if available, otherwise default to sky
-                            const badgeBg = folderColorInfo
-                              ? `${folderColorInfo.hex}20` // 20 = ~12.5% opacity in hex
-                              : 'rgba(14, 165, 233, 0.1)'; // sky-500/10
-                            const badgeBorder = folderColorInfo
-                              ? `${folderColorInfo.hex}50` // 50 = ~31% opacity
-                              : 'rgba(14, 165, 233, 0.3)'; // sky-500/30
-                            const badgeTextColor = folderColorInfo
-                              ? folderColorInfo.hex
-                              : '#38bdf8'; // sky-400
-                            const badgeHoverBg = folderColorInfo
-                              ? `${folderColorInfo.hex}30` // 30 = ~19% opacity
-                              : 'rgba(14, 165, 233, 0.2)'; // sky-500/20
-                            const badgeHoverBorder = folderColorInfo
-                              ? `${folderColorInfo.hex}70` // 70 = ~44% opacity
-                              : 'rgba(14, 165, 233, 0.5)'; // sky-500/50
-
-                            return (
-                              <div
-                                key={idx}
-                                className="flex items-center gap-0.5 px-2 py-1 rounded-md border font-medium transition-colors"
-                                style={{
-                                  backgroundColor: badgeBg,
-                                  borderColor: badgeBorder,
-                                }}
-                              >
-                                {/* Playlist name part */}
-                                <button
-                                  onClick={(e) => handlePlaylistBadgeClick(e, playlistName)}
-                                  className="px-1.5 py-0.5 rounded transition-all cursor-pointer relative group/playlist"
-                                  style={{ color: badgeTextColor }}
-                                  onMouseEnter={(e) => {
-                                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
-                                    e.currentTarget.style.boxShadow = '0 0 0 2px rgba(255, 255, 255, 0.3)';
-                                  }}
-                                  onMouseLeave={(e) => {
-                                    e.currentTarget.style.backgroundColor = 'transparent';
-                                    e.currentTarget.style.boxShadow = 'none';
-                                  }}
-                                  title={getInspectTitle(`Click to navigate to playlist: ${playlistName}`) || `Click to navigate to playlist: ${playlistName}`}
-                                >
-                                  <span className="line-clamp-1">{playlistName}</span>
-                                </button>
-
-                                {/* Separator */}
-                                {folderName && (
-                                  <span className="px-0.5" style={{ color: badgeTextColor, opacity: 0.6 }}>
-                                    -
-                                  </span>
-                                )}
-
-                                {/* Folder name part */}
-                                {folderName && folderColorInfo && (
-                                  <button
-                                    onClick={(e) => handleFolderBadgeClick(e, playlistName, firstFolderColor)}
-                                    className="px-1.5 py-0.5 rounded transition-all cursor-pointer relative group/folder"
-                                    style={{ color: badgeTextColor }}
-                                    onMouseEnter={(e) => {
-                                      e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
-                                      e.currentTarget.style.boxShadow = `0 0 0 2px ${folderColorInfo.hex}80`;
-                                    }}
-                                    onMouseLeave={(e) => {
-                                      e.currentTarget.style.backgroundColor = 'transparent';
-                                      e.currentTarget.style.boxShadow = 'none';
-                                    }}
-                                    title={getInspectTitle(`Click to navigate to folder: ${folderName} in ${playlistName}`) || `Click to navigate to folder: ${folderName} in ${playlistName}`}
-                                  >
-                                    <span className="line-clamp-1">{folderName}</span>
-                                  </button>
-                                )}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
-                      {/* Time badge - own row on bottom, styled like title */}
+                      {/* Time badge - watched at */}
                       <div className="text-lg font-bold leading-tight transition-colors"
                         style={{ color: '#052F4A' }}
                         onMouseEnter={(e) => e.currentTarget.style.color = '#38bdf8'}
@@ -519,10 +431,42 @@ const HistoryPage = ({ onVideoSelect, onSecondPlayerSelect }) => {
                       </div>
                     </div>
                   </div>
-                </Card>
+                </div>
               );
             })}
           </div>
+        </div>
+      );
+    };
+
+  return (
+    <div className="w-full h-full flex flex-col relative overflow-hidden bg-slate-950">
+      {/* Blurred App Banner Background Layer */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none z-0 overflow-hidden"
+      >
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            backgroundImage: `url(${bannerImage})`,
+            backgroundPosition: `${bannerHorizontal}% ${bannerVertical}%`,
+            backgroundRepeat: 'repeat-x',
+            backgroundSize: `${bannerScale}vw auto`,
+            filter: 'blur(36px)',
+            transform: 'scale(1.25)',
+            opacity: 0.85,
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40" />
+      </div>
+
+      {/* Main Content Layer */}
+      <div className="relative z-10 flex-1 flex flex-col min-h-0">
+        <div className="flex-1 overflow-y-auto relative">
+          <BottomNavigation />
+          {renderContent()}
         </div>
       </div>
     </div>

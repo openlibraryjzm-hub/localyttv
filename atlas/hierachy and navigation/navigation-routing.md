@@ -62,20 +62,31 @@ The application has three main pages:
 - When `currentPage` changes → Different page component rendered
 - When page changes in full mode → View mode auto-switches to half
 
+### Sticky Top Navbar Navigation (`BottomNavigation.jsx`)
+
+**Trigger**: User clicks **Back** or **Close** buttons in the sticky top header bar on secondary pages (History, Pins, Likes).
+
+**Components & Structure:**
+- Secondary pages (`HistoryPage`, `PinsPage`, `LikesPage`) render `BottomNavigation.jsx` as a sticky top navbar (`bg-slate-100 border-2 border-[#052F4A] rounded-2xl p-2.5 shadow-md sticky top-0 z-40`).
+- **Left Side**: Displays contextual page title ("Watch History", "Pinned Videos", "Liked Videos", "Tasks") in dark navy (`#052F4A`).
+- **Right Side Actions**:
+  - **Back Button** (`ChevronLeft` chevron arrow): Triggers `goBack()` / `clearPreview()`.
+  - **Close Button** (`X` close icon): Triggers `setViewMode('full')` to switch to fullscreen mode.
+
 ### Back Button Navigation
 
-**Trigger**: User clicks Back button in TopNavigation (top-left of side menu)
+**Trigger**: User clicks Back button in sticky top navbar (`BottomNavigation.jsx` or `PlaylistBar.jsx`)
 
 **Flow:**
-1. User clicks Back button → `goBack()` called (TopNavigation.jsx)
+1. User clicks Back button → `goBack()` / `clearPreview()` called.
 2. `navigationStore` pops last page from `history` stack
 3. Sets `currentPage` to previous page
-4. `TopNavigation` updates → Back button visibility depends on `history.length > 0`
+4. Back button visibility depends on `history.length > 0 || previewPlaylistId != null`
 
 **Logic:**
 - `setCurrentPage(page)`: Pushes current page to `history` stack before changing (unless strictly replacing).
 - `goBack()`: Restores previous page, removes from history.
-- Preview Mode: If user is previewing a playlist/video, clicking Back may also trigger `clearPreview()` if implemented to exit preview context.
+- Preview Mode: If user is previewing a playlist/video, clicking Back triggers `clearPreview()` to exit preview context.
 
 ### Tweet View Navigation
 

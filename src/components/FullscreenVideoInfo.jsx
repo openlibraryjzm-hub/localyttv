@@ -260,40 +260,41 @@ const FullscreenVideoInfo = () => {
 
             const isLocal = video.is_local || (!video.video_url?.includes('youtube.com') && !video.video_url?.includes('youtu.be'));
 
+            const renderVideoThumbnail = () => (
+              <div className="relative group/thumb px-0.5 my-1">
+                {thumbnailUrl ? (
+                  <div className="rounded-xl overflow-hidden shadow-2xl border-[2px] border-black/50 aspect-video relative">
+                    <img
+                      src={thumbnailUrl}
+                      alt={video.title || 'Video thumbnail'}
+                      className="block w-full h-full object-cover"
+                    />
+                  </div>
+                ) : isLocal ? (
+                  <div className="rounded-xl overflow-hidden shadow-2xl border-[2px] border-black/50 aspect-video relative bg-gradient-to-br from-slate-800 via-indigo-950 to-slate-900 flex flex-col items-center justify-center text-white select-none">
+                    <svg
+                      className="w-16 h-16 text-sky-400/80 mb-2 filter drop-shadow-[0_0_8px_rgba(56,189,248,0.5)]"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <span className="text-[10px] tracking-widest font-black text-sky-300/40 uppercase">Local Video File</span>
+                  </div>
+                ) : null}
+              </div>
+            );
+
             return (
               <div className="flex flex-col gap-0.5">
-                {/* Thumbnail Container (No Overlay Avatar) */}
-                <div className="relative group/thumb">
-                  {thumbnailUrl ? (
-                    <div className="rounded-xl overflow-hidden shadow-2xl border-[2px] border-black/50 aspect-video relative">
-                      <img
-                        src={thumbnailUrl}
-                        alt={video.title || 'Video thumbnail'}
-                        className="block w-full h-full object-cover"
-                      />
-                    </div>
-                  ) : isLocal ? (
-                    <div className="rounded-xl overflow-hidden shadow-2xl border-[2px] border-black/50 aspect-video relative bg-gradient-to-br from-slate-800 via-indigo-950 to-slate-900 flex flex-col items-center justify-center text-white select-none">
-                      <svg
-                        className="w-16 h-16 text-sky-400/80 mb-2 filter drop-shadow-[0_0_8px_rgba(56,189,248,0.5)]"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={1.5}
-                          d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
-                        />
-                      </svg>
-                      <span className="text-[10px] tracking-widest font-black text-sky-300/40 uppercase">Local Video File</span>
-                    </div>
-                  ) : null}
-                </div>
-
                 {/* Single Unified Author & Video Info Card */}
-                <div className="mt-3 px-2.5">
+                <div className="mt-1 px-2.5">
                   <div className="border-2 border-[#052F4A] rounded-2xl p-3 bg-slate-100 shadow-md relative overflow-hidden flex items-center gap-3 shrink-0">
                     {/* Avatar */}
                     <img
@@ -344,6 +345,7 @@ const FullscreenVideoInfo = () => {
                 <div className="px-0 min-h-0 flex-1 mt-2">
                   {activeTab === 'info' ? (
                     <div className="flex flex-col gap-3 px-2">
+                      {renderVideoThumbnail()}
                       {/* Integrated Description Box */}
                       {description && (
                         <div className="flex flex-col">
@@ -411,6 +413,7 @@ const FullscreenVideoInfo = () => {
                                 activeThumbnailUrl={activeThumb}
                                 size="large"
                                 inCarousel={false}
+                                contentAboveGrid={renderVideoThumbnail()}
                                 headerExtension={
                                   <>
                                     {/* Left: Content Type Badges (Videos, Orbs, Banners) */}

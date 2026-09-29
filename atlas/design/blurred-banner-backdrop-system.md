@@ -48,6 +48,9 @@ The **Blurred App Banner Backdrop System** is an architectural pattern used acro
 | **Top Playlist Menu** | `src/components/PlayerControllerPlaylistMenu.jsx` | `28px` | `1.15` | `bg-slate-950` | Left controller menu; outer container `overflow: visible` |
 | **Top Video Menu** | `src/components/PlayerControllerVideoMenu.jsx` | `28px` | `1.15` | `bg-slate-950` | Right controller menu; outer container `overflow: visible` |
 | **Videos Page** | `src/components/VideosPage.jsx` | `36px` | `1.25` | `bg-slate-950` | Core video grid page background |
+| **History Page** | `src/components/HistoryPage.jsx` | `36px` | `1.25` | `bg-slate-950` | Watch history list page background |
+| **Pins Page** | `src/components/PinsPage.jsx` | `36px` | `1.25` | `bg-slate-950` | Pinned videos page background |
+| **Likes Page** | `src/components/LikesPage.jsx` | `36px` | `1.25` | `bg-slate-950` | Liked videos grid page background |
 
 ---
 

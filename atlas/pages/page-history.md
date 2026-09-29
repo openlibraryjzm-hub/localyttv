@@ -4,29 +4,29 @@ The History Page displays a vertically scrolling list of the last 100 watched vi
 
 **Related Documentation:**
 - **Navigation Flows**: See `navigation-routing.md` for page changes.
-- **Card Menus**: See `video-tweet-card-three-dot-menu.md`.
+- **Backdrop System**: See `blurred-banner-backdrop-system.md` for background styling.
 - **Card UI**: See `card-video.md` for standard card interactions.
 
 ---
 
 ## 1. Visual Structure & Layout
 
+- **Atmospheric Blurred App Banner Backdrop**:
+  - Anchored on a solid `bg-slate-950` container with an absolute positioned blurred banner overlay (`filter: blur(36px)`, `transform: scale(1.25)`, `opacity: 0.85`), dynamically synced to the active App Banner / preset image in real-time.
+
+- **Sticky Top Navbar (`BottomNavigation.jsx`)**:
+  - A sticky top header card (`bg-slate-100 border-2 border-[#052F4A] rounded-2xl p-2.5 shadow-md sticky top-0 z-40`).
+  - **Left Side**: Page title ("Watch History") in bold dark navy text (`text-[#052F4A] font-black`).
+  - **Right Side**: Action pills for **Back** (`ChevronLeft` chevron arrow) and **Close** (`X` button, toggles `setViewMode('full')`).
+
 - **Vertical List Layout**:
-  - Horizontal cards stacked vertically into a single column.
+  - Full-width edge-to-edge horizontal cards stacked vertically into a single column.
   - The page natively supports standard vertical scrolling.
 
-- **Page Banner**:
-  - Automatically generates interactive badges for every unique playlist that contains videos from the user's watch history.
-  - **Badge Limit**: Limited to 2 rows of badges, with a toggleable expand button (`>>>`) to reveal the full set.
-  - **Interactions**:
-    - **Left Click**: Toggles a filter on the history list to display *only* videos belonging to that clicked playlist. The badge highlights brighter, displaying "Videos from '[Playlist Name]'".
-    - **Right Click**: Executes a silent background fetch, routing the user completely away to the Videos Page for that playlist in **Preview Mode** without interrupting the currently playing video.
-
 - **History Cards (Horizontal Formatting)**:
-  - **Left Side (Thumbnail)**: Fixed width 16:9 thumbnail matching standard styling. Includes the "Currently Playing" red ring identifier.
-  - **Right Side (Content)**: Video Title, Pin Marker (Amber/Sky), and two distinct metadata rows.
-    - **Top Row (Playlist/Folder Labels)**: "Playlist Name - Folder Name". These elements are individually clickable (Left clicking playlist name routes to full playlist in preview mode; clicking folder name routes directly to the folder in preview mode).
-    - **Bottom Row**: Relative time elapsed since watching ("Just now", "2 hours ago", "Jan 15, 2024").
+  - **Backing**: Solid light card surface (`bg-slate-100 border-2 border-[#052F4A] rounded-2xl shadow-md hover:bg-slate-200/95`).
+  - **Left Side (Thumbnail)**: Fixed width 16:9 thumbnail matching standard styling with `#052F4A` border. Includes the "Currently Playing" red ring identifier when active.
+  - **Right Side (Content)**: Video Title in dark navy (`#052F4A`), Pin Marker (Amber/Sky), and watch timestamp ("Just now", "2 hours ago", "Jan 15, 2024").
 
 ## 2. Interaction & Logic
 

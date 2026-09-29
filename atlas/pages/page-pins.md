@@ -4,6 +4,7 @@ The Pins Page provides a dedicated interface for reviewing temporally saved vide
 
 **Related Documentation:**
 - **Navigation Flows**: See `navigation-routing.md`.
+- **Backdrop System**: See `blurred-banner-backdrop-system.md` for background styling.
 - **Tasks Integration**: See `tasks-page.md` for task checklists.
 - **Card UI**: See `card-video.md` for pin icon cyclic behaviors.
 
@@ -11,7 +12,16 @@ The Pins Page provides a dedicated interface for reviewing temporally saved vide
 
 ## 1. Visual Structure & Layout
 
-- **Page Banner**: Uses the standard Pinned Videos banner context overlay. Features a direct navigation button (List icon + label + chevron) to jump instantly to the `Tasks Page`.
+- **Atmospheric Blurred App Banner Backdrop**:
+  - Anchored on a solid `bg-slate-950` container with an absolute positioned blurred banner overlay (`filter: blur(36px)`, `transform: scale(1.25)`, `opacity: 0.85`), dynamically synced to the active App Banner / preset image in real-time.
+
+- **Sticky Top Navbar (`BottomNavigation.jsx`)**:
+  - A sticky top header card (`bg-slate-100 border-2 border-[#052F4A] rounded-2xl p-2.5 shadow-md sticky top-0 z-40`).
+  - **Left Side**: Page title ("Pinned Videos") in bold dark navy text (`text-[#052F4A] font-black`).
+  - **Right Side**: Action pills for **Back** (`ChevronLeft` chevron arrow) and **Close** (`X` button, toggles `setViewMode('full')`).
+
+- **Tasks Link Button**:
+  - Direct navigation button (List icon + "Tasks" label + chevron) positioned at the top of content to jump instantly to the `Tasks Page`.
 
 - **Priority Pins Carousel (Top)**:
   - Consistently ranks videos pinned directly through the long-press (Priority Pin) mechanic.
@@ -35,4 +45,4 @@ The Pins Page provides a dedicated interface for reviewing temporally saved vide
 - Ensures `regularVideos` render exclusively descending based on raw timestamps.
 
 ### Source Control
-- Session-based interactions from any `VideoCard` components explicitly map updates back into the central `pinStore`. Memory-based purges naturally strip standard pins upon application shutdown (not explicitly documented otherwise, but ephemeral vs persistent is managed by store handlers).
+- Session-based interactions from any `VideoCard` components explicitly map updates back into the central `pinStore`.

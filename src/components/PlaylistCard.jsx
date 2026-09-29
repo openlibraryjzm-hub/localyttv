@@ -114,6 +114,7 @@ const PlaylistCard = ({
   folderColorFilter = null,
   onFolderModeToggle,
   headerExtension = null,
+  contentAboveGrid = null,
 }) => {
   const { currentPlaylistId, setPlaylistItems, setPreviewPlaylist } =
     usePlaylistStore();
@@ -1083,6 +1084,12 @@ const PlaylistCard = ({
                 No colored folders yet
               </div>
             )}
+          </div>
+        )}
+
+        {contentAboveGrid && (
+          <div className="w-full px-1 mt-1 mb-1">
+            {contentAboveGrid}
           </div>
         )}
 

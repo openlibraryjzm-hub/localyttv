@@ -34,6 +34,11 @@ const WindowControls = () => {
         try {
             const win = getCurrentWindow();
             await win.toggleMaximize();
+            setTimeout(async () => {
+                try {
+                    setIsMaximized(await win.isMaximized());
+                } catch (e) {}
+            }, 50);
         } catch (e) { console.error(e); }
     };
 

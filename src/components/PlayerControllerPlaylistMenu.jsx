@@ -269,15 +269,7 @@ export default function PlayerControllerPlaylistMenu(props) {
                 </span>;
               })()}
 
-              {/* Video Folder Badge */}
-              {currentVideoFolders.map(folderId => {
-                const folderColor = FOLDER_COLORS.find(c => c.id === folderId);
-                if (!folderColor) return null;
-                const customName = currentVideoFolderNames[folderId];
-                return <span key={folderId} className="text-[11px] font-black uppercase tracking-[0.15em] px-1 inline-flex items-center leading-none" style={BADGE_TEXT_STYLE}>
-                  {customName || folderColor.name}
-                </span>;
-              })}
+
             </div>
 
           </div>

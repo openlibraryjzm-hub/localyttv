@@ -44,8 +44,8 @@ This document describes the **group carousel badge** on the Player Controller’
 
 ## 3. Relation to the Top Playlist Menu
 
-- **Badges row:** The Top Playlist Menu shows, in one row: **Group carousel** (violet) → **Active Preset** (indigo) → **Active Tab** (sky) → **Folder** (colored). Only one group badge is shown; it reflects the group that both labels the context and defines the navigation range.
-- **Badge styling:** All badges (group, preset, tab, folder) use **no bubble or pill container**. Text is **white with a black outline** (same as playlist/video titles) for consistency; 11px font; horizontally aligned. Group badge includes left/right arrow buttons with white-outline chevron icons.
+- **Badges row:** The Top Playlist Menu shows, in one row: **Group carousel** (violet) → **Active Preset** (indigo) → **Active Tab** (sky). Only one group badge is shown; it reflects the group that both labels the context and defines the navigation range.
+- **Badge styling:** All badges (group, preset, tab) use **no bubble or pill container**. Text is **white with a black outline** (same as playlist/video titles) for consistency; 11px font; horizontally aligned. Group badge includes left/right arrow buttons with white-outline chevron icons.
 - **Navigation list build:** `PlayerController` builds `navigationItems` in a `useEffect` that:
   1. Starts from `allPlaylists` (optionally filtered by legacy tab).
   2. **Page Isolation Filter**: If `activeGroupId` is null, filters `allPlaylists` by `activePage` (ensuring navigation stays on the current Hub page: Page 1 groups + unsorted for Page 1; Page 2 groups for Page 2+).

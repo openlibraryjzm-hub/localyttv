@@ -30,7 +30,6 @@ The **Top Playlist Menu** and **Top Video Menu** form the left and right control
 
 Displays the current playlist's title, centered with contextual badges below it:
 - **Active Preset (Indigo) / Tab (Sky)**: Indicates currently overarching filter/preset.
-- **Folder (Colored)**: Displays active folder name.
 
 ### Interactions
 - **Title Click**: Opens the playlists grid view.

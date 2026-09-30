@@ -11,13 +11,12 @@ This document describes the **group carousel badge** on the Player Controller’
 
 ## 1. User-facing behavior
 
-### 1.1 Group badge on the Top Playlist Menu
+### 1.1 Group Carousel Button on the Top Playlist Menu Toolbar
 
-- **Location:** The left rectangle of the Player Controller (Top Playlist Menu). Below the playlist title, badges are shown in a single row.
-- **Group badge:** A **single** violet-styled badge showing the name of the **current group carousel** (e.g. “Featured playlists”). It appears when `activeGroupId` is set to a group on the active explorer page. If `activeGroupId` is null, it displays **ALL**.
-- **Cycling groups**: Left- and right-facing arrow buttons cycle through **populated group carousels on the active explorer page** (groups containing at least one playlist). Empty groups are excluded from this cycle. Cycling is **confined** to the colored carousels; the "ALL" state is excluded from the sequential cycle once a group is entered. Clicking an arrow while on "ALL" jumps to the first/last carousel in the set.
-- **"ALL" Quick Jump**: When a group is active, a dedicated **"ALL"** button appears to the left of the navigation capsule. This provides a persistent one-click shortcut to return to the full library view without needing to cycle back or click the group name.
-- **Event Propagation Isolation**: All badge buttons (ALL badge, group name badge, quick jump, and chevrons) stop mouse down, mouse up, touch start, touch end, and click events from bubbling up to the parent container, keeping them isolated from the container's click-to-grid (`useLongPress`) lifecycle.
+- **Location:** Slot 4 on the bottom toolbar of the Top Playlist Menu (positioned between Add button and Playlist Grid button).
+- **Group Carousel Button:** A dedicated colored circle button representing the **current group carousel** (filled with the folder color of the active group, or Sky Blue when showing **ALL**).
+- **Behavior & Toggling:** Clicking the circle toggles between **ALL** library view and the active group carousel context. Group carousel cycling is performed via `cycleGroupBadge('prev' | 'next')`.
+- **Title Alignment:** The legacy text badge with flanking chevrons above the toolbar has been retired, ensuring playlist and video titles align cleanly across the controller.
 
 ### 1.2 Playlist navigation restricted to the group
 

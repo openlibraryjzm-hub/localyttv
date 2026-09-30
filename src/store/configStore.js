@@ -67,6 +67,10 @@ export const useConfigStore = create(
             controllerCompactMode: false,
             setControllerCompactMode: (val) => set({ controllerCompactMode: val }),
 
+            // Playlist Pin Slot Mode ('pin' | 'carousel')
+            playlistPinSlotMode: 'pin',
+            setPlaylistPinSlotMode: (val) => set({ playlistPinSlotMode: val }),
+
             // Video Menu Toolbar
             modeHandleSize: 20,
             setModeHandleSize: (val) => set({ modeHandleSize: val }),

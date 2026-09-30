@@ -116,7 +116,9 @@ export default function PlayerControllerPlaylistMenu(props) {
     fullscreenBanner,
     bannerPreviewMode,
     bannerNavBannerId,
-    bannerPresets
+    bannerPresets,
+    playlistPinSlotMode = 'pin',
+    setPlaylistPinSlotMode
   } = useConfigStore();
 
   let effectiveBanner = fullscreenBanner;
@@ -248,107 +250,6 @@ export default function PlayerControllerPlaylistMenu(props) {
 
             {/* Badges Container */}
             <div className="flex flex-wrap justify-center items-center gap-x-2 gap-y-0 mb-0.5 animate-in fade-in zoom-in duration-300 overflow-visible min-w-0">
-
-              {/* Group Carousel Badge */}
-              <span className="inline-flex items-center shrink-0 gap-0">
-                {activeGroupId && (
-                  <button 
-                    type="button"
-                    onMouseDown={e => e.stopPropagation()}
-                    onMouseUp={e => e.stopPropagation()}
-                    onTouchStart={e => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setActiveGroupId(null);
-                    }}
-                    onTouchEnd={e => e.stopPropagation()}
-                    onClick={e => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setActiveGroupId(null);
-                    }}
-                    className="text-[11px] font-black uppercase tracking-[0.15em] px-1 mr-1 inline-flex items-center leading-none hover:opacity-80 transition-opacity" 
-                    style={BADGE_TEXT_STYLE} 
-                    title="Quick jump to ALL"
-                  >
-                    ALL
-                  </button>
-                )}
-
-                <button type="button" onMouseDown={e => e.stopPropagation()} onMouseUp={e => e.stopPropagation()} onClick={e => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  cycleGroupBadge('prev');
-                }} onTouchStart={e => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  cycleGroupBadge('prev');
-                }} onTouchEnd={e => e.stopPropagation()} className="p-0.5 hover:scale-110 active:scale-95 transition-transform" title={getInspectTitle('Previous group carousel') || 'Previous group carousel'}>
-                  <span style={ICON_WHITE_OUTLINE}>
-                    <ChevronLeft size={14} color="#052F4A" strokeWidth={3} />
-                  </span>
-                </button>
-                
-                {singleGroupForBadge ? (
-                  <button 
-                    type="button"
-                    onMouseDown={e => e.stopPropagation()}
-                    onMouseUp={e => e.stopPropagation()}
-                    onClick={e => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setActiveGroupId(null);
-                    }}
-                    onTouchStart={e => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setActiveGroupId(null);
-                    }}
-                    onTouchEnd={e => e.stopPropagation()}
-                    className="text-[11px] font-black uppercase tracking-[0.15em] px-1 inline-flex items-center leading-none hover:opacity-80 transition-opacity" 
-                    style={BADGE_TEXT_STYLE} 
-                    title={`Carousel: ${singleGroupForBadge.name} (Click to show ALL)`}
-                  >
-                    {singleGroupForBadge.name}
-                  </button>
-                ) : (
-                  <button 
-                    type="button"
-                    onMouseDown={e => e.stopPropagation()}
-                    onMouseUp={e => e.stopPropagation()}
-                    onClick={e => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setActiveGroupId(groupsOnPage && groupsOnPage[0] ? groupsOnPage[0].id : null);
-                    }}
-                    onTouchStart={e => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setActiveGroupId(groupsOnPage && groupsOnPage[0] ? groupsOnPage[0].id : null);
-                    }}
-                    onTouchEnd={e => e.stopPropagation()}
-                    className="text-[11px] font-black uppercase tracking-[0.15em] px-1 inline-flex items-center leading-none hover:opacity-80 transition-opacity" 
-                    style={BADGE_TEXT_STYLE} 
-                    title="Showing ALL Playlists (Click to switch to Carousels)"
-                  >
-                    ALL
-                  </button>
-                )}
-
-                <button type="button" onMouseDown={e => e.stopPropagation()} onMouseUp={e => e.stopPropagation()} onClick={e => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  cycleGroupBadge('next');
-                }} onTouchStart={e => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  cycleGroupBadge('next');
-                }} onTouchEnd={e => e.stopPropagation()} className="p-0.5 hover:scale-110 active:scale-95 transition-transform" title={getInspectTitle('Next group carousel') || 'Next group carousel'}>
-                  <span style={ICON_WHITE_OUTLINE}>
-                    <ChevronRight size={14} color="#052F4A" strokeWidth={3} />
-                  </span>
-                </button>
-              </span>
 
               {/* Active Preset Badge */}
               {activePresetId !== 'all' && (() => {
@@ -661,25 +562,48 @@ export default function PlayerControllerPlaylistMenu(props) {
 
               {/* Right Side (2 items evenly spaced) */}
               <div className="flex-1 flex items-center justify-evenly h-full pl-4">
-                {/* 4. Priority Pin */}
-                <div className="relative flex items-center justify-center w-[52px] h-[39px]">
+                {/* 4. Group Carousel Dot Button */}
+                <div className="relative flex items-center justify-center h-full">
                   {(() => {
-                    const priorityPinData = pins.find(pin => isPriorityPin(pin.video.id));
-                    if (!priorityPinData) return null;
-                    const thumbnailUrl = getThumbnailUrl(priorityPinData.video.video_id, 'default');
+                    const folderColor = singleGroupForBadge?.folderColorId
+                      ? getFolderColorById(singleGroupForBadge.folderColorId)
+                      : null;
+                    const dotHex = folderColor ? folderColor.hex : (singleGroupForBadge ? '#8b5cf6' : '#052F4A');
+                    const isAll = !singleGroupForBadge;
+
                     return (
-                      <div className="pointer-events-auto group/pin z-40 relative w-full h-full">
-                        <button onClick={() => handlePinClick(priorityPinData.video)} onTouchStart={() => handlePinClick(priorityPinData.video)} className={`rounded-lg flex items-center justify-center transition-all shadow-md overflow-hidden ${activePin === priorityPinData.id ? 'ring-2 ring-sky-400' : ''}`} style={{
-                          width: '100%',
-                          height: '100%',
-                          border: '2px solid #052F4A'
-                        }} title={`Priority Pin: ${priorityPinData.video.title || 'Untitled Video'}`}>
-                          {thumbnailUrl ? <img src={thumbnailUrl} alt={priorityPinData.video.title} className="w-full h-full object-cover" /> : <Pin size={24} fill="#fbbf24" strokeWidth={2} />}
-                        </button>
-                        <button className="absolute -top-2 -right-2 w-5 h-5 bg-rose-500 text-white rounded-full flex items-center justify-center opacity-100 md:opacity-0 md:group-hover/pin:opacity-100 transition-opacity shadow-sm border border-white z-20" onClick={e => handleUnpin(e, priorityPinData.video)} onTouchStart={e => handleUnpin(e, priorityPinData.video)} title="Unpin video">
-                          <X size={12} strokeWidth={4} />
-                        </button>
-                      </div>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          if (isAll) {
+                            setActiveGroupId(groupsOnPage && groupsOnPage[0] ? groupsOnPage[0].id : null);
+                          } else {
+                            setActiveGroupId(null);
+                          }
+                        }}
+                        onTouchStart={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          if (isAll) {
+                            setActiveGroupId(groupsOnPage && groupsOnPage[0] ? groupsOnPage[0].id : null);
+                          } else {
+                            setActiveGroupId(null);
+                          }
+                        }}
+                        className="flex items-center justify-center group/tool hover:scale-110 active:scale-95 transition-transform"
+                        title={singleGroupForBadge ? `Carousel: ${singleGroupForBadge.name} (Click for ALL)` : 'Showing ALL Playlists (Click to switch to Carousels)'}
+                      >
+                        <span style={ICON_WHITE_OUTLINE} className="flex items-center justify-center">
+                          <Circle 
+                            size={Math.round(bottomIconSize * 0.5)} 
+                            fill={isAll ? '#38bdf8' : dotHex} 
+                            color="#052F4A" 
+                            strokeWidth={3} 
+                          />
+                        </span>
+                      </button>
                     );
                   })()}
                 </div>

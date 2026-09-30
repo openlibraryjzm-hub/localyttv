@@ -141,7 +141,6 @@ export default function PlayerControllerPlaylistMenu(props) {
     activeGroupId,
     setActiveGroupId,
     activePage,
-    showPreviewMenus,
     theme,
     menuHeight,
     handleAltNav,
@@ -170,9 +169,6 @@ export default function PlayerControllerPlaylistMenu(props) {
     setIsMoreMenuOpen,
     isMoreMenuOpen,
     bottomIconSize,
-    setShowPreviewMenus,
-    toggleDevToolbar,
-    showDevToolbar,
     setIsVisualizerEnabled,
     isVisualizerEnabled,
     handleBannerUpload,
@@ -209,18 +205,8 @@ export default function PlayerControllerPlaylistMenu(props) {
         <div className="absolute right-full mr-4 transition-transform" style={{
           transform: `translateX(${leftAltNavX}px)`
         }}>
-          <div className="flex items-center gap-4 animate-in slide-in-from-right-2 duration-300">
-            <div className="flex flex-col gap-3 w-9 h-24 items-center justify-center">
-              {playlistCheckpoint !== null && <><button onClick={() => handleCommit('playlist')} className="w-9 h-9 rounded-full flex items-center justify-center shadow-md bg-emerald-500 text-white active:scale-90" title={getInspectTitle('Commit playlist preview')}><Check size={20} strokeWidth={3} /></button><button onClick={() => handleRevert('playlist')} className="w-9 h-9 rounded-full flex items-center justify-center shadow-md bg-rose-500 text-white active:scale-90" title={getInspectTitle('Revert playlist preview')}><X size={20} strokeWidth={3} /></button></>}
-            </div>
-            {/* Playlist Preview Navigation Menu */}
-            {showPreviewMenus && <div className={`w-8 ${theme.menuBg} border ${theme.menuBorder} rounded-lg shadow-sm flex flex-col justify-between items-center py-2 shrink-0 animate-in fade-in zoom-in-95 duration-200`} style={{
-              height: `${menuHeight}px`
-            }}>
-                <button onClick={() => handleAltNav('up', 'playlist')} onTouchStart={() => handleAltNav('up', 'playlist')} className="text-black p-1" title={getInspectTitle('Previous playlist in preview')}><ChevronUp size={18} strokeWidth={3} /></button>
-              <div className={`w-full h-px ${theme.bottomBar} my-1`} />
-              <button onClick={() => handleAltNav('down', 'playlist')} onTouchStart={() => handleAltNav('down', 'playlist')} className="text-black p-1" title={getInspectTitle('Next playlist in preview')}><ChevronDown size={18} strokeWidth={3} /></button>
-            </div>}
+          <div className="flex flex-col gap-3 w-9 h-24 items-center justify-center">
+            {playlistCheckpoint !== null && <><button onClick={() => handleCommit('playlist')} className="w-9 h-9 rounded-full flex items-center justify-center shadow-md bg-emerald-500 text-white active:scale-90" title={getInspectTitle('Commit playlist preview')}><Check size={20} strokeWidth={3} /></button><button onClick={() => handleRevert('playlist')} className="w-9 h-9 rounded-full flex items-center justify-center shadow-md bg-rose-500 text-white active:scale-90" title={getInspectTitle('Revert playlist preview')}><X size={20} strokeWidth={3} /></button></>}
           </div>
         </div>
         <div className={`shadow-2xl flex flex-col relative overflow-visible transition-all duration-300 group/playlist ${isEditMode ? 'ring-4 ring-sky-400/30' : 'bg-transparent rounded-2xl'}`} style={{
@@ -291,30 +277,6 @@ export default function PlayerControllerPlaylistMenu(props) {
                   {isMoreMenuOpen && <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-56 bg-sky-50 border border-sky-300 rounded-lg shadow-xl overflow-hidden z-[10001] animate-in fade-in zoom-in-95 duration-100 flex flex-col p-1" style={{
                     zIndex: 10001
                   }}>
-                    <button className="w-full text-left px-4 py-2 text-sm text-sky-900 hover:bg-sky-200 transition-colors flex items-center gap-2" onClick={() => {
-                      setShowPreviewMenus(!showPreviewMenus);
-                      setIsMoreMenuOpen(false);
-                    }} onTouchStart={() => {
-                      setShowPreviewMenus(!showPreviewMenus);
-                      setIsMoreMenuOpen(false);
-                    }}>
-                      {showPreviewMenus ? <EyeOff size={14} /> : <Eye size={14} />}
-                      {showPreviewMenus ? 'Hide Preview Menus' : 'Show Preview Menus'}
-                    </button>
-
-                    <button className="w-full text-left px-4 py-2 text-sm text-sky-900 hover:bg-sky-200 transition-colors flex items-center gap-2" onClick={() => {
-                      toggleDevToolbar();
-                      setIsMoreMenuOpen(false);
-                    }} onTouchStart={() => {
-                      toggleDevToolbar();
-                      setIsMoreMenuOpen(false);
-                    }}>
-                      {showDevToolbar ? <EyeOff size={14} /> : <Eye size={14} />}
-                      {showDevToolbar ? 'Hide Dev Toolbar' : 'Show Dev Toolbar'}
-                    </button>
-
-
-
                     <button className="w-full text-left px-4 py-2 text-sm text-sky-900 hover:bg-sky-200 transition-colors flex items-center gap-2" onClick={() => {
                       document.getElementById('banner-upload').click();
                       setIsMoreMenuOpen(false);

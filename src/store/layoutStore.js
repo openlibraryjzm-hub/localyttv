@@ -5,8 +5,6 @@ export const useLayoutStore = create((set) => ({
   menuQuarterMode: false, // Menu docked in bottom-right
   showDebugBounds: false, // Visual debug mode for layout bounds
   inspectMode: false, // Inspect element mode for showing UI labels
-  showRuler: false, // Ruler overlay for measurements
-  showDevToolbar: true, // Visibility of the floating dev toolbar (full/half/quarter/etc buttons)
   videoCardStyle: 'youtube', // 'youtube' | 'twitter' - Card display style
 
   // When true, FullscreenVideoInfo renders blank immediately (used when opening splitscreen from fullscreen)
@@ -53,9 +51,6 @@ export const useLayoutStore = create((set) => ({
     console.log('Ruler toggled:', newValue);
     return { showRuler: newValue };
   }),
-
-  // Toggle visibility of the dev toolbar
-  toggleDevToolbar: () => set((state) => ({ showDevToolbar: !state.showDevToolbar })),
 
   // Toggle video card style between YouTube and Twitter/X
   toggleVideoCardStyle: () => set((state) => ({

@@ -42,7 +42,7 @@ import { THEMES } from './utils/themes';
 import './App.css';
 
 function App() {
-  const { viewMode, setViewMode, menuQuarterMode, toggleMenuQuarterMode, showDebugBounds, toggleDebugBounds, inspectMode, toggleInspectMode, showRuler, toggleRuler, showDevToolbar } = useLayoutStore();
+  const { viewMode, setViewMode, menuQuarterMode, toggleMenuQuarterMode, showDebugBounds, toggleDebugBounds, inspectMode, toggleInspectMode, showRuler, toggleRuler } = useLayoutStore();
 
   // Helper to get inspect label
   const getInspectTitle = (label) => inspectMode ? label : undefined;
@@ -521,92 +521,7 @@ function App() {
           bannerHorizontalOffset={bannerHorizontalOffset}
           bannerSpillHeight={bannerSpillHeight}
         />
-        {/* View Mode Toggle - Temporary for testing - Controlled by Dev Toolbar Toggle */}
-        {showDevToolbar && (
-          <div className="view-mode-toggle">
-            <button
-              onClick={() => setViewMode('full')}
-              className={viewMode === 'full' ? 'active' : ''}
-              title={getInspectTitle('Full screen view')}
-            >
-              Full
-            </button>
-            <button
-              onClick={() => setViewMode('half')}
-              className={viewMode === 'half' ? 'active' : ''}
-              title={getInspectTitle('Half screen view')}
-            >
-              Half
-            </button>
-            <button
-              onClick={() => setViewMode('quarter')}
-              className={viewMode === 'quarter' ? 'active' : ''}
-              title={getInspectTitle('Quarter screen view')}
-            >
-              Quarter
-            </button>
-            {/* Menu Quarter Mode Toggle - Only visible outside full screen */}
-            {viewMode !== 'full' && (
-              <button
-                onClick={toggleMenuQuarterMode}
-                className={menuQuarterMode ? 'active' : ''}
-                title={getInspectTitle('Toggle menu quarter mode') || 'Toggle Menu Quarter Mode'}
-              >
-                Menu Q
-              </button>
-            )}
-            {/* Debug Bounds Toggle */}
-            <button
-              onClick={toggleDebugBounds}
-              className={showDebugBounds ? 'active' : ''}
-              title={getInspectTitle('Toggle debug bounds') || 'Toggle Debug Bounds'}
-              style={{
-                backgroundColor: showDebugBounds ? '#3b82f6' : 'transparent',
-                color: showDebugBounds ? 'white' : 'inherit',
-                border: '1px solid #3b82f6',
-                padding: '4px 8px',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
-            >
-              Debug
-            </button>
-            {/* Inspect Mode Toggle */}
-            <button
-              onClick={toggleInspectMode}
-              className={inspectMode ? 'active' : ''}
-              title={getInspectTitle('Toggle inspect mode') || 'Toggle Inspect Mode'}
-              style={{
-                backgroundColor: inspectMode ? '#8b5cf6' : 'transparent',
-                color: inspectMode ? 'white' : 'inherit',
-                border: '1px solid #8b5cf6',
-                padding: '4px 8px',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                marginLeft: '8px'
-              }}
-            >
-              Inspect
-            </button>
-            {/* Ruler Toggle */}
-            <button
-              onClick={toggleRuler}
-              className={showRuler ? 'active' : ''}
-              title={getInspectTitle('Toggle ruler') || 'Toggle Ruler'}
-              style={{
-                backgroundColor: showRuler ? '#ef4444' : 'transparent',
-                color: showRuler ? 'white' : 'inherit',
-                border: '1px solid #ef4444',
-                padding: '4px 8px',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                marginLeft: '8px'
-              }}
-            >
-              Ruler
-            </button>
-          </div>
-        )}
+
 
         <LayoutShell
           topController={<PlayerController

@@ -167,7 +167,6 @@ export default function PlayerControllerVideoMenu(props) {
     setIsTooltipOpen,
     isTooltipOpen,
     rightAltNavX,
-    showPreviewMenus,
     theme,
     handleAltNav,
     videoCheckpoint,
@@ -655,14 +654,6 @@ export default function PlayerControllerVideoMenu(props) {
           transform: `translateX(${rightAltNavX}px)`
         }}>
           <div className="flex items-center gap-4 animate-in slide-in-from-left-2 duration-300">
-            {/* Video Preview Navigation Menu */}
-            {showPreviewMenus && <div className={`w-8 ${theme.menuBg} border ${theme.menuBorder} rounded-lg shadow-sm flex flex-col justify-between items-center py-2 shrink-0 animate-in fade-in zoom-in-95 duration-200`} style={{
-              height: `${menuHeight}px`
-            }}>
-              <button onClick={() => handleAltNav('up', 'video')} className="text-black p-1" title={getInspectTitle('Previous video in preview')}><ChevronUp size={18} strokeWidth={3} /></button>
-              <div className={`w-full h-px ${theme.bottomBar} my-1`} />
-              <button onClick={() => handleAltNav('down', 'video')} className="text-black p-1" title={getInspectTitle('Next video in preview')}><ChevronDown size={18} strokeWidth={3} /></button>
-            </div>}
             <div className="flex flex-col gap-3 w-9 h-24 items-center justify-center">
               {videoCheckpoint !== null && <><button onClick={() => handleCommit('video')} className="w-9 h-9 rounded-full flex items-center justify-center shadow-md bg-emerald-500 text-white transition-all active:scale-90 animate-in zoom-in duration-200" title={getInspectTitle('Commit video preview')}><Check size={20} strokeWidth={3} /></button><button onClick={() => handleRevert('video')} className="w-9 h-9 rounded-full flex items-center justify-center shadow-md bg-rose-500 text-white transition-all active:scale-90 animate-in zoom-in duration-200" title={getInspectTitle('Revert video preview')}><X size={20} strokeWidth={3} /></button></>}
             </div>

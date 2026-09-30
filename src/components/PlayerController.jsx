@@ -129,8 +129,6 @@ export default function PlayerController({
     toggleInspectMode,
     showRuler,
     toggleRuler,
-    showDevToolbar,
-    toggleDevToolbar,
     setFullscreenInfoBlanked
   } = useLayoutStore();
   const {
@@ -301,11 +299,6 @@ export default function PlayerController({
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
   const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
   const [isTooltipOpen, setIsTooltipOpen] = useState(false); // Tooltip popup state
-  const [showPreviewMenus, setShowPreviewMenus] = useState(true); // Default to true based on user request "toggle visibility... with [options]" implies options are main focus, but need to hide/show something? Actually request says "toggle visibility OF the top right menu" - ok so we need a state for the menu itself?
-  // Wait, the request is: "add an option to toggle visibility of the top right menu with 'full, half, quarter, menu q, debug, inspect, ruler, menu' buttons"
-  // This likely means: INSIDE the existing 3-dot menu (More options), adding these toggles.
-  // OR it means adding a button to toggle a NEW menu that contains these?
-  // Reference @atlas/advanced-player-controller.md implies the 3-dot menu is the place for "More options".
   // So I will populate the EXISTING 3-dot menu `isMoreMenuOpen` with these new items. 
 
   // Sync internal mode with external activePlayer prop
@@ -553,7 +546,7 @@ export default function PlayerController({
   const [isEditMode, setIsEditMode] = useState(false);
   const [isConfigOnRight, setIsConfigOnRight] = useState(false);
   const [isAdjustingImage, setIsAdjustingImage] = useState(false);
-  const [isVisualizerEnabled, setIsVisualizerEnabled] = useState(false);
+  const [isVisualizerEnabled, setIsVisualizerEnabled] = useState(true);
   const [showViewCount, setShowViewCount] = useState(true); // Toggle between view count and publish year
   const [metadataOpacity, setMetadataOpacity] = useState(1); // For fade animation
 
@@ -571,12 +564,14 @@ export default function PlayerController({
     };
   }, [historyStack, historyIndex]);
 
-  // Load visualizer enabled state from localStorage on mount
+  // Load visualizer enabled state from localStorage on mount (defaults to true)
   useEffect(() => {
     try {
       const saved = localStorage.getItem('visualizerEnabled');
       if (saved !== null) {
         setIsVisualizerEnabled(saved === 'true');
+      } else {
+        setIsVisualizerEnabled(true);
       }
     } catch (error) {
       console.error('Failed to load visualizer state from localStorage:', error);
@@ -2313,7 +2308,6 @@ export default function PlayerController({
     handleCommit,
     getInspectTitle,
     handleRevert,
-    showPreviewMenus,
     theme,
     menuHeight,
     handleAltNav,
@@ -2345,9 +2339,6 @@ export default function PlayerController({
     setIsMoreMenuOpen,
     isMoreMenuOpen,
     bottomIconSize,
-    setShowPreviewMenus,
-    toggleDevToolbar,
-    showDevToolbar,
     setIsVisualizerEnabled,
     isVisualizerEnabled,
     handleBannerUpload,

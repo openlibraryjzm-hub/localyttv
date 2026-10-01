@@ -52,6 +52,7 @@ Users see the main YouTube player as the primary video playback area:
       - **Scrub Preview**: A floating tooltip above the bar shows the skip-to timestamp on hover.
       - **Time Counter**: A bold tabular-nums display of `Current / Total` time, positioned to avoid native UI overlaps.
       - **Interactions**: Native scroll-to-volume and click-to-pause are retained on the custom shield layer.
+      - **Idle Cursor & Controls Auto-Hide**: Mouse activity resets a 2.5-second timer (`resetIdleTimer`). When idle for >2.5s, the OS cursor is hidden (`cursor-none`) and the custom bottom scrub bar automatically fades out (`opacity-0 translate-y-2 pointer-events-none`). Any mouse movement, click, or scroll wheel action instantly restores the cursor and control bar.
 - **Settings menu**
 - **Quality selection**
 

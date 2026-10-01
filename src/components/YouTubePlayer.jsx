@@ -82,6 +82,32 @@ const YouTubePlayer = ({ videoUrl, videoId, playerId = 'default', onEnded, playl
   const [volumeIndicator, setVolumeIndicator] = useState({ show: false, val: 0 });
   const hideVolumeTimerRef = useRef(null);
 
+  // Mouse Idle State (Shield Mode)
+  const [isIdle, setIsIdle] = useState(false);
+  const [isMouseHovered, setIsMouseHovered] = useState(false);
+  const idleTimerRef = useRef(null);
+
+  const resetIdleTimer = useCallback(() => {
+    setIsMouseHovered(true);
+    setIsIdle(false);
+
+    if (idleTimerRef.current) {
+      clearTimeout(idleTimerRef.current);
+    }
+
+    idleTimerRef.current = setTimeout(() => {
+      setIsIdle(true);
+    }, 2500);
+  }, []);
+
+  const handleShieldMouseLeave = useCallback(() => {
+    if (idleTimerRef.current) {
+      clearTimeout(idleTimerRef.current);
+    }
+    setIsMouseHovered(false);
+    setIsIdle(false);
+  }, []);
+
   // Allow clicking the shield to toggle play/pause
   const handleShieldClick = useCallback(() => {
     if (playerRef.current && typeof playerRef.current.getPlayerState === 'function') {
@@ -373,6 +399,9 @@ const YouTubePlayer = ({ videoUrl, videoId, playerId = 'default', onEnded, playl
       if (hideVolumeTimerRef.current) {
         clearTimeout(hideVolumeTimerRef.current);
       }
+      if (idleTimerRef.current) {
+        clearTimeout(idleTimerRef.current);
+      }
     };
   }, [apiReady, id, videoUrl, handleFollowerPinCompletion, uniquePlayerId, screenProtectorActive]);
 
@@ -393,12 +422,28 @@ const YouTubePlayer = ({ videoUrl, videoId, playerId = 'default', onEnded, playl
       {/* Transparent overlay that blocks pointer events when active */}
       {screenProtectorActive && (
         <div
-          className="absolute inset-0 z-10 bg-transparent cursor-default group/player"
-          onClick={handleShieldClick}
-          onWheel={handleShieldWheel}
+          className={`absolute inset-0 z-10 bg-transparent transition-all ${
+            isMouseHovered && isIdle ? 'cursor-none' : 'cursor-default'
+          }`}
+          onClick={(e) => {
+            resetIdleTimer();
+            handleShieldClick();
+          }}
+          onWheel={(e) => {
+            resetIdleTimer();
+            handleShieldWheel(e);
+          }}
+          onMouseMove={resetIdleTimer}
+          onMouseLeave={handleShieldMouseLeave}
         >
           {/* Minimal Bottom Bar */}
-          <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 via-black/40 to-transparent translate-y-2 opacity-0 group-hover/player:translate-y-0 group-hover/player:opacity-100 transition-all duration-300">
+          <div
+            className={`absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 via-black/40 to-transparent transition-all duration-300 ${
+              isMouseHovered && !isIdle
+                ? 'translate-y-0 opacity-100'
+                : 'translate-y-2 opacity-0 pointer-events-none'
+            }`}
+          >
             {/* Progress Bar Container */}
             <div
               className="w-full h-1.5 bg-white/20 rounded-full mb-3 cursor-pointer group/progress relative"

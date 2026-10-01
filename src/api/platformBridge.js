@@ -3,6 +3,12 @@
  * Routes IPC and event APIs to Tauri, C# WebView2, or Web Browser Mock Mode.
  */
 
+import {
+  getSupabasePlaylists,
+  getSupabasePlaylistMetadata,
+  getSupabasePlaylistItems
+} from './supabaseApi';
+
 // Helper to determine active host environment
 const isTauri = () => !!(window.__TAURI_INTERNALS__ || window.__TAURI__);
 const isWebView2 = () => !!(window.chrome && window.chrome.webview);
@@ -113,10 +119,15 @@ const getMockResponse = async (command, args) => {
   const setStored = (key, val) => localStorage.setItem(key, JSON.stringify(val));
 
   switch (command) {
-    case 'get_all_playlists':
+    case 'get_all_playlists': {
+      const supaData = await getSupabasePlaylists();
+      if (supaData && supaData.length > 0) return supaData;
       return getStored(MOCK_STORAGE_KEYS.PLAYLISTS);
+    }
 
     case 'get_all_playlist_metadata': {
+      const supaMeta = await getSupabasePlaylistMetadata();
+      if (supaMeta && supaMeta.length > 0) return supaMeta;
       const playlists = getStored(MOCK_STORAGE_KEYS.PLAYLISTS);
       const itemsMap = JSON.parse(localStorage.getItem(MOCK_STORAGE_KEYS.ITEMS) || '{}');
       return playlists.map(p => {
@@ -133,6 +144,11 @@ const getMockResponse = async (command, args) => {
     }
 
     case 'get_playlist': {
+      const supaPlaylists = await getSupabasePlaylists();
+      if (supaPlaylists && supaPlaylists.length > 0) {
+        const match = supaPlaylists.find(p => p.id === Number(args.id));
+        if (match) return match;
+      }
       const playlists = getStored(MOCK_STORAGE_KEYS.PLAYLISTS);
       return playlists.find(p => p.id === Number(args.id)) || null;
     }
@@ -179,6 +195,12 @@ const getMockResponse = async (command, args) => {
 
     case 'get_playlist_items':
     case 'get_playlist_items_preview': {
+      const supaItems = await getSupabasePlaylistItems(args.playlistId);
+      if (supaItems && supaItems.length > 0) {
+        return command === 'get_playlist_items_preview'
+          ? supaItems.slice(0, args.limit || 4)
+          : supaItems;
+      }
       const itemsMap = JSON.parse(localStorage.getItem(MOCK_STORAGE_KEYS.ITEMS) || '{}');
       const items = itemsMap[args.playlistId] || [];
       if (command === 'get_playlist_items_preview') {

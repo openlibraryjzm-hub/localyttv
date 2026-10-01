@@ -195,8 +195,9 @@ yttv2/
 | **State Management** | `state-management.md` | All feature docs |
 | **Database** | `database-schema.md` | `api-bridge.md`, `history.md` |
 | **API Layer** | `api-bridge.md` | `database-schema.md`, `content management/importexport.md` |
+| **Web Architecture (`localyt.tv`)** | `web-version.md` | `api-bridge.md`, `database-schema.md` |
 | **Navigation** | `hierachy and navigation/navigation-routing.md` | `orb/orb-navigation.md`, `player controller/player-controller-unified.md` |
-| **Deployment & Packaging** | `deployment.md` | `steam-deck-build-guide.md` |
+| **Deployment & Packaging** | `deployment.md` | `web-version.md`, `steam-deck-build-guide.md` |
 
 ## Document Descriptions
 

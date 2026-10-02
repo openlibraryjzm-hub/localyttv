@@ -407,15 +407,18 @@ const BulkPlaylistImporter = ({ onImportComplete, onCancel, prismPage = 1 }) => 
         try {
           const itemId = await addVideoToPlaylist(
             dbPlaylistId,
-            video.videoUrl,
-            video.videoId,
+            video.videoUrl || video.video_url,
+            video.videoId || video.video_id,
             video.title,
-            video.thumbnailUrl,
+            video.thumbnailUrl || video.thumbnail_url || null,
             video.author || null,
-            null, // viewCount not fetched here
-            video.publishedAt || null,
+            video.viewCount ?? video.view_count ?? null,
+            video.publishedAt || video.published_at || null,
             false,
-            video.profileImageUrl || null
+            video.profileImageUrl || video.profile_image_url || null,
+            video.durationSeconds ?? video.duration_seconds ?? null,
+            video.description || null,
+            video.tags || null
           );
           videosAdded++;
 

@@ -125,7 +125,19 @@ const SubscriptionManagerModal = ({ isOpen, onClose, playlistId, isInline = fals
             for (const v of newVideos) {
                 if (!existingVideoIds.has(v.video_id)) {
                     const addedItemId = await addVideoToPlaylist(
-                        pid, v.video_url, v.video_id, v.title, null, v.author, null, v.published_at, false, v.profile_image_url || null
+                        pid,
+                        v.video_url || v.videoUrl,
+                        v.video_id || v.videoId,
+                        v.title,
+                        v.thumbnail_url || v.thumbnailUrl || null,
+                        v.author || null,
+                        v.view_count ?? v.viewCount ?? null,
+                        v.published_at || v.publishedAt || null,
+                        false,
+                        v.profile_image_url || v.profileImageUrl || null,
+                        v.durationSeconds ?? v.duration_seconds ?? null,
+                        v.description || null,
+                        v.tags || null
                     );
                     existingVideoIds.add(v.video_id);
                     if (targetColor !== 'all') {
@@ -160,7 +172,19 @@ const SubscriptionManagerModal = ({ isOpen, onClose, playlistId, isInline = fals
             for (const v of newVideos) {
                 if (!existingVideoIds.has(v.video_id)) {
                     const addedItemId = await addVideoToPlaylist(
-                        pid, v.video_url, v.video_id, v.title, null, v.author, null, v.published_at, false, v.profile_image_url || null
+                        pid,
+                        v.video_url || v.videoUrl,
+                        v.video_id || v.videoId,
+                        v.title,
+                        v.thumbnail_url || v.thumbnailUrl || null,
+                        v.author || null,
+                        v.view_count ?? v.viewCount ?? null,
+                        v.published_at || v.publishedAt || null,
+                        false,
+                        v.profile_image_url || v.profileImageUrl || null,
+                        v.durationSeconds ?? v.duration_seconds ?? null,
+                        v.description || null,
+                        v.tags || null
                     );
                     existingVideoIds.add(v.video_id);
                     if (targetColor !== 'all') {

@@ -17,6 +17,8 @@ Playlist cards are the primary interface for managing and interacting with playl
 In `large` mode, the top 16:9 cover thumbnail container is omitted in favor of an expanded **15-Item Mini Thumbnail Grid** ($3 \text{ columns} \times 5 \text{ rows}$):
 - **Grid Layout**: `grid-cols-3 gap-1 px-1 pb-0`.
 - **Item Capacity**: Renders up to 15 preview items (`slice(0, 15)`), combining Orbs, Banner Presets, and standard playlist Videos.
+- **Tracker & Channel Filtering**: Channel Cards (`isChannel`) and Playlist/Folder Trackers (`isPlaylist`, `isFolderTracker`) are kept in the database (`playlist_items`) for Subscription Manager syncing but are visually filtered out from mini preview grids via `filterTrackerAndChannelItems`.
+- **Buffered Preview Query**: Previews are queried with a buffer limit (e.g. `limit = 30`) so that excluding tracker/channel items leaves all 15 mini thumbnail slots fully populated.
 - **Cover Ring Indicator**: Mini items matching the active cover thumbnail render a sky-blue highlight ring (`ring-2 ring-sky-400 border-sky-400`).
 - **Dynamic Row Padding**: Automatically pads incomplete rows of 3 items up to 15 max with subtle placeholder slots (`aspect-video rounded-md bg-slate-800/20 border border-slate-700/30`).
 - **Item Order Priority**: Orbs take first priority, followed by Banner Presets, then standard Videos.
@@ -35,6 +37,7 @@ The top solid header bar houses real-time interaction controls:
   - **Quick Add / Add & Play**: Adds clipboard content to the playlist directly in the background or immediately initiates playback.
   - **Assign to Quick Slot**: Assigns the playlist to 1 of 4 quick slots.
 - **Three-Dot Menu (`CardMenu`)**: Provides secondary actions: Open in Uploader, Collapse/Expand Folders, Export Playlist, Assign to Group, Remove from Carousel(s), Hide/Unhide, and Delete Playlist.
+- **Minimal Hover Controls (`showOnlyShuffleHover`)**: When `showOnlyShuffleHover={true}` is passed (e.g., when embedded inside `FullscreenVideoInfo`), all title bar hover buttons except Shuffle / Reset Shuffle are suppressed.
 
 ---
 

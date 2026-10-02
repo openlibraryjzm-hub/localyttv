@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { invoke, listen } from '../api/platformBridge';
-import { smoothBarValues } from '../utils/audioProcessor';
+import { smoothBarValues, mapFrequencyToBars } from '../utils/audioProcessor';
 import { useConfigStore } from '../store/configStore';
+import { isWeb } from '../utils/platform';
 
 /**
  * AudioVisualizer - Circular audio visualizer matching Rainmeter VisBubble widget
@@ -91,13 +92,126 @@ const AudioVisualizer = ({
     sampleRateRef.current = 48000;
   }, [enabled]);
 
-  // Start/stop audio capture
+  const webStreamRef = useRef(null);
+
+  // Web Browser Audio Capture & Procedural Fallback handling
   useEffect(() => {
+    if (!enabled || !isActive) return;
+    if (!isWeb()) return; // Only run on Web
+
+    let mounted = true;
+    let webAnimId = null;
+
+    const startWebCapture = async () => {
+      try {
+        console.log('[AudioVisualizer Web] Prompting display/tab audio capture...');
+        const stream = await navigator.mediaDevices.getDisplayMedia({
+          video: true,
+          audio: true
+        });
+
+        if (!mounted) {
+          stream.getTracks().forEach(t => t.stop());
+          return;
+        }
+
+        webStreamRef.current = stream;
+
+        const audioTracks = stream.getAudioTracks();
+        if (audioTracks.length === 0) {
+          console.warn('[AudioVisualizer Web] No audio track in stream. Falling back to organic sine simulation.');
+          startProceduralFallback();
+          return;
+        }
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        audioContextRef.current = audioCtx;
+
+        const source = audioCtx.createMediaStreamSource(stream);
+        const analyser = audioCtx.createAnalyser();
+        analyser.fftSize = fftSize;
+        analyser.smoothingTimeConstant = smoothing;
+        analyserRef.current = analyser;
+
+        source.connect(analyser);
+
+        const freqData = new Uint8Array(analyser.frequencyBinCount);
+
+        const processWebFrame = () => {
+          if (!mounted) return;
+          analyser.getByteFrequencyData(freqData);
+          
+          const mapped = mapFrequencyToBars(freqData, barCount, freqMin, freqMax, audioCtx.sampleRate);
+          
+          const adjusted = new Uint8Array(barCount);
+          const sensFactor = (sensitivity / 64) * effectiveGain;
+          for (let i = 0; i < barCount; i++) {
+            adjusted[i] = Math.min(255, Math.round(mapped[i] * sensFactor));
+          }
+
+          barValuesRef.current = adjusted;
+          webAnimId = requestAnimationFrame(processWebFrame);
+        };
+
+        processWebFrame();
+
+        audioTracks[0].onended = () => {
+          console.log('[AudioVisualizer Web] Audio stream ended by user.');
+          startProceduralFallback();
+        };
+
+      } catch (err) {
+        console.warn('[AudioVisualizer Web] Tab audio capture declined or failed:', err);
+        startProceduralFallback();
+      }
+    };
+
+    const startProceduralFallback = () => {
+      console.log('[AudioVisualizer Web] Starting organic ambient sine fallback animation...');
+      let phase = 0;
+
+      const animateFallback = () => {
+        if (!mounted) return;
+        phase += 0.04;
+        const fallbackBars = new Uint8Array(barCount);
+
+        for (let i = 0; i < barCount; i++) {
+          const sineVal = Math.sin(phase + (i * 0.15)) * 0.5 + 0.5;
+          const sineVal2 = Math.cos(phase * 0.7 + (i * 0.08)) * 0.5 + 0.5;
+          const combined = (sineVal * 0.6 + sineVal2 * 0.4) * 80 + 10;
+          fallbackBars[i] = Math.min(255, Math.round(combined));
+        }
+
+        barValuesRef.current = fallbackBars;
+        webAnimId = requestAnimationFrame(animateFallback);
+      };
+
+      animateFallback();
+    };
+
+    startWebCapture();
+
+    return () => {
+      mounted = false;
+      if (webAnimId) cancelAnimationFrame(webAnimId);
+      if (webStreamRef.current) {
+        webStreamRef.current.getTracks().forEach(track => track.stop());
+        webStreamRef.current = null;
+      }
+      if (audioContextRef.current) {
+        audioContextRef.current.close().catch(() => {});
+        audioContextRef.current = null;
+      }
+    };
+  }, [enabled, isActive, fftSize, smoothing, barCount, freqMin, freqMax, sensitivity, effectiveGain]);
+
+  // Start/stop desktop audio capture (Tauri only)
+  useEffect(() => {
+    if (isWeb()) return; // Skip Tauri Rust capture on Web
     let mounted = true;
 
     const manageCapture = async () => {
       if (!enabled || !isActive) {
-        // Stop capture if disabled OR inactive
         if (isCapturingRef.current) {
           console.log('[AudioVisualizer] Stopping audio capture...');
           try {
@@ -113,35 +227,22 @@ const AudioVisualizer = ({
         return;
       }
 
-      // Always try to stop first to ensure clean state
       if (isCapturingRef.current) {
         console.log('[AudioVisualizer] Stopping existing capture before restart...');
         try {
           await invoke('stop_audio_capture');
         } catch (error) {
-          // Ignore errors if not running
           console.log('[AudioVisualizer] Stop error (may be expected):', error);
         }
         isCapturingRef.current = false;
         setIsCapturing(false);
-        // Small delay to ensure cleanup
         await new Promise(resolve => setTimeout(resolve, 100));
       }
 
-      // Start capture
       if (!mounted) return;
 
       try {
         console.log('[AudioVisualizer] Starting audio capture...');
-
-        // Test command invocation first
-        try {
-          const testResult = await invoke('test_audio_command');
-          console.log('[AudioVisualizer] Test command result:', testResult);
-        } catch (testError) {
-          console.error('[AudioVisualizer] Test command failed:', testError);
-        }
-
         await invoke('start_audio_capture');
         if (mounted) {
           isCapturingRef.current = true;
@@ -170,9 +271,9 @@ const AudioVisualizer = ({
     };
   }, [enabled, isActive]);
 
-  // Listen to audio data events and process
+  // Listen to desktop audio data events (Tauri only)
   useEffect(() => {
-    if (!enabled || !isActive) return;
+    if (!enabled || !isActive || isWeb()) return;
 
     let unlisten = null;
     let eventCount = 0;
@@ -181,7 +282,7 @@ const AudioVisualizer = ({
       try {
         console.log('[AudioVisualizer] Setting up audio bin listener...');
         unlisten = await listen('audio-bins', (event) => {
-          const bins = event.payload; // Uint8Array of 113 bar values
+          const bins = event.payload;
 
           if (!bins || !Array.isArray(bins) || bins.length === 0) {
             return;
@@ -189,7 +290,6 @@ const AudioVisualizer = ({
 
           eventCount++;
 
-          // Apply smoothing in JS (very lightweight, in-place to avoid GC)
           const target = smoothedValuesRef.current;
           const prev = previousBarValuesRef.current || target;
           const s = smoothing;
@@ -199,7 +299,6 @@ const AudioVisualizer = ({
             target[i] = Math.round(bins[i] * invS + prev[i] * s);
           }
 
-          // Apply sensitivity
           const adjusted = new Uint8Array(target.length);
           const sensFactor = sensitivity / 64;
           for (let i = 0; i < target.length; i++) {
@@ -207,20 +306,8 @@ const AudioVisualizer = ({
           }
 
           barValuesRef.current = adjusted;
-          previousBarValuesRef.current = new Uint8Array(target); // Clone for next frame store
-
-          if (eventCount === 1 || eventCount % 200 === 0) {
-            console.log('[AudioVisualizer] Received', eventCount, 'audio bin events');
-          }
+          previousBarValuesRef.current = new Uint8Array(target);
         });
-        console.log('[AudioVisualizer] Audio listener set up successfully, waiting for events...');
-
-        // Set a timeout to warn if no events are received
-        setTimeout(() => {
-          if (eventCount === 0) {
-            console.warn('[AudioVisualizer] ⚠️ No audio events received after 2 seconds. Check Rust console for audio capture logs.');
-          }
-        }, 2000);
       } catch (error) {
         console.error('[AudioVisualizer] Failed to set up audio listener:', error);
       }

@@ -35,7 +35,8 @@ The solid top header bar acts as the control center for the playlist:
 
 - **1x4 Mini-Thumbnail Preview Grid**:
   - Renders 4 mini thumbnails in a 1-row by 4-column grid layout (`grid-cols-4 gap-2.5`).
-  - Mini preview strips strictly display standard YouTube video thumbnails (Orbs, Banners, and local device folders are filtered out).
+  - Mini preview strips strictly display standard YouTube video thumbnails (Orbs, Banners, Channel Cards, and Playlist/Folder Trackers are filtered out via `filterTrackerAndChannelItems`).
+  - **Buffered Preview Data**: `PlaylistsPage` requests preview items with a buffer (`getAllPlaylistItemsPreviews(15)`) to ensure all 4 mini preview slots remain fully populated after excluding channel/tracker cards.
   - Right-clicking any mini slot swaps that video into the primary cover position.
 - **Skeleton Loading & Empty State System**:
   - **Pre-Data Fetching Skeletons**: While database/IPC preview requests are resolving, 4 animated pulsing skeleton slots (`bg-slate-900/60 animate-pulse border border-[#052F4A]/20`) maintain exact card height and prevent layout jump.
@@ -50,5 +51,5 @@ The solid top header bar acts as the control center for the playlist:
 - **Component Path**: `src/components/LongPlaylistCard.jsx`
 - **Primary Integration**: `PlaylistsPage.jsx` (All Playlists, Unsorted, and Colored Folder Prism views).
 - **Optimization**: Wrapped in `React.memo` to prevent redundant re-renders when parent state updates.
-- **Preview Pool**: Standard YouTube video items, excluding local device items, orbs, and banner presets from the mini preview strip.
+- **Preview Pool**: Standard YouTube video items, excluding local device items, channel cards, playlist trackers, orbs, and banner presets from the mini preview strip.
 - **State Management**: Manages local preview states separately from main store to support real-time manual thumbnail swapping.

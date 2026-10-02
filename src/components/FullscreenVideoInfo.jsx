@@ -5,6 +5,7 @@ import { useLayoutStore } from '../store/layoutStore';
 import { useConfigStore } from '../store/configStore';
 import { invoke } from '../api/platformBridge';
 import { getPlaylistItemsPreview, getFoldersForPlaylist, getAllPlaylistMetadata, getAllPlaylists, getAllFolderAssignments } from '../api/playlistApi';
+import { getThumbnailUrl, fetchVideoMetadata, extractVideoId } from '../utils/youtubeUtils';
 import { FOLDER_COLORS } from '../utils/folderColors';
 import PlaylistCard from './PlaylistCard';
 
@@ -73,8 +74,37 @@ const FullscreenVideoInfo = () => {
   const [previewVideos, setPreviewVideos] = useState([]);
   const [folderCounts, setFolderCounts] = useState({});
   const [isLoadingPlaylistData, setIsLoadingPlaylistData] = useState(false);
+  const [enrichedMetadata, setEnrichedMetadata] = useState({});
 
   const { currentPlaylistItems, currentVideoIndex, currentPlaylistId, allPlaylists, setAllPlaylists } = usePlaylistStore();
+
+  const items = currentPlaylistItems || [];
+  const hasValidIndex =
+    items.length > 0 &&
+    currentVideoIndex != null &&
+    currentVideoIndex >= 0 &&
+    currentVideoIndex < items.length;
+
+  const video = hasValidIndex ? items[currentVideoIndex] : null;
+
+  useEffect(() => {
+    if (!video) return;
+    const vId = video.video_id || video.videoId || extractVideoId(video.video_url || video.videoUrl);
+    const isYt = vId && !video.is_local && !video.video_url?.startsWith('local:');
+
+    if (isYt && (video.view_count == null || !video.description || !video.thumbnail_url || (!video.profile_image_url && !video.profileImageUrl))) {
+      let canceled = false;
+      fetchVideoMetadata(vId).then(meta => {
+        if (!canceled && meta) {
+          setEnrichedMetadata(prev => ({
+            ...prev,
+            [vId]: meta
+          }));
+        }
+      });
+      return () => { canceled = true; };
+    }
+  }, [video?.video_id, video?.videoId, video?.video_url]);
 
   useEffect(() => {
     const fetchPlaylistData = async () => {
@@ -97,7 +127,7 @@ const FullscreenVideoInfo = () => {
         const [metaList, folders, previews, folderAssignments] = await Promise.all([
           getAllPlaylistMetadata(),
           getFoldersForPlaylist(currentPlaylistId),
-          getPlaylistItemsPreview(currentPlaylistId, 15),
+          getPlaylistItemsPreview(currentPlaylistId, 30),
           getAllFolderAssignments(currentPlaylistId).catch(() => ({}))
         ]);
 
@@ -212,15 +242,6 @@ const FullscreenVideoInfo = () => {
     pointerEvents: 'none'
   };
 
-  const items = currentPlaylistItems || [];
-  const hasValidIndex =
-    items.length > 0 &&
-    currentVideoIndex != null &&
-    currentVideoIndex >= 0 &&
-    currentVideoIndex < items.length;
-
-  const video = hasValidIndex ? items[currentVideoIndex] : null;
-
   return (
     <div className="layout-shell__fullscreen-video-info" data-debug-label="Fullscreen Video Info" style={{ position: 'relative', overflow: 'hidden' }}>
       {/* Heavily blurred version of current app banner */}
@@ -229,31 +250,37 @@ const FullscreenVideoInfo = () => {
         {/* Scrollable area - metadata only now */}
         <div className="flex-1 overflow-y-auto px-0 pb-0 scrollbar-hide" style={{ minHeight: 0 }}>
           {!fullscreenInfoBlanked && video && (() => {
-            const thumbnailUrl = video.thumbnail_url || video.thumbnailUrl || null;
-            const author = video.author || 'Unknown';
+            const vId = video.video_id || video.videoId || extractVideoId(video.video_url || video.videoUrl);
+            const extra = enrichedMetadata[vId] || {};
 
-            const formattedDate = video.published_at
-              ? new Date(video.published_at).toLocaleDateString('en-US', {
+            const thumbnailUrl = video.thumbnail_url || video.thumbnailUrl || extra.thumbnailUrl || (vId ? getThumbnailUrl(vId, 'max') : null);
+            const author = video.author || extra.author || 'Unknown';
+
+            const rawDate = video.published_at || video.publishedAt || extra.publishedAt;
+            const formattedDate = rawDate
+              ? new Date(rawDate).toLocaleDateString('en-US', {
                 month: 'long',
                 day: 'numeric',
                 year: 'numeric'
               })
               : null;
 
+            const rawViewCount = video.view_count ?? video.viewCount ?? extra.viewCount ?? null;
             let viewCountText = null;
-            if (video.view_count != null && video.view_count !== '') {
+            if (rawViewCount != null && rawViewCount !== '') {
               const raw =
-                typeof video.view_count === 'string'
-                  ? parseInt(video.view_count, 10)
-                  : video.view_count;
+                typeof rawViewCount === 'string'
+                  ? parseInt(rawViewCount, 10)
+                  : rawViewCount;
               const safeNumber = Number.isFinite(raw) ? raw : 0;
               viewCountText = safeNumber.toLocaleString();
             }
 
-            const description = video.description && String(video.description).trim() ? video.description : null;
-            const tagsList = parseTags(video.tags);
+            const rawDesc = (video.description && String(video.description).trim()) ? video.description : extra.description;
+            const description = rawDesc && String(rawDesc).trim() ? rawDesc : null;
+            const tagsList = parseTags(video.tags || extra.tags);
 
-            const profileImg = video ? (video.profile_image_url || video.profileImageUrl) : null;
+            const profileImg = video ? (video.profile_image_url || video.profileImageUrl || extra.profileImageUrl || extra.profile_image_url) : null;
             const isValidProfileImg = profileImg && profileImg !== 'null' && profileImg !== 'undefined' && profileImg.trim() !== '';
             const authorFallbackName = video ? (video.author || 'Unknown') : 'Unknown';
             const fallbackSrc = `https://ui-avatars.com/api/?name=${encodeURIComponent(authorFallbackName)}&background=333&color=fff&size=128&rounded=true&bold=true`;
@@ -414,6 +441,7 @@ const FullscreenVideoInfo = () => {
                                 size="large"
                                 inCarousel={false}
                                 contentAboveGrid={renderVideoThumbnail()}
+                                showOnlyShuffleHover={true}
                                 headerExtension={
                                   <>
                                     {/* Left: Content Type Badges (Videos, Orbs, Banners) */}

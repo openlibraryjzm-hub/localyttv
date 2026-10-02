@@ -141,6 +141,24 @@ export const fetchVideoMetadata = async (videoId) => {
         durationSeconds = parseYouTubeDuration(contentDetails.duration);
       }
 
+      let profileImageUrl = null;
+      if (snippet?.channelId) {
+        try {
+          const chUrl = `https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${snippet.channelId}&key=${getApiKey()}`;
+          const chRes = await fetch(chUrl);
+          if (chRes.ok) {
+            const chData = await chRes.json();
+            if (chData.items?.length > 0) {
+              profileImageUrl =
+                chData.items[0].snippet.thumbnails?.high?.url ||
+                chData.items[0].snippet.thumbnails?.medium?.url ||
+                chData.items[0].snippet.thumbnails?.default?.url ||
+                null;
+            }
+          }
+        } catch (chErr) {}
+      }
+
       return {
         videoId,
         title: snippet.title,
@@ -151,6 +169,9 @@ export const fetchVideoMetadata = async (videoId) => {
         durationSeconds,
         description: snippet.description || null,
         tags: Array.isArray(snippet.tags) ? JSON.stringify(snippet.tags) : null,
+        profileImageUrl,
+        profile_image_url: profileImageUrl,
+        channelId: snippet.channelId || null
       };
     }
     return null;
@@ -242,6 +263,138 @@ export const fetchChannelMetadata = async (url) => {
   }
 };
 
+/**
+ * Enriches a list of video objects (with video_id / videoId) with full video details:
+ * view_count, durationSeconds, description, tags, high-res thumbnail, and profileImageUrl.
+ */
+export const enrichVideosWithDetails = async (videos) => {
+  if (!videos || videos.length === 0) return videos;
+
+  let key = null;
+  try {
+    key = getApiKey();
+  } catch {
+    return videos;
+  }
+  if (!key) return videos;
+
+  const videoIds = Array.from(new Set(videos.map(v => v.video_id || v.videoId).filter(Boolean)));
+  if (videoIds.length === 0) return videos;
+
+  const chunkSize = 50;
+  const detailsMap = new Map();
+  const channelIdsToFetch = new Set();
+
+  for (let i = 0; i < videoIds.length; i += chunkSize) {
+    const chunk = videoIds.slice(i, i + chunkSize);
+    const url = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics,contentDetails&id=${chunk.join(',')}&key=${key}`;
+
+    try {
+      const response = await fetch(url);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.items) {
+          data.items.forEach(item => {
+            const snippet = item.snippet;
+            const statistics = item.statistics;
+            const contentDetails = item.contentDetails;
+
+            let durationSeconds = null;
+            if (contentDetails?.duration) {
+              durationSeconds = parseYouTubeDuration(contentDetails.duration);
+            }
+
+            const highResThumb =
+              snippet?.thumbnails?.maxres?.url ||
+              snippet?.thumbnails?.standard?.url ||
+              snippet?.thumbnails?.high?.url ||
+              snippet?.thumbnails?.medium?.url ||
+              snippet?.thumbnails?.default?.url ||
+              getThumbnailUrl(item.id, 'max');
+
+            if (snippet?.channelId) {
+              channelIdsToFetch.add(snippet.channelId);
+            }
+
+            detailsMap.set(item.id, {
+              view_count: statistics?.viewCount || '0',
+              viewCount: statistics?.viewCount || '0',
+              durationSeconds,
+              description: snippet?.description || null,
+              tags: Array.isArray(snippet?.tags) ? JSON.stringify(snippet.tags) : null,
+              thumbnail_url: highResThumb,
+              thumbnailUrl: highResThumb,
+              author: snippet?.channelTitle || null,
+              published_at: snippet?.publishedAt || null,
+              channelId: snippet?.channelId || null
+            });
+          });
+        }
+      }
+    } catch (err) {
+      console.error('Error enriching video details:', err);
+    }
+  }
+
+  // Fetch channel avatars in batch
+  const channelAvatarMap = new Map();
+  if (channelIdsToFetch.size > 0) {
+    const chArray = Array.from(channelIdsToFetch);
+    for (let i = 0; i < chArray.length; i += chunkSize) {
+      const chChunk = chArray.slice(i, i + chunkSize);
+      const chUrl = `https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${chChunk.join(',')}&key=${key}`;
+      try {
+        const chRes = await fetch(chUrl);
+        if (chRes.ok) {
+          const chData = await chRes.json();
+          if (chData.items) {
+            chData.items.forEach(chItem => {
+              const avatar =
+                chItem.snippet?.thumbnails?.high?.url ||
+                chItem.snippet?.thumbnails?.medium?.url ||
+                chItem.snippet?.thumbnails?.default?.url ||
+                null;
+              channelAvatarMap.set(chItem.id, avatar);
+            });
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching channel avatars:', err);
+      }
+    }
+  }
+
+  return videos.map(v => {
+    const id = v.video_id || v.videoId;
+    const details = detailsMap.get(id);
+    if (!details) return v;
+
+    const thumb = details.thumbnail_url || v.thumbnail_url || v.thumbnailUrl || getThumbnailUrl(id, 'max');
+    const profileImg = (details.channelId ? channelAvatarMap.get(details.channelId) : null) || v.profile_image_url || v.profileImageUrl || null;
+
+    return {
+      ...v,
+      video_id: id,
+      videoId: id,
+      title: v.title || details.title,
+      thumbnail_url: thumb,
+      thumbnailUrl: thumb,
+      author: v.author || details.author,
+      published_at: v.published_at || v.publishedAt || details.published_at,
+      publishedAt: v.published_at || v.publishedAt || details.published_at,
+      video_url: v.video_url || v.videoUrl || `https://www.youtube.com/watch?v=${id}`,
+      videoUrl: v.video_url || v.videoUrl || `https://www.youtube.com/watch?v=${id}`,
+      view_count: details.view_count ?? v.view_count ?? v.viewCount ?? null,
+      viewCount: details.view_count ?? v.view_count ?? v.viewCount ?? null,
+      durationSeconds: details.durationSeconds ?? v.durationSeconds ?? null,
+      description: (details.description && details.description.trim()) ? details.description : (v.description || null),
+      tags: details.tags ?? v.tags ?? null,
+      profile_image_url: profileImg,
+      profileImageUrl: profileImg
+    };
+  });
+};
+
 export const fetchChannelUploads = async (channelId, limit = 50) => {
   if (!channelId || !channelId.startsWith('UC')) return [];
 
@@ -275,24 +428,35 @@ export const fetchChannelUploads = async (channelId, limit = 50) => {
       const data = await response.json();
       if (!data.items) break;
 
-      const formattedVideos = data.items.map(item => ({
-        video_id: item.snippet.resourceId.videoId,
-        title: item.snippet.title,
-        thumbnail_url: item.snippet.thumbnails?.high?.url || item.snippet.thumbnails?.medium?.url || item.snippet.thumbnails?.default?.url,
-        author: item.snippet.videoOwnerChannelTitle,
-        published_at: item.snippet.publishedAt,
-        video_url: `https://www.youtube.com/watch?v=${item.snippet.resourceId.videoId}`,
-        is_local: false,
-        view_count: null, // API doesn't return view count in playlistItems
-        profile_image_url: profileImageUrl
-      }));
+      const formattedVideos = data.items.map(item => {
+        const vId = item.snippet.resourceId.videoId;
+        const thumb = item.snippet.thumbnails?.maxres?.url || item.snippet.thumbnails?.standard?.url || item.snippet.thumbnails?.high?.url || item.snippet.thumbnails?.medium?.url || item.snippet.thumbnails?.default?.url || getThumbnailUrl(vId, 'max');
+        return {
+          video_id: vId,
+          videoId: vId,
+          title: item.snippet.title,
+          thumbnail_url: thumb,
+          thumbnailUrl: thumb,
+          author: item.snippet.videoOwnerChannelTitle || item.snippet.channelTitle,
+          published_at: item.snippet.publishedAt,
+          publishedAt: item.snippet.publishedAt,
+          video_url: `https://www.youtube.com/watch?v=${vId}`,
+          videoUrl: `https://www.youtube.com/watch?v=${vId}`,
+          is_local: false,
+          view_count: null,
+          viewCount: null,
+          profile_image_url: profileImageUrl,
+          profileImageUrl: profileImageUrl,
+          description: item.snippet.description || null
+        };
+      });
 
       allVideos = allVideos.concat(formattedVideos);
       nextPageToken = data.nextPageToken;
 
     } while (nextPageToken && allVideos.length < limit);
 
-    return allVideos;
+    return await enrichVideosWithDetails(allVideos);
   } catch (error) {
     console.error('Error fetching channel uploads:', error);
     return [];
@@ -319,24 +483,35 @@ export const fetchPlaylistVideos = async (playlistId, limit = 50) => {
       const data = await response.json();
       if (!data.items) break;
 
-      const formattedVideos = data.items.filter(item => item.snippet?.resourceId?.kind === 'youtube#video').map(item => ({
-        video_id: item.snippet.resourceId.videoId,
-        title: item.snippet.title,
-        thumbnail_url: item.snippet.thumbnails?.high?.url || item.snippet.thumbnails?.medium?.url || item.snippet.thumbnails?.default?.url,
-        author: item.snippet.videoOwnerChannelTitle,
-        published_at: item.snippet.publishedAt,
-        video_url: `https://www.youtube.com/watch?v=${item.snippet.resourceId.videoId}`,
-        is_local: false,
-        view_count: null,
-        profile_image_url: null
-      }));
+      const formattedVideos = data.items.filter(item => item.snippet?.resourceId?.kind === 'youtube#video').map(item => {
+        const vId = item.snippet.resourceId.videoId;
+        const thumb = item.snippet.thumbnails?.maxres?.url || item.snippet.thumbnails?.standard?.url || item.snippet.thumbnails?.high?.url || item.snippet.thumbnails?.medium?.url || item.snippet.thumbnails?.default?.url || getThumbnailUrl(vId, 'max');
+        return {
+          video_id: vId,
+          videoId: vId,
+          title: item.snippet.title,
+          thumbnail_url: thumb,
+          thumbnailUrl: thumb,
+          author: item.snippet.videoOwnerChannelTitle || item.snippet.channelTitle,
+          published_at: item.snippet.publishedAt,
+          publishedAt: item.snippet.publishedAt,
+          video_url: `https://www.youtube.com/watch?v=${vId}`,
+          videoUrl: `https://www.youtube.com/watch?v=${vId}`,
+          is_local: false,
+          view_count: null,
+          viewCount: null,
+          profile_image_url: null,
+          profileImageUrl: null,
+          description: item.snippet.description || null
+        };
+      });
 
       allVideos = allVideos.concat(formattedVideos);
       nextPageToken = data.nextPageToken;
 
     } while (nextPageToken && allVideos.length < limit);
 
-    return allVideos;
+    return await enrichVideosWithDetails(allVideos);
   } catch (error) {
     console.error('Error fetching playlist videos:', error);
     return [];

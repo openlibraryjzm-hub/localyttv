@@ -344,6 +344,7 @@ export default function PlayerController({
       let durSecs = null;
       let desc = null;
       let tagsStr = null;
+      let profileImg = null;
       const meta = await fetchVideoMetadata(videoId);
       if (meta) {
         finalTitle = meta.title || finalTitle;
@@ -354,14 +355,11 @@ export default function PlayerController({
         durSecs = meta.durationSeconds || null;
         desc = meta.description || null;
         tagsStr = meta.tags || null;
+        profileImg = meta.profileImageUrl || meta.profile_image_url || null;
       }
 
       // Add video to playlist
-      await addVideoToPlaylist(targetPlaylistId, text, videoId, finalTitle, finalThumbnailUrl, authorName, viewCountStr, pubAt, false,
-        // isLocal
-        null,
-        // profileImageUrl
-        durSecs, desc, tagsStr);
+      await addVideoToPlaylist(targetPlaylistId, text, videoId, finalTitle, finalThumbnailUrl, authorName, viewCountStr, pubAt, false, profileImg, durSecs, desc, tagsStr);
       console.log(`Added ${finalTitle} to Quick Videos`);
       setIsAddMenuOpen(false);
 
@@ -416,6 +414,7 @@ export default function PlayerController({
       let durSecs = null;
       let desc = null;
       let tagsStr = null;
+      let profileImg = null;
       const meta = await fetchVideoMetadata(videoId);
       if (meta) {
         finalTitle = meta.title || finalTitle;
@@ -426,9 +425,10 @@ export default function PlayerController({
         durSecs = meta.durationSeconds || null;
         desc = meta.description || null;
         tagsStr = meta.tags || null;
+        profileImg = meta.profileImageUrl || meta.profile_image_url || null;
       }
 
-      await addVideoToPlaylist(currentPlaylistId, text, videoId, finalTitle, finalThumbnailUrl, authorName, viewCountStr, pubAt, false, null, durSecs, desc, tagsStr);
+      await addVideoToPlaylist(currentPlaylistId, text, videoId, finalTitle, finalThumbnailUrl, authorName, viewCountStr, pubAt, false, profileImg, durSecs, desc, tagsStr);
       console.log(`Added ${finalTitle} to current playlist`);
       setIsAddMenuOpen(false);
 
@@ -470,6 +470,7 @@ export default function PlayerController({
       let durSecs = null;
       let desc = null;
       let tagsStr = null;
+      let profileImg = null;
       const meta = await fetchVideoMetadata(videoId);
       if (meta) {
         finalTitle = meta.title || finalTitle;
@@ -480,9 +481,10 @@ export default function PlayerController({
         durSecs = meta.durationSeconds || null;
         desc = meta.description || null;
         tagsStr = meta.tags || null;
+        profileImg = meta.profileImageUrl || meta.profile_image_url || null;
       }
 
-      await addVideoToPlaylist(targetPlaylistId, text, videoId, finalTitle, finalThumbnailUrl, authorName, viewCountStr, pubAt, false, null, durSecs, desc, tagsStr);
+      await addVideoToPlaylist(targetPlaylistId, text, videoId, finalTitle, finalThumbnailUrl, authorName, viewCountStr, pubAt, false, profileImg, durSecs, desc, tagsStr);
       console.log(`Added ${finalTitle} to target playlist ${targetPlaylistId}`);
       setIsAddMenuOpen(false);
 

@@ -120,42 +120,52 @@ const getMockResponse = async (command, args) => {
 
   switch (command) {
     case 'get_all_playlists': {
-      const supaData = await getSupabasePlaylists();
-      if (supaData && supaData.length > 0) return supaData;
-      return getStored(MOCK_STORAGE_KEYS.PLAYLISTS);
+      const supaData = (await getSupabasePlaylists()) || [];
+      const localData = getStored(MOCK_STORAGE_KEYS.PLAYLISTS) || [];
+      const supaIds = new Set(supaData.map(p => String(p.id)));
+      const filteredLocal = localData.filter(p => !supaIds.has(String(p.id)));
+      return [...supaData, ...filteredLocal];
     }
 
     case 'get_all_playlist_metadata': {
-      const supaMeta = await getSupabasePlaylistMetadata();
-      if (supaMeta && supaMeta.length > 0) return supaMeta;
-      const playlists = getStored(MOCK_STORAGE_KEYS.PLAYLISTS);
+      const supaMeta = (await getSupabasePlaylistMetadata()) || [];
+      const supaIds = new Set(supaMeta.map(p => String(p.id)));
+      const playlists = getStored(MOCK_STORAGE_KEYS.PLAYLISTS) || [];
       const itemsMap = JSON.parse(localStorage.getItem(MOCK_STORAGE_KEYS.ITEMS) || '{}');
-      return playlists.map(p => {
-        const items = itemsMap[p.id] || [];
-        return {
-          id: p.id,
-          name: p.name,
-          description: p.description,
-          video_count: items.length,
-          thumbnail_url: items[0]?.thumbnail_url || null,
-          recent_title: items[0]?.title || null
-        };
-      });
+      
+      const localMeta = playlists
+        .filter(p => !supaIds.has(String(p.id)))
+        .map(p => {
+          const items = itemsMap[p.id] || [];
+          return {
+            id: p.id,
+            name: p.name,
+            description: p.description,
+            video_count: items.length,
+            thumbnail_url: items[0]?.thumbnail_url || null,
+            recent_title: items[0]?.title || null
+          };
+        });
+
+      return [...supaMeta, ...localMeta];
     }
 
     case 'get_playlist': {
+      const playlists = getStored(MOCK_STORAGE_KEYS.PLAYLISTS) || [];
+      const localMatch = playlists.find(p => String(p.id) === String(args.id));
+      if (localMatch) return localMatch;
+
       const supaPlaylists = await getSupabasePlaylists();
       if (supaPlaylists && supaPlaylists.length > 0) {
-        const match = supaPlaylists.find(p => p.id === Number(args.id));
+        const match = supaPlaylists.find(p => String(p.id) === String(args.id));
         if (match) return match;
       }
-      const playlists = getStored(MOCK_STORAGE_KEYS.PLAYLISTS);
-      return playlists.find(p => p.id === Number(args.id)) || null;
+      return null;
     }
 
     case 'create_playlist': {
       const playlists = getStored(MOCK_STORAGE_KEYS.PLAYLISTS);
-      const newId = playlists.length > 0 ? Math.max(...playlists.map(p => p.id)) + 1 : 1;
+      const newId = playlists.length > 0 ? Math.max(...playlists.map(p => Number(p.id) || 0)) + 1000 : 1000;
       const newPlaylist = {
         id: newId,
         name: args.name,
@@ -195,18 +205,20 @@ const getMockResponse = async (command, args) => {
 
     case 'get_playlist_items':
     case 'get_playlist_items_preview': {
+      const itemsMap = JSON.parse(localStorage.getItem(MOCK_STORAGE_KEYS.ITEMS) || '{}');
+      const localItems = itemsMap[args.playlistId];
+      if (localItems && localItems.length > 0) {
+        return command === 'get_playlist_items_preview'
+          ? localItems.slice(0, args.limit || 4)
+          : localItems;
+      }
       const supaItems = await getSupabasePlaylistItems(args.playlistId);
       if (supaItems && supaItems.length > 0) {
         return command === 'get_playlist_items_preview'
           ? supaItems.slice(0, args.limit || 4)
           : supaItems;
       }
-      const itemsMap = JSON.parse(localStorage.getItem(MOCK_STORAGE_KEYS.ITEMS) || '{}');
-      const items = itemsMap[args.playlistId] || [];
-      if (command === 'get_playlist_items_preview') {
-        return items.slice(0, args.limit || 4);
-      }
-      return items;
+      return [];
     }
 
     case 'add_video_to_playlist': {

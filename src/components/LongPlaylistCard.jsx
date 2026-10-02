@@ -189,15 +189,33 @@ const LongPlaylistCard = ({
   const { getGroupIdsForPlaylist, removePlaylistFromGroup } = usePlaylistGroupStore();
   const { hiddenPlaylists, hidePlaylist, unhidePlaylist, quickAssignSlots, setQuickAssignSlot, playlistVideoFilters } = useConfigStore();
   
+const filterTrackerAndChannelItems = (items) => {
+  if (!items || !Array.isArray(items)) return [];
+  return items.filter((item) => {
+    if (!item) return false;
+    const url = item.video_url || item.videoUrl || '';
+    const isChannel = item.isChannel || url.includes('youtube.com/channel/') || url.includes('youtube.com/@') || url.startsWith('@');
+    const isFolderTracker = item.isFolderTracker || url.startsWith('local:device_folder:');
+    const isPlaylistTracker = item.isPlaylist || url.includes('youtube.com/playlist?list=') || url.startsWith('local:playlist:') || url.startsWith('local:folder:');
+    return !isChannel && !isFolderTracker && !isPlaylistTracker;
+  });
+};
+
   const groupIdsForPlaylist = getGroupIdsForPlaylist(playlist.id);
   const isInAnyCarousel = groupIdsForPlaylist.length > 0;
   const isHidden = (hiddenPlaylists || []).includes(playlist.id);
 
   const [previewThumbnail, setPreviewThumbnail] = useState(null);
-  const [localPreviewVideos, setLocalPreviewVideos] = useState(initialPreviewVideos);
+  const [localPreviewVideos, setLocalPreviewVideos] = useState(() => filterTrackerAndChannelItems(initialPreviewVideos));
   const [activeFolderFilter, setActiveFolderFilter] = useState(null);
   const [miniImageErrors, setMiniImageErrors] = useState(new Set());
   const [imageError, setImageError] = useState(false);
+
+  useEffect(() => {
+    if (!previewThumbnail?.isShuffled) {
+      setLocalPreviewVideos(filterTrackerAndChannelItems(initialPreviewVideos));
+    }
+  }, [initialPreviewVideos, previewThumbnail?.isShuffled]);
 
   const { shuffleStates } = useShuffleStore();
 
@@ -208,7 +226,8 @@ const LongPlaylistCard = ({
     try {
       const orbsAndBanners = (initialPreviewVideos || []).filter(item => item.isOrb || item.isBannerPreset);
       const dbVideos = await getPlaylistItems(playlist.id);
-      let pool = [...orbsAndBanners, ...dbVideos];
+      const cleanVideos = filterTrackerAndChannelItems(dbVideos);
+      let pool = [...orbsAndBanners, ...cleanVideos];
 
       const currentFilters = playlistVideoFilters?.[playlist.id] || { sortBy: 'shuffle', sortDirection: 'desc', selectedRatings: [] };
       const sortBy = currentFilters.sortBy || 'shuffle';
@@ -379,7 +398,7 @@ const LongPlaylistCard = ({
 
   useEffect(() => {
     if (!previewThumbnail?.isShuffled) {
-      setLocalPreviewVideos(initialPreviewVideos);
+      setLocalPreviewVideos(filterTrackerAndChannelItems(initialPreviewVideos));
     }
   }, [initialPreviewVideos, previewThumbnail?.isShuffled]);
 
@@ -497,6 +516,7 @@ const LongPlaylistCard = ({
       let durSecs = null;
       let desc = null;
       let tagsStr = null;
+      let profileImg = null;
       const meta = await fetchVideoMetadata(videoId);
       if (meta) {
         finalTitle = meta.title || finalTitle;
@@ -507,9 +527,10 @@ const LongPlaylistCard = ({
         durSecs = meta.durationSeconds || null;
         desc = meta.description || null;
         tagsStr = meta.tags || null;
+        profileImg = meta.profileImageUrl || meta.profile_image_url || null;
       }
 
-      await addVideoToPlaylist(playlist.id, text, videoId, finalTitle, finalThumbnailUrl, authorName, viewCountStr, pubAt, false, null, durSecs, desc, tagsStr);
+      await addVideoToPlaylist(playlist.id, text, videoId, finalTitle, finalThumbnailUrl, authorName, viewCountStr, pubAt, false, profileImg, durSecs, desc, tagsStr);
       console.log(`Added ${finalTitle} to playlist ${playlist.name}`);
 
       const items = await getPlaylistItems(playlist.id);
@@ -571,7 +592,7 @@ const LongPlaylistCard = ({
   const handleResetShuffle = async (e) => {
     e.stopPropagation();
     setPreviewThumbnail(null);
-    setLocalPreviewVideos(initialPreviewVideos.slice(0, 4));
+    setLocalPreviewVideos(filterTrackerAndChannelItems(initialPreviewVideos).slice(0, 4));
   };
 
   const handleSetAsCover = async (e) => {

@@ -634,7 +634,18 @@ const VideosPage = ({ onVideoSelect, onSecondPlayerSelect }) => {
       return;
     }
 
+    const isTrackerOrChannel = (video) => {
+      if (!video) return false;
+      const url = video.video_url || video.videoUrl || '';
+      const isChannel = video.isChannel || url.includes('youtube.com/channel/') || url.includes('youtube.com/@') || url.startsWith('@');
+      const isFolderTracker = video.isFolderTracker || url.startsWith('local:device_folder:');
+      const isPlaylistTracker = video.isPlaylist || url.includes('youtube.com/playlist?list=') || url.startsWith('local:playlist:') || url.startsWith('local:folder:');
+      return isChannel || isFolderTracker || isPlaylistTracker;
+    };
+
     const filterVideos = async () => {
+      const cleanPlaylistItems = activePlaylistItems.filter(v => !isTrackerOrChannel(v));
+
       if (selectedFolder === null) {
         // Show all videos when no folder is selected
         // Also include Orbs assigned to this playlist
@@ -658,8 +669,7 @@ const VideosPage = ({ onVideoSelect, onSecondPlayerSelect }) => {
             title: preset.name
           })) : [];
 
-
-        setDisplayedVideos([...assignedOrbs, ...assignedBanners, ...activePlaylistItems]);
+        setDisplayedVideos([...assignedOrbs, ...assignedBanners, ...cleanPlaylistItems]);
         return;
       }
 
@@ -668,14 +678,8 @@ const VideosPage = ({ onVideoSelect, onSecondPlayerSelect }) => {
         if (selectedFolder === 'unsorted') {
           // Filter for videos with no folder assignments
           const unsortedVideos = [];
-          for (const video of activePlaylistItems) {
-            // Check stored assignments
+          for (const video of cleanPlaylistItems) {
             const folders = videoFolderAssignments[video.id];
-
-            // If we have loaded assignments and it's empty, or if we haven't loaded, let's check
-            // Note: videoFolderAssignments is populated on playlist change, so it should be reliable.
-            // However, to be safe, we could check DB but that's slow for "Unsorted" filter.
-            // Let's rely on useFolderStore's loaded state which is refreshed on playlist change.
             if (!folders || folders.length === 0) {
               unsortedVideos.push(video);
             }
@@ -683,16 +687,13 @@ const VideosPage = ({ onVideoSelect, onSecondPlayerSelect }) => {
           console.log(`Unsorted filter: Found ${unsortedVideos.length} videos`);
           setDisplayedVideos(unsortedVideos);
         } else {
-          // When a color folder is selected, only show videos explicitly assigned to that folder
-          // The database query uses INNER JOIN so it will only return videos with assignments
           const videos = await getVideosInFolder(activePlaylistId, selectedFolder);
-          // Ensure we only show videos that are actually in the result (should be empty if no assignments)
-          console.log(`Folder ${selectedFolder}: Found ${videos?.length || 0} videos with assignments`);
-          setDisplayedVideos(Array.isArray(videos) ? videos : []);
+          const cleanVideos = (Array.isArray(videos) ? videos : []).filter(v => !isTrackerOrChannel(v));
+          console.log(`Folder ${selectedFolder}: Found ${cleanVideos.length} videos with assignments`);
+          setDisplayedVideos(cleanVideos);
         }
       } catch (error) {
         console.error('Failed to load folder videos:', error);
-        // On error, show empty array (folder should be empty)
         setDisplayedVideos([]);
       } finally {
         setLoadingFolders(false);
@@ -1309,11 +1310,11 @@ const VideosPage = ({ onVideoSelect, onSecondPlayerSelect }) => {
         video.video_url?.startsWith('@') ||
         video.isChannel;
       if (isChannel) {
-        return visibleSourceTypes?.channel !== false;
+        return false;
       }
-      const isPlaylistTracker = video.isPlaylist || video.video_url?.includes('youtube.com/playlist?list=') || video.isFolderTracker || video.video_url?.startsWith('local:device_folder:');
+      const isPlaylistTracker = video.isPlaylist || video.video_url?.includes('youtube.com/playlist?list=') || video.isFolderTracker || video.video_url?.startsWith('local:device_folder:') || video.video_url?.startsWith('local:playlist:') || video.video_url?.startsWith('local:folder:');
       if (isPlaylistTracker) {
-        return visibleSourceTypes?.tracker !== false;
+        return false;
       }
       const isImage = video.video_url && /\.(png|jpg|jpeg|gif|webp|bmp|svg)$/i.test(video.video_url);
       if (isImage) {

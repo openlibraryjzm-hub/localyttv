@@ -11,8 +11,8 @@ The Subscription Manager allows users to automatically fetch and sync videos fro
 
 2. **Granular Fetching & Syncing:**
    - Channels: Users have micro-managing power. Instead of mass-syncing, you can fetch the latest `[1]`, `[5]`, `[10]`, `[25]`, `[50]`, `[100]`, or `[ALL]` (capped) videos for each channel specifically.
-   - **Avatar Retrieval**: During the fetch process, the system automatically retrieves high-resolution channel profile pictures (avatars) and persists them to the database for use in the Fullscreen Video Info panel.
-   - Playlists: A "Refresh Latest" button retrieves up to the 100 most recent videos added to that list.
+   - **Avatar & Metadata Enrichment**: During the fetch/sync process (as well as quick-adds from header menus), the system retrieves high-resolution video thumbnails, full descriptions, view counts, published dates, duration seconds, and channel profile pictures (`profile_image_url`) for use across the application.
+   - Playlists: A "Refresh Latest" button retrieves up to the 100 most recent videos added to that list with complete metadata enrichment.
 
 3. **Intelligent Duplication Prevention & Auto-Refresh:**
    - The syncing process compares the `video_id` of returned items against the current playlist's database pool, discarding duplicates before importing.
@@ -24,8 +24,9 @@ The Subscription Manager allows users to automatically fetch and sync videos fro
 
 ## Tracker Cards (Source of Truth)
 
-Because the system infers sources from actual cards embedded inside your playlist, subscriptions are treated exactly like standard videos:
-- **Deletion:** Removing a Channel Card, Playlist Tracker Card, or Folder Tracker Card successfully deletes your "subscription" to it.
+Because the system infers sources from actual cards embedded inside your playlist, subscriptions are stored in the SQLite database (`playlist_items`) and managed like standard items:
+- **Visual Card Filtering**: Channel Cards (`isChannel`) and Playlist/Folder Link Trackers (`isPlaylist`, `isFolderTracker`) remain persisted in the backend DB and fully functional within management/subscription modals, but are visually suppressed from display card grids (`VideosPage`, `PlaylistCard`, `LongPlaylistCard`).
+- **Deletion:** Removing a Channel Card, Playlist Tracker Card, or Folder Tracker Card successfully deletes your "subscription" to it from the database.
 - **Categorization:** You can move a Tracker Card into a colored folder. When you open the Subscription Manager while looking inside that colored folder, only the Tracker Cards assigned to that folder will display for syncing.
 
 ### Local Folder Trackers

@@ -118,20 +118,22 @@ const PlaylistsPage = ({ onVideoSelect }) => {
   const { pinnedVideos: allPinnedVideos, priorityPinIds } = usePinStore();
   const { orbFavorites, hiddenPlaylists } = useConfigStore();
 
-  // Combined preview items per playlist: strictly YouTube video items (no Orbs, Banners, or Playlist/Folder Trackers)
+  // Combined preview items per playlist: strictly YouTube video items (no Orbs, Banners, Playlist/Folder Trackers, or Channels)
   const combinedPreviewItems = useMemo(() => {
     const out = {};
     if (!playlists?.length) return out;
     playlists.forEach((p) => {
       const videos = playlistPreviewVideos[p.id] || playlistPreviewVideos[String(p.id)] || [];
       out[p.id] = videos.filter(
-        (v) =>
-          v &&
-          !v.isOrb &&
-          !v.isBannerPreset &&
-          !v.isPlaylist &&
-          !v.isFolderTracker &&
-          !v.video_url?.startsWith('local:device_folder:')
+        (v) => {
+          if (!v) return false;
+          if (v.isOrb || v.isBannerPreset) return false;
+          const url = v.video_url || v.videoUrl || '';
+          const isChannel = v.isChannel || url.includes('youtube.com/channel/') || url.includes('youtube.com/@') || url.startsWith('@');
+          const isFolderTracker = v.isFolderTracker || url.startsWith('local:device_folder:');
+          const isPlaylistTracker = v.isPlaylist || url.includes('youtube.com/playlist?list=') || url.startsWith('local:playlist:') || url.startsWith('local:folder:');
+          return !isChannel && !isFolderTracker && !isPlaylistTracker;
+        }
       );
     });
     return out;
@@ -512,7 +514,7 @@ const PlaylistsPage = ({ onVideoSelect }) => {
 
   const loadPreviews = async () => {
     try {
-      const batchedPreviews = await getAllPlaylistItemsPreviews(4);
+      const batchedPreviews = await getAllPlaylistItemsPreviews(15);
       if (batchedPreviews && Object.keys(batchedPreviews).length > 0) {
         setPlaylistPreviewVideos(batchedPreviews);
       }
@@ -1130,7 +1132,7 @@ const PlaylistsPage = ({ onVideoSelect }) => {
 
                   setPlaylistPreviewVideos(prev => ({
                     ...prev,
-                    [folder.playlist_id]: items.slice(0, 4)
+                    [folder.playlist_id]: items.slice(0, 15)
                   }));
 
                   setActiveFolderFilters(prev => ({

@@ -23,7 +23,7 @@ The solid top header bar acts as the control center for the playlist:
 - **Action Bar:** Dedicated row for management tasks:
   - **Grid Preview Button:** Toggles full grid preview mode (`Grid3x3`).
   - **Flash Add Button:** Vibrant `+` button for opening the Playlist Uploader, quick-adding clipboard URLs, or assigning to 1 of 4 Quick Assign Slots.
-  - **Three-Dot Menu:** Houses secondary actions (Open in Uploader, Expand/Collapse Folders, Export, Group Assignment, Hide, Delete).
+  - **Three-Dot Menu:** Houses secondary actions (Open in Uploader, Export, Group Assignment, Hide, Delete).
 
 ---
 
@@ -32,6 +32,7 @@ The solid top header bar acts as the control center for the playlist:
 - **1x4 Mini-Thumbnail Preview Grid**:
   - Renders 4 mini thumbnails in a 1-row by 4-column grid layout (`grid-cols-4 gap-2.5`).
   - Mini preview strips display standard YouTube video thumbnails (Orbs, Banners, Channel Cards, and Playlist/Folder Trackers are filtered out via `filterTrackerAndChannelItems`), ordered by **Most Recently WATCHED** (ordered by `COALESCE(vp.last_updated, '1970-01-01') DESC, pi.position DESC`).
+  - **Hover Interaction & Styling**: Mini preview cards feature smooth hover scale animations and ring highlights (`hover:ring-4 hover:ring-sky-500/20`), presenting clean thumbnail graphics without play button overlays or native title tooltips.
   - **Buffered Preview Data**: `PlaylistsPage` requests preview items with a buffer (`getAllPlaylistItemsPreviews(15)`) to ensure all 4 mini preview slots remain fully populated after excluding channel/tracker cards.
   - Right-clicking any mini slot swaps that video into the primary cover position.
 - **Skeleton Loading & Empty State System**:

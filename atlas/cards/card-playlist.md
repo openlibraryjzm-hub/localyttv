@@ -31,6 +31,7 @@ Playlist cards and Colored Folder cards share the exact same UI card schema and 
   - Floating mini thumbnail grid ($3 \text{ columns} \times 5 \text{ rows}$, `grid-cols-3 gap-1.5`).
   - Vertically centered (`flex-1 my-auto flex flex-col justify-center`) to ensure 100% equalized vertical margins between the top header card and bottom containers.
   - Displays up to 15 items ordered by **Most Recently WATCHED** (`COALESCE(vp.last_updated, '1970-01-01') DESC, pi.position DESC`).
+  - **Hover Interaction & Styling**: Mini preview cards feature a subtle dim-to-bright hover transition (`opacity-80 group-hover/mini:opacity-100`) and hover ring outline (`hover:ring-2 hover:ring-sky-500`), presenting clean thumbnail graphics without play button overlays or native title tooltips.
   - Clicking any item instantly launches that specific video, orb, or banner.
 
 - **Global Toggles**:

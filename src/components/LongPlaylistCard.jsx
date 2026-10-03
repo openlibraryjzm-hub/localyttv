@@ -76,15 +76,12 @@ const MiniPreviewItem = ({
     <div
       key={slotKey}
       className={`relative aspect-square overflow-hidden transition-all cursor-pointer group/mini shadow-sm border ${
-        isCover ? "ring-2 ring-sky-400 border-sky-400" : ""
-      } ${
         isOrb 
           ? "rounded-full border-amber-500/30 bg-amber-900/20 hover:border-amber-400 hover:ring-4 hover:ring-amber-500/20" 
           : "rounded-xl border-[#052F4A]/30 bg-slate-900/40 hover:border-sky-500/50 hover:ring-4 hover:ring-sky-500/20"
       }`}
       {...longPress}
       onContextMenu={(e) => handleMiniVideoRightClick(e, item, index)}
-      title={getPreviewItemTitle(item)}
     >
       {isOrb ? (
         /* Orb Rendering: Centered Circle */
@@ -143,18 +140,10 @@ const MiniPreviewItem = ({
 
             {/* Title Area: White space at bottom */}
             <div className="flex-1 p-1.5 flex flex-col justify-center min-h-0">
-                <h4 className="text-[9px] leading-[1.1] font-bold text-[#052F4A] line-clamp-2 break-words" title={getPreviewItemTitle(item)}>
+                <h4 className="text-[9px] leading-[1.1] font-bold text-[#052F4A] line-clamp-2 break-words">
                     {getPreviewItemTitle(item)}
                 </h4>
             </div>
-        </div>
-      )}
-
-      {isVideo && showImg && imgLoaded && (
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/mini:opacity-100 bg-black/20 transition-opacity">
-          <div className="w-8 h-8 rounded-full bg-sky-500/80 flex items-center justify-center backdrop-blur-sm shadow-lg">
-            <Play size={14} className="text-white fill-current translate-x-0.5" />
-          </div>
         </div>
       )}
     </div>
@@ -838,7 +827,6 @@ const filterTrackerAndChannelItems = (items) => {
                         }
                         options={[
                             { label: "Open in Playlist Uploader", action: "openUploader", icon: <Upload size={16} className="text-sky-400" /> },
-                            { label: isExpanded ? "Collapse Folders" : "Expand Folders", action: "toggleFolders", icon: <Folder size={16} /> },
                             { label: "Export Playlist", action: "export", icon: <ExternalLink size={16} /> },
                             { label: "Assign to group", action: "openAssignToGroup", icon: <Grid3x3 size={16} className="text-sky-500" /> },
                             ...(isInAnyCarousel ? [{ label: "Remove from carousel(s)", action: "removeFromCarousel", icon: <X size={16} className="text-red-500" />, danger: true }] : []),
@@ -847,7 +835,6 @@ const filterTrackerAndChannelItems = (items) => {
                         ]}
                         onOptionClick={(opt) => {
                             if (opt.action === "openUploader") handleExportPlaylist?.(playlist.id, playlist.name);
-                            else if (opt.action === "toggleFolders") togglePlaylistExpand?.(playlist.id);
                             else if (opt.action === "export") handleExportPlaylist?.(playlist.id, playlist.name);
                             else if (opt.action === "delete") handleDeletePlaylist?.(playlist.id, playlist.name, { stopPropagation: () => { } });
                             else if (opt.action === "openAssignToGroup") onAssignToGroupClick?.();

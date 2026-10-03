@@ -41,10 +41,7 @@ The Playlists Page is the primary organizational hub for the application, displa
 
 ## 3. Colored Folders Integration
 
-Users interact with colored folders via two distinct modes:
-
-1. **Prism Folder Filter (PlaylistBar)**: Selecting a folder color segment on the top `PlaylistBar` filters the vertical list to show playlists belonging to that folder color group on the active page.
-2. **Inline Expansion**: Triggered via "Expand Folders" in the card's 3-dot menu; displays folder distribution sub-views.
+Users interact with colored folders via the **Prism Folder Filter (PlaylistBar)**: Selecting a folder color segment on the top `PlaylistBar` filters the vertical list to show playlists belonging to that folder color group on the active page. Selecting White displays all playlists, while Black displays unsorted playlists.
 
 ---
 

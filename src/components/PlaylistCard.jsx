@@ -75,7 +75,6 @@ const MiniPreviewItem = ({
       }`}
       {...longPress}
       onContextMenu={(e) => handleMiniVideoRightClick(e, item, index)}
-      title={getPreviewItemTitle(item)}
     >
       {showImg ? (
         <img
@@ -87,11 +86,6 @@ const MiniPreviewItem = ({
       ) : (
         <div className={`w-full h-full flex items-center justify-center ${item.isOrb ? "bg-amber-900/60 text-amber-200" : item.isBannerPreset ? "bg-violet-900/60 text-violet-200" : "bg-slate-700/50 text-slate-400"}`}>
           <span className="text-xs font-bold uppercase">{item.isOrb ? "Orb" : item.isBannerPreset ? "Banner" : ""}</span>
-        </div>
-      )}
-      {isVideo && showImg && (
-        <div className="absolute inset-0 flex items-center justify-center md:opacity-0 md:group-hover/mini:opacity-100 bg-black/30 transition-opacity">
-          <Play size={12} className="text-white fill-current" />
         </div>
       )}
     </div>

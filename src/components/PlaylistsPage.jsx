@@ -1005,88 +1005,63 @@ const PlaylistsPage = ({ onVideoSelect }) => {
 
             </div>
 
-            {/* Pagination Controls & Up Arrow - Centered at bottom (hidden when viewing single colored folder carousel) */}
-            {!(selectedPrismFolder !== 'unsorted' && selectedPrismFolder !== null) && (
+            {/* Pagination Controls - Centered at bottom (hidden when viewing single colored folder carousel) */}
+            {!(selectedPrismFolder !== 'unsorted' && selectedPrismFolder !== null) && totalPages > 1 && (
               <div className="flex flex-col items-center justify-center py-8 gap-6">
-
-                {/* Pagination Controls */}
-                {totalPages > 1 && (
-                  <div className="flex items-center gap-2 bg-slate-900/60 rounded-full px-4 py-2 border border-white/10 backdrop-blur-md shadow-lg">
-                    <button
-                      onClick={() => {
-                        setCurrentPage(Math.max(1, currentPage - 1));
-                        if (scrollContainerRef.current) scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-                      }}
-                      disabled={currentPage === 1}
-                      className="p-2 rounded-full hover:bg-white/10 disabled:opacity-30 transition-colors"
-                    >
-                      <ChevronLeft className="w-4 h-4" />
-                    </button>
-
-                    <div className="flex gap-1">
-                      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                        let pageNum = i + 1;
-                        if (totalPages > 5) {
-                          if (currentPage > 3) {
-                            pageNum = currentPage - 2 + i;
-                          }
-                          if (pageNum > totalPages) {
-                            pageNum = totalPages - 4 + i;
-                          }
-                        }
-
-                        if (pageNum < 1) pageNum = i + 1;
-
-                        return (
-                          <button
-                            key={pageNum}
-                            onClick={() => {
-                              setCurrentPage(pageNum);
-                              if (scrollContainerRef.current) scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-                            }}
-                            className={`w-8 h-8 rounded-full text-xs font-medium transition-all ${currentPage === pageNum
-                              ? 'bg-sky-500 text-white shadow-lg scale-110'
-                              : 'text-slate-400 hover:bg-white/10 hover:text-white'
-                              }`}
-                          >
-                            {pageNum}
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    <button
-                      onClick={() => {
-                        setCurrentPage(Math.min(totalPages, currentPage + 1));
-                        if (scrollContainerRef.current) scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-                      }}
-                      disabled={currentPage === totalPages}
-                      className="p-2 rounded-full hover:bg-white/10 disabled:opacity-30 transition-colors"
-                    >
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
-                  </div>
-                )}
-
-                {/* Up Arrow */}
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 bg-slate-900/60 rounded-full px-4 py-2 border border-white/10 backdrop-blur-md shadow-lg">
                   <button
-                    ref={arrowButtonRef}
                     onClick={() => {
-                      if (scrollContainerRef.current) {
-                        scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-                      } else {
-                        scrollToTop();
-                      }
+                      setCurrentPage(Math.max(1, currentPage - 1));
+                      if (scrollContainerRef.current) scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
-                    className="p-3 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-sky-400 transition-all border border-white/10 hover:border-sky-500/50 shadow-lg hover:shadow-sky-500/25"
-                    title="Scroll to top"
+                    disabled={currentPage === 1}
+                    className="p-2 rounded-full hover:bg-white/10 disabled:opacity-30 transition-colors"
                   >
-                    <ChevronUp size={24} />
+                    <ChevronLeft className="w-4 h-4" />
                   </button>
-                  <div className="text-slate-400 font-medium text-lg w-64 truncate">
-                    {centeredPlaylistName || "Scroll to browse"}
+
+                  <div className="flex gap-1">
+                    {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                      let pageNum = i + 1;
+                      if (totalPages > 5) {
+                        if (currentPage > 3) {
+                          pageNum = currentPage - 2 + i;
+                        }
+                        if (pageNum > totalPages) {
+                          pageNum = totalPages - 4 + i;
+                        }
+                      }
+
+                      if (pageNum < 1) pageNum = i + 1;
+
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => {
+                            setCurrentPage(pageNum);
+                            if (scrollContainerRef.current) scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+                          }}
+                          className={`w-8 h-8 rounded-full text-xs font-medium transition-all ${currentPage === pageNum
+                            ? 'bg-sky-500 text-white shadow-lg scale-110'
+                            : 'text-slate-400 hover:bg-white/10 hover:text-white'
+                            }`}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    })}
                   </div>
+
+                  <button
+                    onClick={() => {
+                      setCurrentPage(Math.min(totalPages, currentPage + 1));
+                      if (scrollContainerRef.current) scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                    disabled={currentPage === totalPages}
+                    className="p-2 rounded-full hover:bg-white/10 disabled:opacity-30 transition-colors"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
             )}

@@ -170,6 +170,7 @@ const LongPlaylistCard = ({
   orbCount = 0,
   bannerCount = 0,
   initialPreviewVideos = [],
+  recentVideo = null,
   globalInfoToggle,
   folderMetadata = {},
   deletingPlaylistId,
@@ -206,14 +207,16 @@ const filterTrackerAndChannelItems = (items) => {
   const isHidden = (hiddenPlaylists || []).includes(playlist.id);
 
   const [previewThumbnail, setPreviewThumbnail] = useState(null);
-  const [localPreviewVideos, setLocalPreviewVideos] = useState(() => filterTrackerAndChannelItems(initialPreviewVideos));
+  const [localPreviewVideos, setLocalPreviewVideos] = useState(() =>
+    filterTrackerAndChannelItems(initialPreviewVideos).slice(0, 4)
+  );
   const [activeFolderFilter, setActiveFolderFilter] = useState(null);
   const [miniImageErrors, setMiniImageErrors] = useState(new Set());
   const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     if (!previewThumbnail?.isShuffled) {
-      setLocalPreviewVideos(filterTrackerAndChannelItems(initialPreviewVideos));
+      setLocalPreviewVideos(filterTrackerAndChannelItems(initialPreviewVideos).slice(0, 4));
     }
   }, [initialPreviewVideos, previewThumbnail?.isShuffled]);
 
@@ -259,17 +262,10 @@ const filterTrackerAndChannelItems = (items) => {
         });
       } else if (sortBy === 'shuffle') {
         const state = shuffleStates[playlist.id];
-        const getStableRank = (id) => {
-          if (state?.map && state.map[id] !== undefined) return state.map[id];
-          let hash = 0;
-          const str = String(id);
-          for (let i = 0; i < str.length; i++) {
-            hash = ((hash << 5) - hash) + str.charCodeAt(i);
-            hash |= 0;
-          }
-          return (hash + 2147483648) / 4294967296;
-        };
-        pool.sort((a, b) => getStableRank(a.id) - getStableRank(b.id));
+        if (state?.enabled && state?.map) {
+          const getStableRank = (id) => state.map[id] ?? 999999;
+          pool.sort((a, b) => getStableRank(a.id) - getStableRank(b.id));
+        }
       } else if (sortBy === 'progress' || sortBy === 'lastViewed' || sortBy === 'watchCount') {
         try {
           const allProgress = await getAllVideoProgress();
@@ -735,19 +731,7 @@ const filterTrackerAndChannelItems = (items) => {
                     <Grid3x3 size={16} />
                 </button>
 
-                {/* Folder Distribution */}
-                <button
-                    data-card-action="true"
-                    onClick={(e) => { e.stopPropagation(); onFolderModeToggle?.(playlist.id); }}
-                    className="w-9 h-9 rounded-xl flex items-center justify-center transition-all hover:scale-105 active:scale-95 shadow-sm border border-[#052F4A]/10"
-                    style={{ 
-                        backgroundColor: activeFolderCount > 0 ? '#052F4A' : '#f1f5f9',
-                        color: activeFolderCount > 0 ? 'white' : '#64748b'
-                    }}
-                    title="Folder Distribution Mode"
-                >
-                    <Folder size={16} fill={activeFolderCount > 0 ? "currentColor" : "none"} />
-                </button>
+
 
                 {/* Flash Add Menu */}
                 <div data-card-action="true">
@@ -820,39 +804,7 @@ const filterTrackerAndChannelItems = (items) => {
                     />
                 </div>
                 
-                {/* Shuffle */}
-                <button
-                    data-card-action="true"
-                    onClick={handleShuffle}
-                    className="w-9 h-9 rounded-xl bg-[#052F4A] text-white flex items-center justify-center hover:bg-[#074066] transition-all shadow-md active:scale-95"
-                    title="Shuffle Playlist"
-                >
-                    <Shuffle size={16} />
-                </button>
 
-                {/* Shuffle Page Selector */}
-                <button
-                    type="button"
-                    data-card-action="true"
-                    onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        if (totalPlaylistPages <= 1) return;
-                        const next = (shufflePage % totalPlaylistPages) + 1;
-                        changeShufflePage(next);
-                    }}
-                    onContextMenu={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        if (totalPlaylistPages <= 1) return;
-                        const prev = (shufflePage - 2 + totalPlaylistPages) % totalPlaylistPages + 1;
-                        changeShufflePage(prev);
-                    }}
-                    className="w-9 h-9 rounded-xl bg-white border border-[#052F4A]/10 flex items-center justify-center text-[#052F4A] hover:bg-sky-50 hover:text-sky-600 hover:border-sky-200 font-bold text-xs transition-all shadow-sm active:scale-95 select-none"
-                    title={`Shuffle Page Filter (1-${totalPlaylistPages}) - Left-Click: +1, Right-Click: -1`}
-                >
-                    {shufflePage}
-                </button>
 
                 {/* Conditional Actions */}
                 {previewThumbnail?.isShuffled && (

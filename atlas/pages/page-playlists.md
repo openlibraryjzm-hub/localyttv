@@ -30,8 +30,8 @@ The Playlists Page is the primary organizational hub for the application, displa
 ## 2. Performance & Data Flow Architecture
 
 ### Batched Preview Query (`getAllPlaylistItemsPreviews`)
-- **Single-Query Fetch**: Initial playlist item previews are loaded via 1 batched IPC database command using SQLite window functions (`ROW_NUMBER() OVER (PARTITION BY playlist_id ORDER BY position ASC)`).
-- **Filtered Video Previews**: Previews filter out local device folders, Orbs, Banner Presets, Playlist Link Cards, and Folder Trackers, presenting YouTube video thumbnails in the mini-preview strip.
+- **Single-Query Fetch**: Initial playlist item previews are loaded via 1 batched IPC database command using SQLite window functions (`ROW_NUMBER() OVER (PARTITION BY pi.playlist_id ORDER BY COALESCE(vp.last_updated, '1970-01-01') DESC, pi.position DESC)` joining `video_progress vp`).
+- **Filtered Video Previews**: Previews filter out local device folders, Orbs, Banner Presets, Playlist Link Cards, and Folder Trackers, presenting YouTube video thumbnails in the mini-preview strip in order of most recently watched.
 - **Skeleton Loading System**:
   - **DB Fetch Skeletons**: Pre-data fetching renders 4 animated pulsing skeleton slots (`bg-slate-900/60 animate-pulse rounded-xl`) to maintain card heights without layout shift while backend queries resolve.
   - **Network Image Download Placeholders**: `MiniPreviewItem` tracks image load state using DOM element `ref` inspection (`el.complete`) and `onLoad` handlers, displaying a dark pulsing background until image bytes finish downloading.
@@ -41,11 +41,10 @@ The Playlists Page is the primary organizational hub for the application, displa
 
 ## 3. Colored Folders Integration
 
-Users interact with colored folders via three distinct modes:
+Users interact with colored folders via two distinct modes:
 
 1. **Prism Folder Filter (PlaylistBar)**: Selecting a folder color segment on the top `PlaylistBar` filters the vertical list to show playlists belonging to that folder color group on the active page.
 2. **Inline Expansion**: Triggered via "Expand Folders" in the card's 3-dot menu; displays folder distribution sub-views.
-3. **Pie Chart Folder View**: Toggling the folder icon on `LongPlaylistCard` replaces the mini-thumbnail grid with an interactive radial SVG visualization of folder tag distribution.
 
 ---
 

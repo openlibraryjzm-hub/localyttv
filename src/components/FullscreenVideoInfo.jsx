@@ -417,7 +417,7 @@ const FullscreenVideoInfo = () => {
                               .filter(preset => Array.isArray(preset.playlistIds) && preset.playlistIds.map(String).includes(pidStr))
                               .map(preset => ({ ...preset, id: `banner-${preset.id}`, originalId: preset.id, isBannerPreset: true, title: preset.name }));
 
-                            const initialPreviewVideos = [...assignedOrbs, ...assignedBanners, ...previewVideos];
+                            const initialPreviewVideos = [...previewVideos];
 
                             let activeThumb = null;
                             if (playlistObj.custom_thumbnail_url) {

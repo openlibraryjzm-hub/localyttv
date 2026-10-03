@@ -715,10 +715,11 @@ impl Database {
         limit: i64,
     ) -> Result<Vec<PlaylistItem>> {
         let mut stmt = self.conn.prepare(
-            "SELECT id, playlist_id, video_url, video_id, title, thumbnail_url, position, added_at, is_local, author, view_count, published_at, profile_image_url, drumstick_rating, duration_seconds, description, tags, like_count, comment_count 
-             FROM playlist_items 
-             WHERE playlist_id = ?1 
-             ORDER BY position ASC
+            "SELECT pi.id, pi.playlist_id, pi.video_url, pi.video_id, pi.title, pi.thumbnail_url, pi.position, pi.added_at, pi.is_local, pi.author, pi.view_count, pi.published_at, pi.profile_image_url, pi.drumstick_rating, pi.duration_seconds, pi.description, pi.tags, pi.like_count, pi.comment_count 
+             FROM playlist_items pi
+             LEFT JOIN video_progress vp ON pi.video_id = vp.video_id
+             WHERE pi.playlist_id = ?1 
+             ORDER BY COALESCE(vp.last_updated, '1970-01-01') DESC, pi.position DESC
              LIMIT ?2"
         )?;
 
@@ -758,11 +759,15 @@ impl Database {
         let mut stmt = self.conn.prepare(
             "SELECT id, playlist_id, video_url, video_id, title, thumbnail_url, position, added_at, is_local, author, view_count, published_at, profile_image_url, drumstick_rating, duration_seconds, description, tags, like_count, comment_count 
              FROM (
-                 SELECT pi.*, ROW_NUMBER() OVER (PARTITION BY playlist_id ORDER BY position ASC) as rn
+                 SELECT pi.*, ROW_NUMBER() OVER (
+                     PARTITION BY pi.playlist_id 
+                     ORDER BY COALESCE(vp.last_updated, '1970-01-01') DESC, pi.position DESC
+                 ) as rn
                  FROM playlist_items pi
+                 LEFT JOIN video_progress vp ON pi.video_id = vp.video_id
              )
              WHERE rn <= ?1
-             ORDER BY playlist_id, position ASC"
+             ORDER BY playlist_id, rn ASC"
         )?;
 
         let mut map: HashMap<i64, Vec<PlaylistItem>> = HashMap::new();

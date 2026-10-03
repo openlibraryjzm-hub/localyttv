@@ -42,12 +42,11 @@ The Fullscreen Video Info panel is a dedicated component that appears in the rig
 - **Playlist Tab & Card Container**:
   - Displays parent playlist metadata and mini previews via `PlaylistCard` in `large` size mode.
   - Container is horizontally indented (`px-5 mt-2`) for clean visual hierarchy.
-  - Passes `showOnlyShuffleHover={true}` to `PlaylistCard` so only the Shuffle button displays when hovering over the card header.
   - Renders a **2-row solid Playlist Header Card** (`bg-slate-100 border-2 border-[#052F4A] rounded-2xl p-1 shadow-md h-[68px]` matching Author Card height):
-    - **Row 1**: Playlist Title + Shuffle action button.
+    - **Row 1**: Playlist Title.
     - **Row 2**: Content type indicators (`🎬 Videos`, `🔮 Orbs`, `🖼️ Banners`) on left + Colored folder distribution pill badges (`[🔴 4] [🔵 2]`) on right.
   - **Main Video Thumbnail**: 16:9 aspect ratio thumbnail positioned directly underneath the 2-row Playlist Header Card (and above the 15 mini thumbnail grid).
-  - **Mini Thumbnail Grid**: 15 preview items ($3 \text{ columns} \times 5 \text{ rows}$, `grid-cols-3 gap-1`) floating directly underneath the Main Video Thumbnail.
+  - **Mini Thumbnail Grid**: 15 preview items ($3 \text{ columns} \times 5 \text{ rows}$, `grid-cols-3 gap-1`) floating directly underneath the Main Video Thumbnail, filtered strictly to display **video thumbnails** (Orbs and Banner presets excluded) ordered by most recently watched.
 - **Bottom Control Dock Card**:
   - A unified solid light card (`bg-slate-100 border-2 border-[#052F4A] rounded-2xl px-3 py-2 shadow-md mx-2.5 mb-2.5`).
   - **Left**: Volume control section with Mute button (`#052F4A`) and custom range slider.
@@ -70,5 +69,5 @@ When opening side menus or switching views from fullscreen mode, `layoutStore.fu
   - `layoutStore`: Reads/writes `fullscreenInfoBlanked`.
   - `configStore`: Reads fullscreen banner settings.
 - **API Queries**:
-  - `getPlaylistItemsPreview(currentPlaylistId, 30)`: Fetches up to 30 preview items for the embedded `PlaylistCard` so that excluding tracker/channel cards leaves all 15 mini thumbnail slots populated.
+  - `getPlaylistItemsPreview(currentPlaylistId, 30)`: Fetches up to 30 preview items for the embedded `PlaylistCard` ordered by most recently watched (`COALESCE(vp.last_updated, '1970-01-01') DESC, pi.position DESC`), filtered in frontend to strictly render standard video thumbnails.
   - `getFoldersForPlaylist(currentPlaylistId)`: Loads folder metadata.

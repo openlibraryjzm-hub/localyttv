@@ -706,7 +706,6 @@ const PlaylistCard = ({
                   </>
                 )}
 
-                <div className="flex items-center gap-0.5">
                   {previewThumbnail?.isShuffled && (
                     <button
                       onClick={handleResetShuffle}
@@ -716,14 +715,6 @@ const PlaylistCard = ({
                       <RotateCcw size={18} strokeWidth={2.5} />
                     </button>
                   )}
-                  <button
-                    onClick={handleShuffle}
-                    className="p-1 hover:bg-slate-200 rounded text-[#052F4A] hover:text-sky-600 transition-colors"
-                    title="Preview random thumbnail"
-                  >
-                    <Shuffle size={18} />
-                  </button>
-                </div>
 
                 {!showOnlyShuffleHover && (
                   <>

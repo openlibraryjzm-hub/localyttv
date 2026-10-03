@@ -958,6 +958,7 @@ const PlaylistsPage = ({ onVideoSelect }) => {
                           orbCount={orbCount}
                           bannerCount={bannerCount}
                           initialPreviewVideos={initialPreviewVideos}
+                          recentVideo={playlistRecentVideos[playlist.id]}
                           globalInfoToggle={globalInfoToggle}
                           folderMetadata={folderMetadata}
                           deletingPlaylistId={deletingPlaylistId}

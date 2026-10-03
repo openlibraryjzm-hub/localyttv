@@ -72,29 +72,12 @@ const MOCK_STORAGE_KEYS = {
   SETTINGS: 'mock_yttv_settings',
 };
 
-// Seed mock data if not present in localStorage
+// Seed mock data if not present in localStorage (defaults to clean slate)
 const seedMockData = () => {
-  if (!localStorage.getItem(MOCK_STORAGE_KEYS.PLAYLISTS)) {
-    const mockPlaylists = [
-      { id: 1, name: 'Lo-Fi Chill Beats', description: 'Coding and relaxation soundtrack.', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
-      { id: 2, name: 'Synthwave Retro Mix', description: 'Outrun aesthetics and analog synths.', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
-      { id: 3, name: 'My Local Video Library', description: 'Scanned local files and device directories.', created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
-    ];
-    localStorage.setItem(MOCK_STORAGE_KEYS.PLAYLISTS, JSON.stringify(mockPlaylists));
-
-    const mockItems = {
-      1: [
-        { id: 101, playlist_id: 1, video_url: 'https://www.youtube.com/watch?v=jfKfPfyJRdk', video_id: 'jfKfPfyJRdk', title: 'Lofi Hip Hop Radio - Beats to Relax/Study to', thumbnail_url: 'https://i.ytimg.com/vi/jfKfPfyJRdk/hqdefault.jpg', author: 'Lofi Girl', view_count: '1240500', position: 0, added_at: new Date().toISOString(), is_local: 0 },
-        { id: 102, playlist_id: 1, video_url: 'https://www.youtube.com/watch?v=tNkZs56sUdg', video_id: 'tNkZs56sUdg', title: 'Lofi Cafe - Ambient Lofi Beats to Work/Study', thumbnail_url: 'https://i.ytimg.com/vi/tNkZs56sUdg/hqdefault.jpg', author: 'Lofi Records', view_count: '439200', position: 1, added_at: new Date().toISOString(), is_local: 0 }
-      ],
-      2: [
-        { id: 201, playlist_id: 2, video_url: 'https://www.youtube.com/watch?v=4xDzrJKXOOY', video_id: '4xDzrJKXOOY', title: 'Synthwave Radio - Chill Synth / Retro Beats', thumbnail_url: 'https://i.ytimg.com/vi/4xDzrJKXOOY/hqdefault.jpg', author: 'Lofi Girl Synthwave', view_count: '883000', position: 0, added_at: new Date().toISOString(), is_local: 0 }
-      ],
-      3: [
-        { id: 301, playlist_id: 3, video_url: 'C:\\Videos\\SampleLocalVideo.mp4', video_id: 'local_C__Videos_SampleLocalVideo_mp4', title: 'Sample Local Video.mp4', thumbnail_url: '', author: 'Local File', view_count: '1', position: 0, added_at: new Date().toISOString(), is_local: 1, duration_seconds: 120 }
-      ]
-    };
-    localStorage.setItem(MOCK_STORAGE_KEYS.ITEMS, JSON.stringify(mockItems));
+  const existing = localStorage.getItem(MOCK_STORAGE_KEYS.PLAYLISTS);
+  if (!existing || existing.includes('Lo-Fi Chill Beats') || existing.includes('Synthwave Retro Mix')) {
+    localStorage.setItem(MOCK_STORAGE_KEYS.PLAYLISTS, JSON.stringify([]));
+    localStorage.setItem(MOCK_STORAGE_KEYS.ITEMS, JSON.stringify({}));
     localStorage.setItem(MOCK_STORAGE_KEYS.PROGRESS, JSON.stringify({}));
     localStorage.setItem(MOCK_STORAGE_KEYS.HISTORY, JSON.stringify([]));
     localStorage.setItem(MOCK_STORAGE_KEYS.STUCK_FOLDERS, JSON.stringify([]));
@@ -219,6 +202,29 @@ const getMockResponse = async (command, args) => {
           : supaItems;
       }
       return [];
+    }
+
+    case 'get_all_playlist_items_previews': {
+      const limit = args.limit || 15;
+      const result = {};
+
+      const itemsMap = JSON.parse(localStorage.getItem(MOCK_STORAGE_KEYS.ITEMS) || '{}');
+      for (const [playlistId, items] of Object.entries(itemsMap)) {
+        if (Array.isArray(items) && items.length > 0) {
+          result[playlistId] = items.slice(0, limit);
+        }
+      }
+
+      const supaPlaylists = (await getSupabasePlaylists()) || [];
+      for (const p of supaPlaylists) {
+        if (!result[p.id]) {
+          const supaItems = await getSupabasePlaylistItems(p.id);
+          if (supaItems && supaItems.length > 0) {
+            result[p.id] = supaItems.slice(0, limit);
+          }
+        }
+      }
+      return result;
     }
 
     case 'add_video_to_playlist': {

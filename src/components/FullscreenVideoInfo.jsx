@@ -267,13 +267,15 @@ const FullscreenVideoInfo = () => {
 
             const rawViewCount = video.view_count ?? video.viewCount ?? extra.viewCount ?? null;
             let viewCountText = null;
-            if (rawViewCount != null && rawViewCount !== '') {
+            if (rawViewCount != null && rawViewCount !== '' && rawViewCount !== '0' && rawViewCount !== 0) {
               const raw =
                 typeof rawViewCount === 'string'
                   ? parseInt(rawViewCount, 10)
                   : rawViewCount;
               const safeNumber = Number.isFinite(raw) ? raw : 0;
-              viewCountText = safeNumber.toLocaleString();
+              if (safeNumber > 0) {
+                viewCountText = safeNumber.toLocaleString();
+              }
             }
 
             const rawDesc = (video.description && String(video.description).trim()) ? video.description : extra.description;
@@ -282,8 +284,6 @@ const FullscreenVideoInfo = () => {
 
             const profileImg = video ? (video.profile_image_url || video.profileImageUrl || extra.profileImageUrl || extra.profile_image_url) : null;
             const isValidProfileImg = profileImg && profileImg !== 'null' && profileImg !== 'undefined' && profileImg.trim() !== '';
-            const authorFallbackName = video ? (video.author || 'Unknown') : 'Unknown';
-            const fallbackSrc = `https://ui-avatars.com/api/?name=${encodeURIComponent(authorFallbackName)}&background=333&color=fff&size=128&rounded=true&bold=true`;
 
             const isLocal = video.is_local || (!video.video_url?.includes('youtube.com') && !video.video_url?.includes('youtu.be'));
 
@@ -324,15 +324,20 @@ const FullscreenVideoInfo = () => {
                 <div className="mt-1 px-2.5">
                   <div className="border-2 border-[#052F4A] rounded-2xl p-3 bg-slate-100 shadow-md relative overflow-hidden flex items-center gap-3 shrink-0">
                     {/* Avatar */}
-                    <img
-                      src={isValidProfileImg ? profileImg : fallbackSrc}
-                      alt={author}
-                      className="w-12 h-12 rounded-full border-2 border-[#052F4A] object-cover bg-slate-900 shrink-0 shadow-sm"
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = fallbackSrc;
-                      }}
-                    />
+                    {isValidProfileImg ? (
+                      <img
+                        src={profileImg}
+                        alt={author}
+                        className="w-12 h-12 rounded-full border-2 border-[#052F4A] object-cover bg-slate-900 shrink-0 shadow-sm"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <div className="w-12 h-12 rounded-full border-2 border-[#052F4A] bg-[#052F4A] flex items-center justify-center text-white shrink-0 shadow-sm">
+                        <User size={22} strokeWidth={2.5} />
+                      </div>
+                    )}
 
                     {/* Info Column (Author + Subtitle View Count & Date) */}
                     <div className="flex flex-col min-w-0 flex-1 justify-center">
@@ -374,16 +379,25 @@ const FullscreenVideoInfo = () => {
                     <div className="flex flex-col gap-3 px-2">
                       {renderVideoThumbnail()}
                       {/* Integrated Description Box */}
-                      {description && (
-                        <div className="flex flex-col">
-                          <div
-                            className={`flex flex-col p-3 rounded-2xl border-2 border-slate-700/40 bg-black/30 backdrop-blur-md transition-all duration-300 overflow-hidden ${descriptionMode === 'full' ? 'h-auto max-h-[500px] overflow-y-auto scrollbar-hide' : 'h-[220px]'}`}
-                          >
-                            <div className="text-sm font-semibold leading-relaxed whitespace-pre-wrap" style={TEXT_SECONDARY}>
-                              {description}
-                            </div>
+                      <div className="flex flex-col">
+                        <div
+                          className={`flex flex-col p-3 rounded-2xl border-2 border-slate-700/40 bg-black/30 backdrop-blur-md transition-all duration-300 overflow-hidden ${descriptionMode === 'full' ? 'h-auto max-h-[500px] overflow-y-auto scrollbar-hide' : 'h-[220px]'}`}
+                        >
+                          <div className="text-sm font-semibold leading-relaxed whitespace-pre-wrap" style={TEXT_SECONDARY}>
+                            {description ? (
+                              description
+                            ) : (
+                              <div className="flex flex-col items-center justify-center py-6 text-center gap-1.5">
+                                <span className="text-xs font-black uppercase tracking-wider text-sky-400">No API Key Configured</span>
+                                <p className="text-xs text-slate-300/80 max-w-xs leading-relaxed">
+                                  Video descriptions, exact view counts, and channel avatars require a YouTube Data API Key. Add yours in settings for full metadata.
+                                </p>
+                              </div>
+                            )}
                           </div>
+                        </div>
 
+                        {description && (
                           <div className="flex justify-start mt-1.5 px-1">
                             <button
                               onClick={() => setDescriptionMode(descriptionMode === 'full' ? 'trunc' : 'full')}
@@ -393,8 +407,8 @@ const FullscreenVideoInfo = () => {
                               {descriptionMode === 'full' ? '[ Collapse Description ]' : '[ Expand Description ]'}
                             </button>
                           </div>
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </div>
                   ) : (
                     /* Playlist Tab */

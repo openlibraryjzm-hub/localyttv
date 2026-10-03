@@ -39,9 +39,9 @@ Platform environment detection is centralized in [`src/utils/platform.js`](file:
 * `isWebView2()`: Returns `true` inside C# WPF host window.
 * `isWeb()`: Returns `true` when running in standard web browsers (`localyt.tv`).
 
-### API Dispatch Pattern ([`src/api/platformBridge.js`](file:///c:/Users/jodyn/Desktop/yttv%20in%20october%202026/src/api/platformBridge.js))
-* **Tauri Desktop**: Invokes Rust IPC commands (`get_all_playlists`, `get_playlist_items`, etc.).
-* **Web Environment**: Queries **Supabase Cloud Database** via [`src/api/supabaseApi.js`](file:///c:/Users/jodyn/Desktop/yttv%20in%20october%202026/src/api/supabaseApi.js). If network or Supabase is unavailable, falls back gracefully to `LocalStorage` mock stores.
+### API Dispatch Pattern ([`src/api/platformBridge.js`](file:///c:/Users/GGPC/Desktop/yttv%20on%20desktop/src/api/platformBridge.js))
+* **Tauri Desktop**: Invokes Rust IPC commands (`get_all_playlists`, `get_playlist_items`, `get_all_playlist_items_previews`, etc.).
+* **Web Environment**: Queries **Supabase Cloud Database** via [`src/api/supabaseApi.js`](file:///c:/Users/GGPC/Desktop/yttv%20on%20desktop/src/api/supabaseApi.js) and aggregates batch preview queries (`get_all_playlist_items_previews`). If network or Supabase is unavailable, falls back gracefully to `LocalStorage` mock stores.
 
 ---
 

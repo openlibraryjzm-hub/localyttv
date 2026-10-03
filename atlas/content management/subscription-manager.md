@@ -49,4 +49,4 @@ The Subscription Manager supports two display modes controlled by the `isInline`
 - Component: `src/components/SubscriptionManagerModal.jsx`
 - Host Component (Inline): `src/components/PlaylistUploader.jsx`
 - API calls: `src/api/playlistApi.js` (`getPlaylistItems`, `addVideoToPlaylist`)
-- Extraction Helpers: `src/utils/youtubeUtils.js` (`fetchChannelUploads`, `fetchPlaylistVideos`)
+- Extraction Helpers: `src/utils/youtubeUtils.js` (`fetchChannelUploads`, `fetchPlaylistVideos`, `fetchOEmbedVideoMetadata`)

@@ -228,7 +228,11 @@ const PlaylistCard = ({
         null
       );
     }
-    return item.thumbnail_url?.replace(/name=[a-z]+/, "name=medium") || getThumbnailUrl(item.video_id, "medium");
+    const rawThumb = item.thumbnail_url || item.thumbnailUrl;
+    if (rawThumb && !rawThumb.endsWith('/default.jpg')) {
+      return rawThumb.replace(/name=[a-z]+/, "name=medium");
+    }
+    return getThumbnailUrl(item.video_id, "high") || getThumbnailUrl(item.video_id, "medium") || rawThumb;
   };
   const getPreviewItemTitle = (item) => item?.title ?? "";
   const getPreviewItemKey = (item, index) => item?.id ?? item?.video_id ?? `preview-${index}`;

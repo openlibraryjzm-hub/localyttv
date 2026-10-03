@@ -118,67 +118,111 @@ const getApiKey = () => {
 };
 
 /**
- * Fetches video metadata from YouTube Data API v3
- * This works for individual videos
+ * Helper to fetch video metadata via public oEmbed endpoint (no API key required)
  */
-export const fetchVideoMetadata = async (videoId) => {
+export const fetchOEmbedVideoMetadata = async (videoId) => {
+  if (!videoId) return null;
   try {
-    const videoUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics,contentDetails&id=${videoId}&key=${getApiKey()}`;
-
-    const response = await fetch(videoUrl);
-    if (!response.ok) {
-      throw new Error('Failed to fetch video metadata');
-    }
-
+    const oembedUrl = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`;
+    const response = await fetch(oembedUrl);
+    if (!response.ok) return null;
     const data = await response.json();
-    if (data.items && data.items.length > 0) {
-      const snippet = data.items[0].snippet;
-      const statistics = data.items[0].statistics;
-      const contentDetails = data.items[0].contentDetails;
+    if (!data || !data.title) return null;
 
-      let durationSeconds = null;
-      if (contentDetails?.duration) {
-        durationSeconds = parseYouTubeDuration(contentDetails.duration);
-      }
-
-      let profileImageUrl = null;
-      if (snippet?.channelId) {
-        try {
-          const chUrl = `https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${snippet.channelId}&key=${getApiKey()}`;
-          const chRes = await fetch(chUrl);
-          if (chRes.ok) {
-            const chData = await chRes.json();
-            if (chData.items?.length > 0) {
-              profileImageUrl =
-                chData.items[0].snippet.thumbnails?.high?.url ||
-                chData.items[0].snippet.thumbnails?.medium?.url ||
-                chData.items[0].snippet.thumbnails?.default?.url ||
-                null;
-            }
-          }
-        } catch (chErr) {}
-      }
-
-      return {
-        videoId,
-        title: snippet.title,
-        thumbnailUrl: snippet.thumbnails?.maxres?.url || snippet.thumbnails?.high?.url || snippet.thumbnails?.medium?.url || snippet.thumbnails?.default?.url,
-        author: snippet.channelTitle,
-        viewCount: statistics?.viewCount || '0',
-        publishedAt: snippet.publishedAt,
-        durationSeconds,
-        description: snippet.description || null,
-        tags: Array.isArray(snippet.tags) ? JSON.stringify(snippet.tags) : null,
-        profileImageUrl,
-        profile_image_url: profileImageUrl,
-        channelId: snippet.channelId || null
-      };
-    }
-    return null;
-  } catch (error) {
-    console.error('Failed to fetch video metadata:', error);
+    const thumb = getThumbnailUrl(videoId, 'high') || data.thumbnail_url;
+    return {
+      videoId,
+      title: data.title,
+      thumbnailUrl: thumb,
+      thumbnail_url: thumb,
+      author: data.author_name || 'YouTube Video',
+      viewCount: null,
+      view_count: null,
+      publishedAt: null,
+      durationSeconds: null,
+      description: null,
+      tags: null,
+      profileImageUrl: null,
+      profile_image_url: null,
+      noApiKey: true
+    };
+  } catch (err) {
+    console.error('Failed to fetch oEmbed metadata:', err);
     return null;
   }
+};
+
+/**
+ * Fetches video metadata from YouTube Data API v3, with automatic public oEmbed fallback
+ */
+export const fetchVideoMetadata = async (videoId) => {
+  if (!videoId) return null;
+  let key = null;
+  try {
+    key = useConfigStore.getState().youtubeApiKey;
+  } catch (e) {}
+
+  if (key) {
+    try {
+      const videoUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics,contentDetails&id=${videoId}&key=${key}`;
+      const response = await fetch(videoUrl);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.items && data.items.length > 0) {
+          const snippet = data.items[0].snippet;
+          const statistics = data.items[0].statistics;
+          const contentDetails = data.items[0].contentDetails;
+
+          let durationSeconds = null;
+          if (contentDetails?.duration) {
+            durationSeconds = parseYouTubeDuration(contentDetails.duration);
+          }
+
+          let profileImageUrl = null;
+          if (snippet?.channelId) {
+            try {
+              const chUrl = `https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${snippet.channelId}&key=${key}`;
+              const chRes = await fetch(chUrl);
+              if (chRes.ok) {
+                const chData = await chRes.json();
+                if (chData.items?.length > 0) {
+                  profileImageUrl =
+                    chData.items[0].snippet.thumbnails?.high?.url ||
+                    chData.items[0].snippet.thumbnails?.medium?.url ||
+                    chData.items[0].snippet.thumbnails?.default?.url ||
+                    null;
+                }
+              }
+            } catch (chErr) {}
+          }
+
+          const thumb = snippet.thumbnails?.maxres?.url || snippet.thumbnails?.high?.url || snippet.thumbnails?.medium?.url || snippet.thumbnails?.default?.url || getThumbnailUrl(videoId, 'high');
+
+          return {
+            videoId,
+            title: snippet.title,
+            thumbnailUrl: thumb,
+            thumbnail_url: thumb,
+            author: snippet.channelTitle,
+            viewCount: statistics?.viewCount || '0',
+            view_count: statistics?.viewCount || '0',
+            publishedAt: snippet.publishedAt,
+            durationSeconds,
+            description: snippet.description || null,
+            tags: Array.isArray(snippet.tags) ? JSON.stringify(snippet.tags) : null,
+            profileImageUrl,
+            profile_image_url: profileImageUrl,
+            channelId: snippet.channelId || null
+          };
+        }
+      }
+    } catch (error) {
+      console.warn('API Key fetch failed, trying oEmbed fallback...', error);
+    }
+  }
+
+  // Fallback to free public oEmbed (no API key needed)
+  return await fetchOEmbedVideoMetadata(videoId);
 };
 
 export const resolveHandleToChannelId = async (handle) => {

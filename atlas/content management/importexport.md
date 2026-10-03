@@ -83,6 +83,7 @@ Users see a unified "Config Playlist" modal when clicking the "Config Playlist" 
   - `extractPlaylistId(url)` - Extracts playlist ID from YouTube URL
   - `extractVideoId(url)` - Extracts video ID from YouTube URL
   - `parseYouTubeDuration(isoDuration)` - Converts ISO 8601 duration (e.g. PT1H2M3S) to seconds
+  - `fetchOEmbedVideoMetadata(videoId)` - Fetches video title and channel author via public YouTube oEmbed endpoint when no API key is set
 
 **Backend:**
 - `src-tauri/src/commands.rs`: Tauri command handlers for playlist/video operations

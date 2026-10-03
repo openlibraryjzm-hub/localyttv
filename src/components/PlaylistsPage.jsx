@@ -941,10 +941,29 @@ const PlaylistsPage = ({ onVideoSelect }) => {
                         if (firstItem.isOrb && firstItem.customOrbImage) activeThumbnailUrl = firstItem.customOrbImage;
                         else if (firstItem.isBannerPreset) activeThumbnailUrl = firstItem.splitscreenBanner?.image || firstItem.customBannerImage || firstItem.fullscreenBanner?.image || firstItem.image || null;
                       }
-                      const videoCount = playlistItemCounts[playlist.id] || 0;
-                      const orbCount = combined.filter((i) => i.isOrb).length;
-                      const bannerCount = combined.filter((i) => i.isBannerPreset).length;
-                      const itemCount = videoCount + orbCount + bannerCount;
+                      const rawPreviewVideos = playlistPreviewVideos[playlist.id] || playlistPreviewVideos[String(playlist.id)] || [];
+
+                      const channelTrackerCount = rawPreviewVideos.filter((v) => {
+                        if (!v) return false;
+                        const url = v.video_url || v.videoUrl || '';
+                        return v.isChannel || url.includes('youtube.com/channel/') || url.includes('youtube.com/@') || url.startsWith('@');
+                      }).length;
+
+                      const playlistTrackerCount = rawPreviewVideos.filter((v) => {
+                        if (!v) return false;
+                        const url = v.video_url || v.videoUrl || '';
+                        return v.isPlaylist || url.includes('youtube.com/playlist?list=') || url.startsWith('local:playlist:') || url.startsWith('local:folder:') || url.startsWith('local:device_folder:');
+                      }).length;
+
+                      const totalDbCount = playlistItemCounts[playlist.id] || 0;
+                      const pureVideoCount = Math.max(0, totalDbCount - channelTrackerCount - playlistTrackerCount);
+
+                      const assignedOrbsCount = (orbFavorites || []).filter(orb => Array.isArray(orb.playlistIds) && orb.playlistIds.map(String).includes(String(playlist.id))).length;
+                      const assignedBannersCount = (bannerPresets || []).filter(preset => Array.isArray(preset.playlistIds) && preset.playlistIds.map(String).includes(String(playlist.id))).length;
+
+                      const orbCount = assignedOrbsCount + rawPreviewVideos.filter(i => i?.isOrb).length;
+                      const bannerCount = assignedBannersCount + rawPreviewVideos.filter(i => i?.isBannerPreset).length;
+                      const itemCount = pureVideoCount + orbCount + bannerCount + playlistTrackerCount + channelTrackerCount;
                       const folders = playlistFolders[playlist.id] || [];
                       const initialPreviewVideos = combined;
                       return (
@@ -954,9 +973,11 @@ const PlaylistsPage = ({ onVideoSelect }) => {
                           folders={folders}
                           activeThumbnailUrl={activeThumbnailUrl}
                           itemCount={itemCount}
-                          videoCount={videoCount}
+                          videoCount={pureVideoCount}
                           orbCount={orbCount}
                           bannerCount={bannerCount}
+                          playlistTrackerCount={playlistTrackerCount}
+                          channelTrackerCount={channelTrackerCount}
                           initialPreviewVideos={initialPreviewVideos}
                           recentVideo={playlistRecentVideos[playlist.id]}
                           globalInfoToggle={globalInfoToggle}

@@ -64,7 +64,8 @@ Platform environment detection is centralized in [`src/utils/platform.js`](file:
 
 ### Data Isolation Strategy
 * **Public Shared Cloud**: Playlists, video metadata, Orb configurations, and banner images live in Supabase PostgreSQL & Storage Buckets with Row-Level Security (RLS) public read access.
-* **Visitor Local Sandbox**: Individual watch history, likes, pins, folder assignments, and progress percentage are stored in the visitor's browser `LocalStorage` / `IndexedDB` to ensure privacy and prevent global state pollution.
+* **Visitor Local Sandbox**: Individual watch history, likes, pins, folder assignments, progress percentage, and user-imported playlists (via JSON or links) are stored in the visitor's browser `LocalStorage` / `IndexedDB` to ensure privacy and prevent global state pollution.
+* **Metadata Schema Alignment**: Local storage playlists conform to the standard `PlaylistMetadata` schema (`{ playlist_id, count, first_video, recent_video }`), ensuring local JSON imports seamless render item counts, thumbnails, and metadata across all pages.
 
 ---
 

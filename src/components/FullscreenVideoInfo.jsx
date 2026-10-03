@@ -456,52 +456,6 @@ const FullscreenVideoInfo = () => {
                                 inCarousel={false}
                                 contentAboveGrid={renderVideoThumbnail()}
                                 showOnlyShuffleHover={true}
-                                headerExtension={
-                                  <>
-                                    {/* Left: Content Type Badges (Videos, Orbs, Banners) */}
-                                    <div className="flex items-center gap-1.5 flex-wrap text-[11px] font-black uppercase tracking-wider">
-                                      <span className="inline-flex items-center gap-1 bg-slate-200/80 px-2 py-0.5 rounded-lg border border-[#052F4A]/30" title={`${playlistMetadata?.count || 0} Videos`}>
-                                        <Play size={11} className="fill-current text-[#052F4A]" />
-                                        <span>{playlistMetadata?.count || 0} Videos</span>
-                                      </span>
-
-                                      {assignedOrbs.length > 0 && (
-                                        <span className="inline-flex items-center gap-1 bg-amber-100/90 text-amber-900 px-2 py-0.5 rounded-lg border border-amber-500/40" title={`${assignedOrbs.length} Orbs`}>
-                                          <span className="text-[11px]">🔮</span>
-                                          <span>{assignedOrbs.length} Orbs</span>
-                                        </span>
-                                      )}
-
-                                      {assignedBanners.length > 0 && (
-                                        <span className="inline-flex items-center gap-1 bg-violet-100/90 text-violet-900 px-2 py-0.5 rounded-lg border border-violet-500/40" title={`${assignedBanners.length} Banners`}>
-                                          <span className="text-[11px]">🖼️</span>
-                                          <span>{assignedBanners.length} Banners</span>
-                                        </span>
-                                      )}
-                                    </div>
-
-                                    {/* Right: Colored Folder Distribution Badges */}
-                                    {folderCounts && Object.keys(folderCounts).length > 0 && (
-                                      <div className="flex items-center gap-1 flex-wrap justify-end">
-                                        {Object.entries(folderCounts).map(([colorId, count]) => {
-                                          if (!count || count <= 0) return null;
-                                          const colorObj = FOLDER_COLORS.find(c => c.id === colorId) || { hex: '#ef4444', name: colorId };
-                                          return (
-                                            <span
-                                              key={colorId}
-                                              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-black border border-black/20 shadow-sm text-white shrink-0"
-                                              style={{ backgroundColor: colorObj.hex }}
-                                              title={`${count} video(s) in ${colorObj.name} folder`}
-                                            >
-                                              <span className="w-1.5 h-1.5 rounded-full bg-white opacity-90" />
-                                              <span>{count}</span>
-                                            </span>
-                                          );
-                                        })}
-                                      </div>
-                                    )}
-                                  </>
-                                }
                               />
                             );
                           })()}

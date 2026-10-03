@@ -800,12 +800,6 @@ const PlaylistCard = ({
               </div>
             </div>
 
-            {/* Row 2: Playlist Stats & Folder Distribution (Header Extension) */}
-            {headerExtension && (
-              <div className="border-t-2 border-[#052F4A]/20 pt-1.5 pb-0.5 px-2 flex items-center justify-between gap-2 text-[#052F4A] w-full">
-                {headerExtension}
-              </div>
-            )}
           </div>
         )}
 

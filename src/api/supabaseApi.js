@@ -25,12 +25,10 @@ export const getSupabasePlaylistMetadata = async () => {
   return playlists.map(p => {
     const pItems = (items || []).filter(item => item.playlist_id === p.id);
     return {
-      id: p.id,
-      name: p.name,
-      description: p.description,
-      video_count: pItems.length,
-      thumbnail_url: pItems[0]?.thumbnail_url || p.custom_thumbnail_url || null,
-      recent_title: pItems[0]?.title || null
+      playlist_id: p.id,
+      count: pItems.length,
+      first_video: pItems[0] || null,
+      recent_video: pItems[pItems.length - 1] || pItems[0] || null
     };
   });
 };

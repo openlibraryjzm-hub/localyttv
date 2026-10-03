@@ -77,7 +77,7 @@ const AudioVisualizer = ({
   const [isCapturing, setIsCapturing] = useState(false);
   const sampleRateRef = useRef(48000); // Default, will be updated from audio data
   const isCapturingRef = useRef(false); // Track capture state for cleanup
-  const { visualizerGradient, visualizerSensitivity = 1.0, visualizerMode = 'bar', visualizerColor = '#ffffff' } = useConfigStore();
+  const { visualizerGradient, visualizerSensitivity = 1.0, visualizerMode = 'light2', visualizerColor = '#ffffff' } = useConfigStore();
   const activeColor = visualizerColor || colors;
 
   // Combine default gain with user sensitivity

@@ -108,8 +108,6 @@ const BADGE_TEXT_STYLE = {
 
 export default function PlayerControllerPlaylistMenu(props) {
   const {
-    visualizerMode = 'bar',
-    setVisualizerMode,
     quickAssignSlots,
     visualizerColor = '#ffffff',
     setVisualizerColor,
@@ -300,49 +298,9 @@ export default function PlayerControllerPlaylistMenu(props) {
                       {isVisualizerEnabled ? 'Hide Audio Visualizer' : 'Show Audio Visualizer'}
                     </button>
 
-                    {/* Visualizer Mode Switcher */}
+                    {/* Visualizer Color Picker */}
                     {isVisualizerEnabled && (
-                      <>
-                        <div className="px-2 py-1.5 border-t border-sky-200 mt-1">
-                          <div className="text-[10px] font-bold text-sky-700 uppercase tracking-wider mb-1 px-1">Style</div>
-                          <div className="flex bg-sky-200/50 p-0.5 rounded-lg border border-sky-300 gap-0.5">
-                            <button
-                              type="button"
-                              onClick={(e) => { e.stopPropagation(); setVisualizerMode('bar'); }}
-                              onTouchStart={(e) => { e.stopPropagation(); setVisualizerMode('bar'); }}
-                              className={`flex-1 py-1 text-[10px] font-bold rounded-md transition-all ${visualizerMode === 'bar' ? 'bg-sky-500 text-white shadow-sm' : 'text-sky-800 hover:bg-sky-200/50'}`}
-                            >
-                              Bar
-                            </button>
-                            <button
-                              type="button"
-                              onClick={(e) => { e.stopPropagation(); setVisualizerMode('light'); }}
-                              onTouchStart={(e) => { e.stopPropagation(); setVisualizerMode('light'); }}
-                              className={`flex-1 py-1 text-[10px] font-bold rounded-md transition-all ${visualizerMode === 'light' ? 'bg-sky-500 text-white shadow-sm' : 'text-sky-800 hover:bg-sky-200/50'}`}
-                            >
-                              Light 1
-                            </button>
-                            <button
-                              type="button"
-                              onClick={(e) => { e.stopPropagation(); setVisualizerMode('light2'); }}
-                              onTouchStart={(e) => { e.stopPropagation(); setVisualizerMode('light2'); }}
-                              className={`flex-1 py-1 text-[10px] font-bold rounded-md transition-all ${visualizerMode === 'light2' ? 'bg-sky-500 text-white shadow-sm' : 'text-sky-800 hover:bg-sky-200/50'}`}
-                            >
-                              Light 2
-                            </button>
-                            <button
-                              type="button"
-                              onClick={(e) => { e.stopPropagation(); setVisualizerMode('bubble'); }}
-                              onTouchStart={(e) => { e.stopPropagation(); setVisualizerMode('bubble'); }}
-                              className={`flex-1 py-1 text-[10px] font-bold rounded-md transition-all ${visualizerMode === 'bubble' ? 'bg-sky-500 text-white shadow-sm' : 'text-sky-800 hover:bg-sky-200/50'}`}
-                            >
-                              Bubble
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* Visualizer Color Picker */}
-                        <div className="px-2 py-1.5 border-t border-sky-200">
+                      <div className="px-2 py-1.5 border-t border-sky-200 mt-1">
                           <div className="text-[10px] font-bold text-sky-700 uppercase tracking-wider mb-1.5 px-1 flex justify-between items-center">
                             <span>Color</span>
                             <span className="text-[9px] font-medium text-sky-600 bg-sky-200/50 px-1.5 py-0.5 rounded">
@@ -428,7 +386,6 @@ export default function PlayerControllerPlaylistMenu(props) {
                             </div>
                           </div>
                         </div>
-                      </>
                     )}
                     <input type="file" id="banner-upload" className="hidden" accept="image/*" onChange={handleBannerUpload} />
                   </div>}

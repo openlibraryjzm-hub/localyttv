@@ -120,7 +120,7 @@ Users see a unified "Config Playlist" modal when clicking the "Config Playlist" 
    - Checks format → If `data.version && data.playlist && data.videos` → New format
    - Creates playlist → `createPlaylist(name, description)` → Uses user input or JSON data
    - Loops through videos → For each video in `data.videos`:
-     - Adds video → `addVideoToPlaylist(dbPlaylistId, videoUrl, videoId, title, thumbnailUrl)` → Returns `itemId`
+     - Adds video → `addVideoToPlaylist(dbPlaylistId, videoUrl, videoId, title, thumbnailUrl, author, viewCount, publishedAt, isLocal, profileImageUrl)` → Returns `itemId` (preserves upload date and channel avatar)
      - Restores folder assignments → If `video.folder_assignments` array exists:
        - Loops through folder colors → `assignVideoToFolder(dbPlaylistId, itemId, folderColor)`
        - Tracks folder assignment count

@@ -112,21 +112,19 @@ const getMockResponse = async (command, args) => {
 
     case 'get_all_playlist_metadata': {
       const supaMeta = (await getSupabasePlaylistMetadata()) || [];
-      const supaIds = new Set(supaMeta.map(p => String(p.id)));
+      const supaIds = new Set(supaMeta.map(p => String(p.playlist_id || p.id)));
       const playlists = getStored(MOCK_STORAGE_KEYS.PLAYLISTS) || [];
       const itemsMap = JSON.parse(localStorage.getItem(MOCK_STORAGE_KEYS.ITEMS) || '{}');
       
       const localMeta = playlists
         .filter(p => !supaIds.has(String(p.id)))
         .map(p => {
-          const items = itemsMap[p.id] || [];
+          const items = itemsMap[p.id] || itemsMap[String(p.id)] || [];
           return {
-            id: p.id,
-            name: p.name,
-            description: p.description,
-            video_count: items.length,
-            thumbnail_url: items[0]?.thumbnail_url || null,
-            recent_title: items[0]?.title || null
+            playlist_id: p.id,
+            count: items.length,
+            first_video: items[0] || null,
+            recent_video: items[items.length - 1] || items[0] || null
           };
         });
 
@@ -189,7 +187,7 @@ const getMockResponse = async (command, args) => {
     case 'get_playlist_items':
     case 'get_playlist_items_preview': {
       const itemsMap = JSON.parse(localStorage.getItem(MOCK_STORAGE_KEYS.ITEMS) || '{}');
-      const localItems = itemsMap[args.playlistId];
+      const localItems = itemsMap[args.playlistId] || itemsMap[String(args.playlistId)];
       if (localItems && localItems.length > 0) {
         return command === 'get_playlist_items_preview'
           ? localItems.slice(0, args.limit || 4)
@@ -229,7 +227,8 @@ const getMockResponse = async (command, args) => {
 
     case 'add_video_to_playlist': {
       const itemsMap = JSON.parse(localStorage.getItem(MOCK_STORAGE_KEYS.ITEMS) || '{}');
-      const items = itemsMap[args.playlistId] || [];
+      const key = String(args.playlistId);
+      const items = itemsMap[key] || [];
       const newId = Math.floor(Math.random() * 1000000);
       const newItem = {
         id: newId,
@@ -240,14 +239,19 @@ const getMockResponse = async (command, args) => {
         thumbnail_url: args.thumbnailUrl || '',
         author: args.author || 'Unknown Author',
         view_count: args.viewCount || '0',
+        published_at: args.publishedAt || null,
+        profile_image_url: args.profileImageUrl || null,
+        duration_seconds: args.durationSeconds || null,
+        description: args.description || null,
+        tags: args.tags || null,
+        like_count: args.likeCount || null,
+        comment_count: args.commentCount || null,
         position: items.length,
         added_at: new Date().toISOString(),
-        is_local: args.isLocal ? 1 : 0,
-        duration_seconds: args.durationSeconds,
-        description: args.description,
+        is_local: args.isLocal ? 1 : 0
       };
       items.push(newItem);
-      itemsMap[args.playlistId] = items;
+      itemsMap[key] = items;
       localStorage.setItem(MOCK_STORAGE_KEYS.ITEMS, JSON.stringify(itemsMap));
       return newId;
     }

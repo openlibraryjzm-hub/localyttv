@@ -53,16 +53,16 @@ The system uses a "push" architecture where the Rust backend performs the mathem
 ## 3. Usage & Configuration
 
 ### 3.1 Customization Controls
-*   **Style Switcher**: Located in the More Options menu (`PlayerControllerPlaylistMenu.jsx`), featuring an inline 4-segment UI to toggle instantly between visual rendering modes.
-*   **Color Picker**: Located in the More Options menu under the Style switcher. Offers a preset palette of curated colors (White, Sky Blue, Rose Pink, Emerald Green, Purple, Amber), a custom color input, and a continuous rainbow sliding gradient for fine hue adjustments. Custom selections update the visualizer in real-time.
+*   **Rendering Mode**: Standardized on **Light 2** (Static Starburst & Pulsing Tips) as the primary audio visualizer mode.
+*   **Color Picker**: Located in the More Options menu (`PlayerControllerPlaylistMenu.jsx`). Offers a preset palette of curated colors (White, Sky Blue, Rose Pink, Emerald Green, Purple, Amber), a custom color input, and a continuous rainbow sliding gradient for fine hue adjustments. Custom selections update the visualizer in real-time.
 *   **Sensitivity**: Multiplier for responsiveness (`visualizerSensitivity` in `configStore`).
 *   **Smoothing**: Controls temporal decay/jitter resistance.
 
 ### 3.2 Rendering Modes
-1.  **Bar (Standard Live Spokes)**: Traditional spiky outward spokes extending linearly from the perimeter. Demands perfect transient sync.
-2.  **Light 1 (Floating Fireflies)**: Replaces straight spokes with hovering, atmospheric nodes. Scales visual radius and opacity dynamically, masking timing delays through smooth persistence.
-3.  **Light 2 (Static Starburst & Pulsing Tips)**: Renders a constant, unmoving geometric cage/spoke framework with highly reactive, localized circular nodes pulsing directly over each spoke tip.
-4.  **Bubble (Liquid Ribbon)**: Horizontally connects the end-coordinates of all frequency bins into a single, closed continuous path. Simulates natural surface tension and fluid drag to make system-baked delays look intentional and heavy.
+1.  **Light 2 (Static Starburst & Pulsing Tips)** (*Active Default*): Renders a constant, unmoving geometric cage/spoke framework with highly reactive, localized circular nodes pulsing directly over each spoke tip.
+2.  **Bar (Standard Live Spokes)**: Traditional spiky outward spokes extending linearly from the perimeter.
+3.  **Light 1 (Floating Fireflies)**: Replaces straight spokes with hovering, atmospheric nodes.
+4.  **Bubble (Liquid Ribbon)**: Horizontally connects the end-coordinates of all frequency bins into a single continuous path.
 
 ---
 

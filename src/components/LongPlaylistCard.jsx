@@ -19,6 +19,9 @@ import {
   Trash2,
   Plus,
   Upload,
+  Sparkles,
+  ListMusic,
+  User,
 } from "lucide-react";
 import CardMenu from "./NewCardMenu";
 import ImageHoverPreview from "./ImageHoverPreview";
@@ -158,6 +161,8 @@ const LongPlaylistCard = ({
   videoCount = itemCount,
   orbCount = 0,
   bannerCount = 0,
+  playlistTrackerCount = 0,
+  channelTrackerCount = 0,
   initialPreviewVideos = [],
   recentVideo = null,
   globalInfoToggle,
@@ -688,20 +693,40 @@ const filterTrackerAndChannelItems = (items) => {
             {/* Info Bar (Metrics) */}
             <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white/50 border border-[#052F4A]/10 shadow-sm backdrop-blur-sm">
                 <div className="flex items-center gap-2.5">
-                    <div className="flex items-center gap-1 text-[#052F4A]/70">
-                        <Play size={12} className="text-sky-600" fill="currentColor" />
-                        <span className="text-xs font-bold">{videoCount}</span>
-                    </div>
+                    {videoCount > 0 && (
+                        <div className="flex items-center gap-1 text-[#052F4A]/80" title={`${videoCount} Videos`}>
+                            <Play size={12} className="text-sky-600" fill="currentColor" />
+                            <span className="text-xs font-bold">{videoCount}</span>
+                        </div>
+                    )}
                     {orbCount > 0 && (
-                        <div className="flex items-center gap-1 text-[#052F4A]/70">
-                            <div className="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
+                        <div className="flex items-center gap-1 text-[#052F4A]/80" title={`${orbCount} Orbs`}>
+                            <Sparkles size={12} className="text-amber-500" />
                             <span className="text-xs font-bold">{orbCount}</span>
                         </div>
                     )}
                     {bannerCount > 0 && (
-                        <div className="flex items-center gap-1 text-[#052F4A]/70">
+                        <div className="flex items-center gap-1 text-[#052F4A]/80" title={`${bannerCount} Banners`}>
                             <Image size={12} className="text-indigo-500" />
                             <span className="text-xs font-bold">{bannerCount}</span>
+                        </div>
+                    )}
+                    {playlistTrackerCount > 0 && (
+                        <div className="flex items-center gap-1 text-[#052F4A]/80" title={`${playlistTrackerCount} Tracked Playlists`}>
+                            <ListMusic size={12} className="text-emerald-600" />
+                            <span className="text-xs font-bold">{playlistTrackerCount}</span>
+                        </div>
+                    )}
+                    {channelTrackerCount > 0 && (
+                        <div className="flex items-center gap-1 text-[#052F4A]/80" title={`${channelTrackerCount} Tracked Channels`}>
+                            <User size={12} className="text-purple-600" />
+                            <span className="text-xs font-bold">{channelTrackerCount}</span>
+                        </div>
+                    )}
+                    {videoCount === 0 && orbCount === 0 && bannerCount === 0 && playlistTrackerCount === 0 && channelTrackerCount === 0 && (
+                        <div className="flex items-center gap-1 text-[#052F4A]/50" title="0 Items">
+                            <Play size={12} className="text-slate-400" />
+                            <span className="text-xs font-bold">0</span>
                         </div>
                     )}
                 </div>

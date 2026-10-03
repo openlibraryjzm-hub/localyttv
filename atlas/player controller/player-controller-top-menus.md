@@ -37,7 +37,7 @@ Displays the current playlist's title, centered with contextual badges below it:
 ### Action & Navigation Cluster
 A horizontally evenly-spaced set of tool buttons positioned across the bottom of the menu.
 
-1. **Three Dot Menu (More Options)** (Left Half): Toggles advanced configurations (Preview Menus, Change Banner, Audio Visualizer toggle, and dedicated Multi-Style Switcher for selecting rendering modes). Visually nudged outwards (24px left) toward the container edge to improve peripheral balance.
+1. **Three Dot Menu (More Options)** (Left Half): Toggles advanced configurations (Preview Menus, Change Banner, Audio Visualizer toggle, and Visualizer Color Picker). Visually nudged outwards (24px left) toward the container edge to improve peripheral balance.
 2. **History** (Left Half): Clock icon. Left-click to view History page (Placeholder). Left-clicking the flanking left/right arrows navigates Older/Newer in playback history. Visually nudged outwards (5px left) toward the container edge to improve peripheral balance.
 3. **Add (Plus)** (Absolute Center): Perfect dead-center anchor of the bar. Functions as a dropdown menu ("Add to quick videos", "Add to current playlist", and 4 customizable **Quick Assign Slots** mapped persistently to user-specified target playlists). Each option features a companion Play button extension on its right side that seamlessly switches playback immediately upon addition.
 4. **Group Carousel Dot** (Right Half): Circle button filled with the active group carousel's folder color (or Sky Blue in ALL mode). Left-clicking the circle toggles between ALL mode and group carousel context.

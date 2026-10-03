@@ -1021,7 +1021,7 @@ export const useConfigStore = create(
             }),
 
             // Visualizer Mode ('bar' | 'light' | 'light2' | 'bubble')
-            visualizerMode: 'bar',
+            visualizerMode: 'light2',
             setVisualizerMode: (val) => set({ visualizerMode: val }),
 
             // Unified Banner State (Calculated)

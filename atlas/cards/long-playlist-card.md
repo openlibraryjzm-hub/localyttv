@@ -17,8 +17,12 @@ The card uses a responsive flex container (`md:flex-row`) that prioritizes a sta
 ### 2. Header Bar: Identity & Management Hub
 The solid top header bar acts as the control center for the playlist:
 
-- **Metadata Bar (Metrics):** A glassmorphic indicator consolidating:
-  - **Item Counts:** Persistent indicators for Video, Orb, and Banner counts assigned to the playlist.
+- **Metadata Bar (Metrics):** A glassmorphic indicator displaying sleek SVG icons for non-zero item categories:
+  - **Videos:** `<Play>` (Sky Blue) indicator for standard video files/links.
+  - **Orbs:** `<Sparkles>` (Amber) indicator for assigned visualizer Orb themes.
+  - **Banners:** `<Image>` (Indigo) indicator for assigned banner presets.
+  - **Tracked Playlists:** `<ListMusic>` (Emerald) indicator for linked playlist trackers.
+  - **Tracked Channels:** `<User>` (Purple) indicator for linked channel trackers.
 - **Centered Title:** Bold typography displaying the playlist name with line truncation and hover color transitions.
 - **Action Bar:** Dedicated row for management tasks:
   - **Grid Preview Button:** Toggles full grid preview mode (`Grid3x3`).

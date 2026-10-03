@@ -19,7 +19,6 @@ Playlist cards and Colored Folder cards share the exact same UI card schema and 
 - **Content Area**:
   - **Solid Header Card**: Enclosed in a solid light card container (`bg-slate-100 border-2 border-[#052F4A] rounded-2xl p-1 shadow-md`).
   - **Row 1 (Playlist Title & Actions)**: Positioned inside the top row with a dark navy title (`#052F4A`) and hover action triggers (Grid3x3, Flash Add `+`, Card Menu).
-  - **Row 2 (Header Extension - Playlist Stats & Folder Badges)**: Optional second row rendering item count badges (Videos `🎬`, Orbs `🔮`, Banners `🖼️`) on the left and colored folder distribution pill badges (`[🔴 4] [🔵 2]`) on the right.
 
 - **Hover Actions (Title Bar)**:
   - Preview, Flash Add, and Card Menu buttons horizontally aligned within Row 1 when hovered.

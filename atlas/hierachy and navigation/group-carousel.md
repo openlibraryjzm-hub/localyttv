@@ -16,7 +16,7 @@ The Playlists page has three view modes:
 |---------|-------------|
 | **ALL** | Shows all playlists in a 2-column grid. No carousels. |
 | **UNSORTED** | Shows only playlists that are not in any group carousel. No carousels. |
-| **GROUPS** | Shows only group carousels: one horizontal carousel per group, with a “New carousel” button at the bottom. No main grid. |
+| **GROUPS** | Shows group carousels bound to colored folder groups. No main grid. |
 
 - **ALL** and **UNSORTED** use the same card size and grid layout (`grid-cols-1 md:grid-cols-2 gap-10`).
 - **GROUPS** shows each group in a **bounded carousel box** (see below). Each carousel has its **own display mode** (Large / Small / Bar), set via mode buttons on that carousel's top bar; modes can be mixed. TopNavigation provides a one-shot **"apply to all"** (see 1.2). **Small and Large** carousels use a **white box** (`bg-white`), light gray border (`border-slate-200`), and **light top bar** (`bg-slate-50`, dark text); **Bar** mode keeps the dark box and bar.
@@ -40,10 +40,10 @@ When viewing carousels in the GROUPS view, clicking the folder icon on any playl
 
 **PlaylistBar** (sticky toolbar in the **page content**, not the header): Rendered at the top of the Playlists page body. It includes VideoSortFilters, Add/Refresh/Bulk tag buttons, the **folder prism**, and Back/Close. The prism has segments for **All**, **Unsorted** (if any playlists are in no group), and **each folder color that has a group carousel**. Clicking a color segment sets the selected folder; when a color is selected, PlaylistsPage shows the playlists assigned to that group in a standard vertical-scrolling grid using high-density `LongPlaylistCard`s. See **`playlist-bar.md`** for props (`groupColorIds`, `selectedFolder`, `onFolderSelect`) and populated-only vs all-segments prism modes.
 
-### 1.3 Creating and managing carousels
+### 1.4 Creating and managing carousels
 
 - **Colored folder model:** There are **16 folder colors** (see `src/utils/folderColors.js`: red, orange, amber, yellow, lime, green, emerald, teal, cyan, sky, blue, indigo, violet, purple, fuchsia, pink). Each **group** has a `folderColorId`; at most **one group per color**. The prism in PlaylistBar shows only colors that have a group (in populated-only mode).
-- **New carousel (GROUPS view):** “New carousel” button below the last carousel uses `getNextAvailableColorId()` to pick the first unused color, then creates a group with `addGroup(color.name, nextColorId)`. If all 16 colors are used, an alert is shown and no group is created. Empty carousels still appear as a bounded box with a placeholder (“No playlists in this carousel”).
+- **Carousel Creation:** Carousels are created dynamically via the **PlaylistGroupColumn** assignment overlay or the colored folder prism (`addGroup(color.name, folderColorId)`). If all 16 colors are used, no additional groups can be assigned to that page. Empty carousels still appear as a bounded box with a placeholder (“No playlists in this carousel”).
 - **Per-carousel mode:** Each carousel's **top bar** has three mode buttons (Large / Small / Bar). The active mode is highlighted; clicking sets that carousel's mode only (`playlistGroupStore.groupCarouselModes[groupId]`). New groups default to Large.
 - **Rename:** In the carousel **top bar**, a pencil icon opens a rename prompt. Only available when the carousel is rendered with `groupId` and `onRename` (i.e. on GROUPS).
 - **Delete:** A trash icon in the top bar opens a confirmation: “Delete carousel “[name]”? Playlists will be unassigned from this carousel but not removed from the app.” Confirming removes the group and unassigns all playlists from it; playlists themselves are not deleted.

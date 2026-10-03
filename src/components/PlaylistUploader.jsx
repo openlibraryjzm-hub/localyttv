@@ -416,7 +416,7 @@ const PlaylistUploader = ({ onUploadComplete, onCancel, initialPlaylistId, prism
   const fetchPlaylistVideos = async (playlistUrl) => {
     const API_KEY = useConfigStore.getState().youtubeApiKey;
     if (!API_KEY) {
-      throw new Error('YouTube API Key is missing. Click the Info button in the top menu to set one.');
+      throw new Error('Importing YouTube playlists and channels requires a personal YouTube API Key. Click the Info (ⓘ) button in the top menu to enter your free YouTube API Key to unlock playlist/channel importing.');
     }
 
     // Check if it's a single video
@@ -787,6 +787,7 @@ const PlaylistUploader = ({ onUploadComplete, onCancel, initialPlaylistId, prism
 
       // Flatten into list of videos with folder assignments
       let allVideosToInsert = [];
+      const taskErrors = [];
 
       for (let i = 0; i < tasks.length; i++) {
         const { url, folderColor } = tasks[i];
@@ -997,11 +998,18 @@ const PlaylistUploader = ({ onUploadComplete, onCancel, initialPlaylistId, prism
 
         } catch (e) {
           console.error(`Failed to fetch ${url}`, e);
-          // We'll continue but maybe log error to UI? Simplified for now.
+          taskErrors.push(e.message || String(e));
         }
       }
 
       if (allVideosToInsert.length === 0) {
+        if (taskErrors.length > 0) {
+          const keyErr = taskErrors.find(msg => msg.includes('API Key') || msg.includes('API key'));
+          if (keyErr) {
+            throw new Error(keyErr);
+          }
+          throw new Error(taskErrors[0]);
+        }
         throw new Error('Could not fetch any videos from provided links.');
       }
 

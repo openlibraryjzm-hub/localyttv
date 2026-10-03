@@ -281,6 +281,10 @@ const SubscriptionManagerModal = ({ isOpen, onClose, playlistId, isInline = fals
         if (!window.confirm(`Fetch latest ${limit === Infinity ? 'ALL' : limit} videos for ALL channels and refresh ALL playlists?`)) return;
 
         setLoading(true);
+        setError(null);
+        setSuccessMsg(null);
+        const refreshErrors = [];
+
         try {
             // Refresh Channels
             for (const item of channels) {
@@ -318,6 +322,7 @@ const SubscriptionManagerModal = ({ isOpen, onClose, playlistId, isInline = fals
                     }
                 } catch (err) {
                     console.error(`Error refreshing channel ${item.title}:`, err);
+                    refreshErrors.push(err.message || String(err));
                 } finally {
                     setFetchingState(prev => ({ ...prev, [item.id]: false }));
                 }
@@ -347,6 +352,7 @@ const SubscriptionManagerModal = ({ isOpen, onClose, playlistId, isInline = fals
                     }
                 } catch (err) {
                     console.error(`Error refreshing playlist ${item.title}:`, err);
+                    refreshErrors.push(err.message || String(err));
                 } finally {
                     setFetchingState(prev => ({ ...prev, [item.id]: false }));
                 }
@@ -415,11 +421,18 @@ const SubscriptionManagerModal = ({ isOpen, onClose, playlistId, isInline = fals
                     }
                 } catch (err) {
                     console.error(`Error refreshing folder ${item.title}:`, err);
+                    refreshErrors.push(err.message || String(err));
                 } finally {
                     setFetchingState(prev => ({ ...prev, [item.id]: false }));
                 }
             }
-            displayMsg('Successfully refreshed all channels, playlists, and folders!');
+
+            if (refreshErrors.length > 0) {
+                const keyErr = refreshErrors.find(e => e.includes('API Key') || e.includes('API key'));
+                displayMsg(keyErr || refreshErrors[0], 'error');
+            } else {
+                displayMsg('Successfully refreshed all channels, playlists, and folders!');
+            }
         } catch (err) {
             console.error('Refresh all error:', err);
             displayMsg(err.message || 'Error refreshing all', 'error');

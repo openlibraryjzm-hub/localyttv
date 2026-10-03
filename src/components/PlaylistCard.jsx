@@ -70,9 +70,7 @@ const MiniPreviewItem = ({
   return (
     <div
       key={slotKey}
-      className={`aspect-video relative rounded-md overflow-hidden bg-black/50 border-2 border-[#052F4A] hover:ring-2 hover:ring-sky-500 transition-all cursor-pointer group/mini shadow-md ${
-        isCover ? "ring-2 ring-sky-400 border-sky-400" : ""
-      }`}
+      className="aspect-video relative rounded-md overflow-hidden bg-black/50 border-2 border-[#052F4A] hover:ring-2 hover:ring-sky-500 transition-all cursor-pointer group/mini shadow-md"
       {...longPress}
       onContextMenu={(e) => handleMiniVideoRightClick(e, item, index)}
     >

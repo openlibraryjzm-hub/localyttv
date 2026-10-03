@@ -112,7 +112,7 @@ export const fetchPlaylistMetadata = async (playlistId) => {
 const getApiKey = () => {
   const key = useConfigStore.getState().youtubeApiKey;
   if (!key) {
-    throw new Error('YouTube API Key is missing. Click the Info button in the top menu to set one.');
+    throw new Error('Importing YouTube playlists and channels requires a personal YouTube API Key. Click the Info (ⓘ) button in the top menu to enter your free YouTube API Key to unlock playlist/channel importing.');
   }
   return key;
 };
@@ -442,9 +442,11 @@ export const enrichVideosWithDetails = async (videos) => {
 export const fetchChannelUploads = async (channelId, limit = 50) => {
   if (!channelId || !channelId.startsWith('UC')) return [];
 
+  const apiKey = getApiKey();
+
   let profileImageUrl = null;
   try {
-    const channelUrl = `https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${channelId}&key=${getApiKey()}`;
+    const channelUrl = `https://www.googleapis.com/youtube/v3/channels?part=snippet&id=${channelId}&key=${apiKey}`;
     const channelRes = await fetch(channelUrl);
     if (channelRes.ok) {
       const channelData = await channelRes.json();
@@ -452,7 +454,9 @@ export const fetchChannelUploads = async (channelId, limit = 50) => {
         profileImageUrl = channelData.items[0].snippet.thumbnails?.high?.url || channelData.items[0].snippet.thumbnails?.medium?.url || channelData.items[0].snippet.thumbnails?.default?.url || null;
       }
     }
-  } catch (err) {}
+  } catch (err) {
+    if (err.message?.includes('API Key') || err.message?.includes('API key')) throw err;
+  }
 
   const uploadPlaylistId = 'UU' + channelId.substring(2);
   let allVideos = [];
@@ -464,7 +468,7 @@ export const fetchChannelUploads = async (channelId, limit = 50) => {
       if (remaining <= 0) break;
       const fetchSize = Math.min(50, remaining);
 
-      const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadPlaylistId}&maxResults=${fetchSize}&key=${getApiKey()}${nextPageToken ? `&pageToken=${nextPageToken}` : ''}`;
+      const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadPlaylistId}&maxResults=${fetchSize}&key=${apiKey}${nextPageToken ? `&pageToken=${nextPageToken}` : ''}`;
 
       const response = await fetch(url);
       if (!response.ok) break;
@@ -503,12 +507,14 @@ export const fetchChannelUploads = async (channelId, limit = 50) => {
     return await enrichVideosWithDetails(allVideos);
   } catch (error) {
     console.error('Error fetching channel uploads:', error);
-    return [];
+    throw error;
   }
 };
 
 export const fetchPlaylistVideos = async (playlistId, limit = 50) => {
   if (!playlistId) return [];
+
+  const apiKey = getApiKey();
 
   let allVideos = [];
   let nextPageToken = null;
@@ -519,7 +525,7 @@ export const fetchPlaylistVideos = async (playlistId, limit = 50) => {
       if (remaining <= 0) break;
       const fetchSize = Math.min(50, remaining);
 
-      const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${playlistId}&maxResults=${fetchSize}&key=${getApiKey()}${nextPageToken ? `&pageToken=${nextPageToken}` : ''}`;
+      const url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${playlistId}&maxResults=${fetchSize}&key=${apiKey}${nextPageToken ? `&pageToken=${nextPageToken}` : ''}`;
 
       const response = await fetch(url);
       if (!response.ok) break;
@@ -558,7 +564,7 @@ export const fetchPlaylistVideos = async (playlistId, limit = 50) => {
     return await enrichVideosWithDetails(allVideos);
   } catch (error) {
     console.error('Error fetching playlist videos:', error);
-    return [];
+    throw error;
   }
 };
 

@@ -13,6 +13,7 @@ The Subscription Manager allows users to automatically fetch and sync videos fro
    - Channels: Users have micro-managing power. Instead of mass-syncing, you can fetch the latest `[1]`, `[5]`, `[10]`, `[25]`, `[50]`, `[100]`, or `[ALL]` (capped) videos for each channel specifically.
    - **Avatar & Metadata Enrichment**: During the fetch/sync process (as well as quick-adds from header menus), the system retrieves high-resolution video thumbnails, full descriptions, view counts, published dates, duration seconds, and channel profile pictures (`profile_image_url`) for use across the application.
    - Playlists: A "Refresh Latest" button retrieves up to the 100 most recent videos added to that list with complete metadata enrichment.
+   - **API Key Requirement**: Fetching or syncing external YouTube channels and playlists requires a personal YouTube Data API Key (`youtubeApiKey`). If no key is set, sync attempts gracefully surface a clear red error banner asking the user to configure their free YouTube API Key via the top menu Info (ⓘ) modal. Local device folder syncing requires no API key.
 
 3. **Intelligent Duplication Prevention & Auto-Refresh:**
    - The syncing process compares the `video_id` of returned items against the current playlist's database pool, discarding duplicates before importing.

@@ -47,11 +47,11 @@ The Fullscreen Video Info panel is a dedicated component that appears in the rig
     - **Row 2**: Content type indicators (`🎬 Videos`, `🔮 Orbs`, `🖼️ Banners`) on left + Colored folder distribution pill badges (`[🔴 4] [🔵 2]`) on right.
   - **Main Video Thumbnail**: 16:9 aspect ratio thumbnail positioned directly underneath the 2-row Playlist Header Card (and above the 15 mini thumbnail grid).
   - **Mini Thumbnail Grid**: 15 preview items ($3 \text{ columns} \times 5 \text{ rows}$, `grid-cols-3 gap-1`) floating directly underneath the Main Video Thumbnail, filtered strictly to display **video thumbnails** (Orbs and Banner presets excluded) ordered by most recently watched. Previews feature a clean hover transition (`opacity-80 group-hover/mini:opacity-100`) without play button overlays or browser title tooltips. Clicking any mini thumbnail immediately launches playback for that video via `onVideoSelect`.
-- **Bottom Control Dock Card**:
-  - A unified solid light card (`bg-slate-100 border-2 border-[#052F4A] rounded-2xl px-3 py-2 shadow-md mx-2.5 mb-2.5`).
-  - **Left**: Volume control section with Mute button (`#052F4A`) and custom range slider.
-  - **Center**: Interactive Info vs Playlist mode toggle pill button (`border-2 border-[#052F4A]`).
-  - **Right**: Screen Protector Shield toggle capsule with a dark navy border.
+- **Bottom Control Dock**:
+  - A frameless floating control dock (`flex items-center justify-between gap-3 px-2.5 pb-2.5`). The shared card background backdrop has been removed so controls float directly over the atmospheric banner background.
+  - **Left (Volume Controller)**: Frameless volume control section featuring a white mute icon with a 4-direction black outline drop shadow (`filter: drop-shadow(...)`), a dynamic range track with a solid bright white fill to the left of the marker (`linear-gradient(to right, #ffffff 0%, #ffffff ${volume}%, #475569 ${volume}%, #475569 100%)`) against a dimmer slate-grey unfilled track (`#475569`), a 2px solid black track border, and a circular white thumb handle with a thick 2.5px solid black outline border (`border: 2.5px solid #000000`).
+  - **Center**: Standalone interactive Info vs Playlist mode toggle pill button (`border-2 border-[#052F4A] shadow-md`).
+  - **Right**: Standalone Screen Protector Shield toggle capsule with a dark navy border (`border-2 border-[#052F4A] shadow-md`).
 
 ---
 

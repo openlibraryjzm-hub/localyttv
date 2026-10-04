@@ -484,72 +484,104 @@ const FullscreenVideoInfo = () => {
           })()}
         </div>
 
-        {/* Unified Bottom Control Dock Card */}
+        {/* Standalone Floating Bottom Control Dock */}
         {!fullscreenInfoBlanked && video && (
-          <div className="shrink-0 w-full mt-2 px-2.5 pb-2.5 relative transition-all duration-300 z-20">
-            <div className="border-2 border-[#052F4A] rounded-2xl px-3 py-2 bg-slate-100 shadow-md flex items-center justify-between gap-3">
-              {/* Left: Volume Control (Mute Icon + Slider Track) */}
-              <div className="flex items-center gap-2.5 flex-1 min-w-[110px]">
-                <button
-                  onClick={() => handleVolumeChange({ target: { value: volume === 0 ? 100 : 0 } })}
-                  className="transition-transform shrink-0 hover:scale-110 active:scale-95 text-[#052F4A] flex items-center justify-center"
-                  title={volume === 0 ? "Unmute" : "Mute"}
-                >
-                  {volume === 0 ? (
-                    <VolumeX size={22} strokeWidth={2.5} />
-                  ) : volume < 50 ? (
-                    <Volume1 size={22} strokeWidth={2.5} />
-                  ) : (
-                    <Volume2 size={22} strokeWidth={2.5} />
-                  )}
-                </button>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={volume}
-                  onChange={handleVolumeChange}
-                  className="w-full h-2 bg-slate-300 border border-[#052F4A]/40 rounded-lg appearance-none cursor-pointer accent-[#052F4A] transition-all outline-none opacity-90 hover:opacity-100 shadow-inner"
-                  title={`Volume: ${volume}%`}
-                />
-              </div>
-
-              {/* Center: Info vs Playlist Mode Toggle Button */}
+          <div className="shrink-0 w-full mt-2 px-2.5 pb-2.5 relative transition-all duration-300 z-20 flex items-center justify-between gap-3">
+            {/* Left: Volume Control (White Fill, Dimmer Grey Unfilled Track, Thick Black Outlined Circle Thumb) */}
+            <div className="flex items-center gap-2.5 flex-1 min-w-[110px]">
+              <style>{`
+                .volume-slider-input::-webkit-slider-thumb {
+                  -webkit-appearance: none;
+                  appearance: none;
+                  width: 16px;
+                  height: 16px;
+                  border-radius: 50%;
+                  background: #ffffff;
+                  border: 2.5px solid #000000;
+                  box-shadow: 0 2px 4px rgba(0,0,0,0.7);
+                  cursor: pointer;
+                  transition: transform 0.15s ease;
+                }
+                .volume-slider-input::-webkit-slider-thumb:hover {
+                  transform: scale(1.15);
+                }
+                .volume-slider-input::-moz-range-thumb {
+                  width: 16px;
+                  height: 16px;
+                  border-radius: 50%;
+                  background: #ffffff;
+                  border: 2.5px solid #000000;
+                  box-shadow: 0 2px 4px rgba(0,0,0,0.7);
+                  cursor: pointer;
+                  transition: transform 0.15s ease;
+                }
+                .volume-slider-input::-moz-range-thumb:hover {
+                  transform: scale(1.15);
+                }
+              `}</style>
               <button
-                onClick={() => setActiveTab(activeTab === 'info' ? 'playlist' : 'info')}
-                className={`border-2 border-[#052F4A] rounded-xl px-2.5 py-1.5 shadow-sm flex items-center gap-1.5 font-black text-xs uppercase tracking-wider transition-all active:scale-95 cursor-pointer shrink-0 ${activeTab === 'info' ? 'bg-[#052F4A] text-slate-100' : 'bg-slate-200/60 hover:bg-sky-100 text-[#052F4A]'}`}
-                title={activeTab === 'info' ? "Show Playlist" : "Show Video Info"}
+                onClick={() => handleVolumeChange({ target: { value: volume === 0 ? 100 : 0 } })}
+                className="transition-transform shrink-0 hover:scale-110 active:scale-95 flex items-center justify-center"
+                style={ICON_STYLE}
+                title={volume === 0 ? "Unmute" : "Mute"}
               >
-                {activeTab === 'info' ? (
-                  <>
-                    <ListMusic size={15} strokeWidth={2.5} />
-                    <span>Playlist</span>
-                  </>
+                {volume === 0 ? (
+                  <VolumeX size={22} strokeWidth={2.5} />
+                ) : volume < 50 ? (
+                  <Volume1 size={22} strokeWidth={2.5} />
                 ) : (
-                  <>
-                    <Info size={15} strokeWidth={2.5} />
-                    <span>Info</span>
-                  </>
+                  <Volume2 size={22} strokeWidth={2.5} />
                 )}
               </button>
-
-              {/* Right: Shield Toggle Capsule */}
-              <button
-                onClick={toggleScreenProtector}
-                className={`group shrink-0 h-8 rounded-full flex items-center transition-all duration-300 relative border-2 border-[#052F4A] px-1 shadow-sm ${screenProtectorActive ? 'bg-emerald-500 w-14' : 'bg-slate-200/80 hover:bg-slate-300/80 w-14'}`}
-                title={screenProtectorActive ? "Disable Shield (Enable Embed UI)" : "Enable Shield (Hide Embed UI)"}
-              >
-                <div
-                  className={`w-5 h-5 rounded-full bg-slate-100 shadow-md border border-[#052F4A] transition-transform duration-300 flex items-center justify-center ${screenProtectorActive ? 'translate-x-6' : 'translate-x-0'}`}
-                >
-                  {screenProtectorActive ? (
-                    <Shield size={12} fill="currentColor" className="text-emerald-700" />
-                  ) : (
-                    <ShieldOff size={12} className="text-[#052F4A]" />
-                  )}
-                </div>
-              </button>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={volume}
+                onChange={handleVolumeChange}
+                style={{
+                  background: `linear-gradient(to right, #ffffff 0%, #ffffff ${volume}%, #475569 ${volume}%, #475569 100%)`
+                }}
+                className="volume-slider-input w-full h-2.5 border-2 border-black rounded-full appearance-none cursor-pointer shadow-[0_2px_5px_rgba(0,0,0,0.8)] transition-all outline-none"
+                title={`Volume: ${volume}%`}
+              />
             </div>
+
+            {/* Center: Info vs Playlist Mode Toggle Button */}
+            <button
+              onClick={() => setActiveTab(activeTab === 'info' ? 'playlist' : 'info')}
+              className={`border-2 border-[#052F4A] rounded-xl px-2.5 py-1.5 shadow-md flex items-center gap-1.5 font-black text-xs uppercase tracking-wider transition-all active:scale-95 cursor-pointer shrink-0 ${activeTab === 'info' ? 'bg-[#052F4A] text-slate-100' : 'bg-slate-100/90 hover:bg-sky-100 text-[#052F4A]'}`}
+              title={activeTab === 'info' ? "Show Playlist" : "Show Video Info"}
+            >
+              {activeTab === 'info' ? (
+                <>
+                  <ListMusic size={15} strokeWidth={2.5} />
+                  <span>Playlist</span>
+                </>
+              ) : (
+                <>
+                  <Info size={15} strokeWidth={2.5} />
+                  <span>Info</span>
+                </>
+              )}
+            </button>
+
+            {/* Right: Shield Toggle Capsule */}
+            <button
+              onClick={toggleScreenProtector}
+              className={`group shrink-0 h-8 rounded-full flex items-center transition-all duration-300 relative border-2 border-[#052F4A] px-1 shadow-md ${screenProtectorActive ? 'bg-emerald-500 w-14' : 'bg-slate-100/90 hover:bg-slate-200 w-14'}`}
+              title={screenProtectorActive ? "Disable Shield (Enable Embed UI)" : "Enable Shield (Hide Embed UI)"}
+            >
+              <div
+                className={`w-5 h-5 rounded-full bg-slate-100 shadow-md border border-[#052F4A] transition-transform duration-300 flex items-center justify-center ${screenProtectorActive ? 'translate-x-6' : 'translate-x-0'}`}
+              >
+                {screenProtectorActive ? (
+                  <Shield size={12} fill="currentColor" className="text-emerald-700" />
+                ) : (
+                  <ShieldOff size={12} className="text-[#052F4A]" />
+                )}
+              </div>
+            </button>
           </div>
         )}
       </div>

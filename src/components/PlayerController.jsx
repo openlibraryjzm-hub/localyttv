@@ -1866,6 +1866,14 @@ export default function PlayerController({
 
   const clipPathId = `orbClipPath-${isOrbPreviewMode ? 'preview' : (orbNavOrbId || 'default')}`;
 
+  // Auto-sync orb and banner nav playlist IDs whenever currentPlaylistId changes
+  useEffect(() => {
+    if (currentPlaylistId) {
+      setOrbNavPlaylistId(currentPlaylistId);
+      setBannerNavPlaylistId(currentPlaylistId);
+    }
+  }, [currentPlaylistId, setOrbNavPlaylistId, setBannerNavPlaylistId]);
+
 
   // --- Derived Constants ---
   const theme = THEMES[currentThemeId] || THEMES.blue;

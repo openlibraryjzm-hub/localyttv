@@ -76,7 +76,7 @@ const FullscreenVideoInfo = () => {
   const [isLoadingPlaylistData, setIsLoadingPlaylistData] = useState(false);
   const [enrichedMetadata, setEnrichedMetadata] = useState({});
 
-  const { currentPlaylistItems, currentVideoIndex, currentPlaylistId, allPlaylists, setAllPlaylists } = usePlaylistStore();
+  const { currentPlaylistItems, currentVideoIndex, currentPlaylistId, allPlaylists, setAllPlaylists, setCurrentVideoIndex } = usePlaylistStore();
 
   const items = currentPlaylistItems || [];
   const hasValidIndex =
@@ -86,6 +86,20 @@ const FullscreenVideoInfo = () => {
     currentVideoIndex < items.length;
 
   const video = hasValidIndex ? items[currentVideoIndex] : null;
+
+  const handleVideoSelect = (videoUrl) => {
+    if (!videoUrl || !items || items.length === 0) return;
+    const targetVidId = extractVideoId(videoUrl);
+    const targetIndex = items.findIndex(v => {
+      if (v.video_url === videoUrl) return true;
+      if (targetVidId && (v.video_id === targetVidId || extractVideoId(v.video_url) === targetVidId)) return true;
+      return false;
+    });
+
+    if (targetIndex >= 0) {
+      setCurrentVideoIndex(targetIndex);
+    }
+  };
 
   useEffect(() => {
     if (!video) return;
@@ -456,6 +470,7 @@ const FullscreenVideoInfo = () => {
                                 inCarousel={false}
                                 contentAboveGrid={renderVideoThumbnail()}
                                 showOnlyShuffleHover={true}
+                                onVideoSelect={handleVideoSelect}
                               />
                             );
                           })()}

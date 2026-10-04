@@ -59,17 +59,22 @@ const MiniPreviewItem = ({
   setMiniImageErrors,
   getPreviewItemTitle
 }) => {
+  const handleClick = (e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    const targetUrl = item?.video_url || item?.videoUrl || (item?.video_id ? `https://www.youtube.com/watch?v=${item.video_id}` : null);
+    if (isVideo && targetUrl && onVideoSelect) onVideoSelect(targetUrl);
+  };
+
   const longPress = useLongPress(
     (e) => handleMiniVideoRightClick(e, item, index),
-    (e) => {
-      e.stopPropagation();
-      if (isVideo && item.video_url && onVideoSelect) onVideoSelect(item.video_url);
-    }
+    handleClick
   );
 
   return (
     <div
       key={slotKey}
+      data-card-action="true"
+      onClick={handleClick}
       className="aspect-video relative rounded-md overflow-hidden bg-black/50 border-2 border-[#052F4A] hover:ring-2 hover:ring-sky-500 transition-all cursor-pointer group/mini shadow-md"
       {...longPress}
       onContextMenu={(e) => handleMiniVideoRightClick(e, item, index)}
@@ -121,7 +126,7 @@ const PlaylistCard = ({
   contentAboveGrid = null,
   showOnlyShuffleHover = false,
 }) => {
-  const { currentPlaylistId, setPlaylistItems, setPreviewPlaylist } =
+  const { currentPlaylistId, setPlaylistItems, setPreviewPlaylist, setCurrentVideoIndex, currentPlaylistItems } =
     usePlaylistStore();
   const { viewMode, setViewMode, inspectMode, setFullscreenInfoBlanked } = useLayoutStore();
   const { setCurrentPage } = useNavigationStore();
@@ -130,6 +135,20 @@ const PlaylistCard = ({
   const groupIdsForPlaylist = getGroupIdsForPlaylist(playlist.id);
   const isInAnyCarousel = groupIdsForPlaylist.length > 0;
   const isHidden = (hiddenPlaylists || []).includes(playlist.id);
+
+  const handleMiniVideoSelect = (targetUrl) => {
+    if (onVideoSelect) {
+      onVideoSelect(targetUrl);
+      return;
+    }
+    if (currentPlaylistItems && currentPlaylistItems.length > 0) {
+      const targetVidId = extractVideoId(targetUrl);
+      const idx = currentPlaylistItems.findIndex(v => v.video_url === targetUrl || (targetVidId && (v.video_id === targetVidId || extractVideoId(v.video_url) === targetVidId)));
+      if (idx >= 0) {
+        setCurrentVideoIndex(idx);
+      }
+    }
+  };
 
   const getInspectTitle = (label) => (inspectMode ? label : undefined);
 
@@ -255,6 +274,7 @@ const PlaylistCard = ({
 
   const handleCardClick = async (e) => {
     if (e.target.closest('[data-card-menu="true"]')) return;
+    if (e.target.closest('[data-card-action="true"]')) return;
     if (typeof onEnterFromGroup === "function") {
       if (groupIdFromCarousel) onEnterFromGroup(groupIdFromCarousel);
       else onEnterFromGroup(null);
@@ -1122,7 +1142,7 @@ const PlaylistCard = ({
                   isVideo={isVideo}
                   isTweet={isTweet}
                   isCover={isCover}
-                  onVideoSelect={onVideoSelect}
+                  onVideoSelect={handleMiniVideoSelect}
                   handleMiniVideoRightClick={handleMiniVideoRightClick}
                   setMiniImageErrors={setMiniImageErrors}
                   getPreviewItemTitle={getPreviewItemTitle}

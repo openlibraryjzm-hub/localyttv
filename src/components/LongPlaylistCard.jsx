@@ -78,10 +78,10 @@ const MiniPreviewItem = ({
   return (
     <div
       key={slotKey}
-      className={`relative aspect-square overflow-hidden transition-all cursor-pointer group/mini shadow-sm border ${
+      className={`relative w-full overflow-hidden transition-all cursor-pointer group/mini shadow-sm border ${
         isOrb 
-          ? "rounded-full border-amber-500/30 bg-amber-900/20 hover:border-amber-400 hover:ring-4 hover:ring-amber-500/20" 
-          : "rounded-xl border-[#052F4A]/30 bg-slate-900/40 hover:border-sky-500/50 hover:ring-4 hover:ring-sky-500/20"
+          ? "aspect-square rounded-full border-amber-500/30 bg-amber-900/20 hover:border-amber-400 hover:ring-4 hover:ring-amber-500/20" 
+          : "aspect-[4/3] rounded-xl border-[#052F4A]/30 bg-slate-900/40 hover:border-sky-500/50 hover:ring-4 hover:ring-sky-500/20"
       }`}
       {...longPress}
       onContextMenu={(e) => handleMiniVideoRightClick(e, item, index)}
@@ -141,9 +141,9 @@ const MiniPreviewItem = ({
                 )}
             </div>
 
-            {/* Title Area: White space at bottom */}
-            <div className="flex-1 p-1.5 flex flex-col justify-center min-h-0">
-                <h4 className="text-[9px] leading-[1.1] font-bold text-[#052F4A] line-clamp-2 break-words">
+            {/* Title Area: Single line bold text-sm (14px) */}
+            <div className="flex-1 px-1.5 py-0.5 flex flex-col justify-center min-h-0 bg-white">
+                <h4 className="text-sm font-bold text-[#052F4A] truncate leading-tight" title={getPreviewItemTitle(item)}>
                     {getPreviewItemTitle(item)}
                 </h4>
             </div>
@@ -691,7 +691,7 @@ const filterTrackerAndChannelItems = (items) => {
         {/* Top Header: Info Metrics, Centered Title & Action Controls */}
         <div className="w-full flex flex-col md:flex-row items-center justify-between gap-3 px-4 py-2.5 relative z-10 bg-slate-100 border-2 border-[#052F4A] rounded-xl shadow-md">
             {/* Info Bar (Metrics) */}
-            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white/50 border border-[#052F4A]/10 shadow-sm backdrop-blur-sm">
+            <div className="flex items-center gap-1.5 px-1 py-1">
                 <div className="flex items-center gap-2.5">
                     {videoCount > 0 && (
                         <div className="flex items-center gap-1 text-[#052F4A]/80" title={`${videoCount} Videos`}>
@@ -743,10 +743,10 @@ const filterTrackerAndChannelItems = (items) => {
                 <button
                     data-card-action="true"
                     onClick={handlePreviewPlaylist}
-                    className="w-9 h-9 rounded-xl bg-white border border-[#052F4A]/10 flex items-center justify-center text-[#052F4A] hover:bg-sky-50 hover:text-sky-600 hover:border-sky-200 transition-all shadow-sm active:scale-95"
+                    className="w-9 h-9 rounded-xl text-[#052F4A] hover:bg-slate-200/70 hover:text-sky-600 transition-all flex items-center justify-center active:scale-95"
                     title="Preview Grid"
                 >
-                    <Grid3x3 size={16} />
+                    <Grid3x3 size={18} />
                 </button>
 
 
@@ -754,17 +754,18 @@ const filterTrackerAndChannelItems = (items) => {
                 {/* Flash Add Menu */}
                 <div data-card-action="true">
                     <CardMenu
+                        theme="light"
                         customButton={
                             <button
                                 type="button"
-                                className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500 to-sky-600 text-white flex items-center justify-center hover:from-sky-600 hover:to-sky-700 transition-all shadow-md hover:shadow-sky-500/25 active:scale-95 border border-sky-400/30"
+                                className="w-9 h-9 rounded-xl text-[#052F4A] hover:bg-slate-200/70 hover:text-sky-600 transition-all flex items-center justify-center active:scale-95"
                                 title="Add Options"
                             >
-                                <Plus size={18} strokeWidth={2.5} />
+                                <Plus size={20} strokeWidth={2.5} />
                             </button>
                         }
                         options={[
-                            { label: "Open in Playlist Uploader", action: "openUploader", icon: <Upload size={16} className="text-sky-400" /> },
+                            { label: "Open in Playlist Uploader", action: "openUploader", icon: <Upload size={16} className="text-sky-600" /> },
                             {
                                 render: (closeMenu) => (
                                     <div className="flex items-center w-full">
@@ -776,10 +777,10 @@ const filterTrackerAndChannelItems = (items) => {
                                                 handleQuickAdd(false);
                                                 closeMenu();
                                             }}
-                                            className="flex-1 text-left px-4 py-2.5 text-sm text-white hover:bg-slate-700 transition-colors flex items-center gap-3 rounded-l-md"
+                                            className="flex-1 text-left px-4 py-2.5 text-sm text-[#052F4A] hover:bg-slate-200/80 transition-colors flex items-center gap-3 rounded-l-md font-semibold"
                                             title="Add clipboard to playlist in background"
                                         >
-                                            <Plus size={16} className="text-emerald-400 flex-shrink-0" />
+                                            <Plus size={16} className="text-emerald-600 flex-shrink-0" />
                                             <span className="truncate">Quick Add</span>
                                         </button>
                                         <button
@@ -790,7 +791,7 @@ const filterTrackerAndChannelItems = (items) => {
                                                 handleQuickAdd(true);
                                                 closeMenu();
                                             }}
-                                            className="px-4 py-2.5 hover:bg-slate-700 transition-colors flex items-center justify-center border-l border-slate-700 text-emerald-400 hover:text-emerald-300 rounded-r-md"
+                                            className="px-4 py-2.5 hover:bg-slate-200/80 transition-colors flex items-center justify-center border-l border-slate-200 text-emerald-600 hover:text-emerald-700 rounded-r-md"
                                             title="Add and Play immediately"
                                         >
                                             <Play size={14} className="fill-current flex-shrink-0" />
@@ -801,14 +802,14 @@ const filterTrackerAndChannelItems = (items) => {
                             {
                                 label: "Assign to Quick Slot...",
                                 submenu: "quickAssign",
-                                icon: <Grid3x3 size={16} className="text-amber-400" />
+                                icon: <Grid3x3 size={16} className="text-amber-600" />
                             }
                         ]}
                         submenuOptions={{
                             quickAssign: [0, 1, 2, 3].map(i => ({
                                 label: `Slot ${i + 1}: ${quickAssignSlots?.[i]?.name || 'Empty'}`,
                                 action: `assignSlot${i}`,
-                                icon: <Plus size={14} className={quickAssignSlots?.[i]?.id === playlist.id ? "text-emerald-400" : "text-slate-400"} />
+                                icon: <Plus size={14} className={quickAssignSlots?.[i]?.id === playlist.id ? "text-emerald-600" : "text-slate-400"} />
                             }))
                         }}
                         onOptionClick={(opt) => {
@@ -849,18 +850,19 @@ const filterTrackerAndChannelItems = (items) => {
                 {/* Management Menu */}
                 <div data-card-action="true">
                     <CardMenu
+                        theme="light"
                         customButton={
-                            <button className="w-9 h-9 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-[#052F4A] transition-all flex items-center justify-center shadow-sm">
+                            <button className="w-9 h-9 rounded-xl text-[#052F4A] hover:bg-slate-200/70 hover:text-sky-600 transition-all flex items-center justify-center active:scale-95" title="More Options">
                                 <MoreVertical size={18} strokeWidth={2.5} />
                             </button>
                         }
                         options={[
-                            { label: "Open in Playlist Uploader", action: "openUploader", icon: <Upload size={16} className="text-sky-400" /> },
-                            { label: "Export Playlist", action: "export", icon: <ExternalLink size={16} /> },
-                            { label: "Assign to group", action: "openAssignToGroup", icon: <Grid3x3 size={16} className="text-sky-500" /> },
-                            ...(isInAnyCarousel ? [{ label: "Remove from carousel(s)", action: "removeFromCarousel", icon: <X size={16} className="text-red-500" />, danger: true }] : []),
-                            { label: isHidden ? "Unhide" : "Hide", action: isHidden ? "unhide" : "hide", icon: isHidden ? <Eye size={16} /> : <EyeOff size={16} /> },
-                            { label: "Delete", action: "delete", danger: true, icon: <X size={16} /> }
+                            { label: "Open in Playlist Uploader", action: "openUploader", icon: <Upload size={16} className="text-sky-600" /> },
+                            { label: "Export Playlist", action: "export", icon: <ExternalLink size={16} className="text-[#052F4A]" /> },
+                            { label: "Assign to group", action: "openAssignToGroup", icon: <Grid3x3 size={16} className="text-sky-600" /> },
+                            ...(isInAnyCarousel ? [{ label: "Remove from carousel(s)", action: "removeFromCarousel", icon: <X size={16} className="text-red-600" />, danger: true }] : []),
+                            { label: isHidden ? "Unhide" : "Hide", action: isHidden ? "unhide" : "hide", icon: isHidden ? <Eye size={16} className="text-[#052F4A]" /> : <EyeOff size={16} className="text-[#052F4A]" /> },
+                            { label: "Delete", action: "delete", danger: true, icon: <X size={16} className="text-red-600" /> }
                         ]}
                         onOptionClick={(opt) => {
                             if (opt.action === "openUploader") handleExportPlaylist?.(playlist.id, playlist.name);
@@ -976,10 +978,10 @@ const filterTrackerAndChannelItems = (items) => {
                             Array.from({ length: 4 }).map((_, idx) => (
                                 <div
                                     key={`skeleton-${idx}`}
-                                    className="relative aspect-square overflow-hidden rounded-xl border border-[#052F4A]/20 bg-slate-900/60 p-1.5 flex flex-col justify-between animate-pulse shadow-sm"
+                                    className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-[#052F4A]/20 bg-slate-900/60 p-1 flex flex-col justify-between animate-pulse shadow-sm"
                                 >
                                     <div className="w-full aspect-video rounded-lg bg-slate-800/80" />
-                                    <div className="flex-1 mt-1.5 flex flex-col justify-center gap-1">
+                                    <div className="flex-1 mt-1 flex flex-col justify-center gap-1">
                                         <div className="w-full h-2 rounded bg-slate-800/80" />
                                         <div className="w-2/3 h-2 rounded bg-slate-800/60" />
                                     </div>
@@ -990,7 +992,7 @@ const filterTrackerAndChannelItems = (items) => {
                             Array.from({ length: 4 }).map((_, idx) => (
                                 <div
                                     key={`empty-slot-${idx}`}
-                                    className="relative aspect-square overflow-hidden rounded-xl border border-dashed border-[#052F4A]/15 bg-slate-100/40 flex flex-col items-center justify-center text-slate-400 select-none"
+                                    className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-dashed border-[#052F4A]/15 bg-slate-100/40 flex flex-col items-center justify-center text-slate-400 select-none"
                                 >
                                     <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400/60">Empty</span>
                                 </div>
@@ -1011,7 +1013,7 @@ const filterTrackerAndChannelItems = (items) => {
                             );
 
                             return (
-                                <div key={slotKey} data-card-action="true" className="flex items-center justify-center">
+                                <div key={slotKey} data-card-action="true" className="w-full flex items-center justify-center">
                                     <MiniPreviewItem
                                         item={item}
                                         index={index}

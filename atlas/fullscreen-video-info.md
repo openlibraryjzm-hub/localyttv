@@ -46,7 +46,7 @@ The Fullscreen Video Info panel is a dedicated component that appears in the rig
     - **Row 1**: Playlist Title.
     - **Row 2**: Content type indicators (`🎬 Videos`, `🔮 Orbs`, `🖼️ Banners`) on left + Colored folder distribution pill badges (`[🔴 4] [🔵 2]`) on right.
   - **Main Video Thumbnail**: 16:9 aspect ratio thumbnail positioned directly underneath the 2-row Playlist Header Card (and above the 15 mini thumbnail grid).
-  - **Mini Thumbnail Grid**: 15 preview items ($3 \text{ columns} \times 5 \text{ rows}$, `grid-cols-3 gap-1`) floating directly underneath the Main Video Thumbnail, filtered strictly to display **video thumbnails** (Orbs and Banner presets excluded) ordered by most recently watched. Previews feature a clean hover transition (`opacity-80 group-hover/mini:opacity-100`) without play button overlays or browser title tooltips.
+  - **Mini Thumbnail Grid**: 15 preview items ($3 \text{ columns} \times 5 \text{ rows}$, `grid-cols-3 gap-1`) floating directly underneath the Main Video Thumbnail, filtered strictly to display **video thumbnails** (Orbs and Banner presets excluded) ordered by most recently watched. Previews feature a clean hover transition (`opacity-80 group-hover/mini:opacity-100`) without play button overlays or browser title tooltips. Clicking any mini thumbnail immediately launches playback for that video via `onVideoSelect`.
 - **Bottom Control Dock Card**:
   - A unified solid light card (`bg-slate-100 border-2 border-[#052F4A] rounded-2xl px-3 py-2 shadow-md mx-2.5 mb-2.5`).
   - **Left**: Volume control section with Mute button (`#052F4A`) and custom range slider.

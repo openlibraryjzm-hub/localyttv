@@ -30,6 +30,7 @@ The **Top Playlist Menu** and **Top Video Menu** form the left and right control
 
 Displays the current playlist's title, centered with contextual badges below it:
 - **Active Preset (Indigo) / Tab (Sky)**: Indicates currently overarching filter/preset.
+- **Title Tracking & State Auto-Sync**: The top playlist title automatically synchronizes (`useEffect` in `PlayerController`) whenever `currentPlaylistId` updates (such as jumping directly into a video or playlist from external cards, orb, banner, or search). This ensures `orbNavPlaylistId` and `bannerNavPlaylistId` stay aligned with active playback while still allowing temporary arrow cycling previews.
 
 ### Interactions
 - **Title Click**: Opens the playlists grid view.

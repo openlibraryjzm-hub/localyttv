@@ -2296,19 +2296,38 @@ export default function PlayerController({
     ? groupsOnPage.find(g => g.id === activeGroupId)
     : null;
 
-  // Cycle group badge: cycle through group carousels ON THIS PAGE
+  // Cycle group badge: cycle through group carousels ON THIS PAGE (including ALL state)
   const cycleGroupBadge = direction => {
-    if (groupsOnPage.length === 0) return;
+    if (groupsOnPage.length === 0) {
+      setActiveGroupId(null);
+      return;
+    }
     const items = groupsOnPage;
     const currentIdx = items.findIndex(g => g.id === activeGroupId);
-    let nextIdx;
-    if (currentIdx === -1) {
-      // Currently on "ALL", go to first or last group
-      nextIdx = direction === 'next' ? 0 : items.length - 1;
+
+    if (direction === 'next') {
+      if (currentIdx === -1) {
+        // From ALL -> First group
+        setActiveGroupId(items[0].id);
+      } else if (currentIdx === items.length - 1) {
+        // From Last group -> ALL
+        setActiveGroupId(null);
+      } else {
+        // From Group i -> Group i+1
+        setActiveGroupId(items[currentIdx + 1].id);
+      }
     } else {
-      nextIdx = direction === 'next' ? (currentIdx + 1) % items.length : (currentIdx - 1 + items.length) % items.length;
+      if (currentIdx === -1) {
+        // From ALL -> Last group
+        setActiveGroupId(items[items.length - 1].id);
+      } else if (currentIdx === 0) {
+        // From First group -> ALL
+        setActiveGroupId(null);
+      } else {
+        // From Group i -> Group i-1
+        setActiveGroupId(items[currentIdx - 1].id);
+      }
     }
-    setActiveGroupId(items[nextIdx].id);
   };
   const canCycleGroups = groupsOnPage.length >= 1;
   const sharedProps = {

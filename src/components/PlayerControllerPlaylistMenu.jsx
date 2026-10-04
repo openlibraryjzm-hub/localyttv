@@ -479,7 +479,7 @@ export default function PlayerControllerPlaylistMenu(props) {
                     const folderColor = singleGroupForBadge?.folderColorId
                       ? getFolderColorById(singleGroupForBadge.folderColorId)
                       : null;
-                    const dotHex = folderColor ? folderColor.hex : (singleGroupForBadge ? '#8b5cf6' : '#052F4A');
+                    const dotHex = folderColor ? folderColor.hex : (singleGroupForBadge ? '#8b5cf6' : '#ffffff');
                     const isAll = !singleGroupForBadge;
 
                     return (
@@ -488,28 +488,25 @@ export default function PlayerControllerPlaylistMenu(props) {
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          if (isAll) {
-                            setActiveGroupId(groupsOnPage && groupsOnPage[0] ? groupsOnPage[0].id : null);
-                          } else {
-                            setActiveGroupId(null);
-                          }
+                          cycleGroupBadge('next');
+                        }}
+                        onContextMenu={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          cycleGroupBadge('prev');
                         }}
                         onTouchStart={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          if (isAll) {
-                            setActiveGroupId(groupsOnPage && groupsOnPage[0] ? groupsOnPage[0].id : null);
-                          } else {
-                            setActiveGroupId(null);
-                          }
+                          cycleGroupBadge('next');
                         }}
-                        className="flex items-center justify-center group/tool hover:scale-110 active:scale-95 transition-transform"
-                        title={singleGroupForBadge ? `Carousel: ${singleGroupForBadge.name} (Click for ALL)` : 'Showing ALL Playlists (Click to switch to Carousels)'}
+                        className="flex items-center justify-center group/tool hover:scale-110 active:scale-95 transition-transform cursor-pointer"
+                        title={singleGroupForBadge ? `Carousel: ${singleGroupForBadge.name} (Left-click next, Right-click prev)` : 'Showing ALL Playlists (Left-click next, Right-click prev)'}
                       >
                         <span style={ICON_WHITE_OUTLINE} className="flex items-center justify-center">
                           <Circle 
                             size={Math.round(bottomIconSize * 0.5)} 
-                            fill={isAll ? '#38bdf8' : dotHex} 
+                            fill={isAll ? '#ffffff' : dotHex} 
                             color="#052F4A" 
                             strokeWidth={3} 
                           />

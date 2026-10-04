@@ -14,17 +14,19 @@ This document describes the **group carousel badge** on the Player Controller’
 ### 1.1 Group Carousel Button on the Top Playlist Menu Toolbar
 
 - **Location:** Slot 4 on the bottom toolbar of the Top Playlist Menu (positioned between Add button and Playlist Grid button).
-- **Group Carousel Button:** A dedicated colored circle button representing the **current group carousel** (filled with the folder color of the active group, or Sky Blue when showing **ALL**).
-- **Behavior & Toggling:** Clicking the circle toggles between **ALL** library view and the active group carousel context. Group carousel cycling is performed via `cycleGroupBadge('prev' | 'next')`.
+- **Group Carousel Dot Button:** A singular colored circle button representing the **current group carousel** (filled with the folder color of the active group, or **White `#ffffff`** when showing **ALL**).
+- **Left-Click / Right-Click Cycling:** 
+  - **Left-Click (`onClick`)**: Cycles forward (`next`) through populated group carousels on the active page, returning to **ALL (White)** after the last group.
+  - **Right-Click (`onContextMenu`)**: Cycles backward (`prev`) through populated group carousels on the active page, returning to **ALL (White)** before the first group.
+- **Populated-Only Ring:** Cycling skips unpopulated color slots entirely. The navigation ring connects `ALL (White) <-> Group 1 <-> Group 2 <-> ... <-> Group N <-> ALL (White)`.
 - **Title Alignment:** The legacy text badge with flanking chevrons above the toolbar has been retired, ensuring playlist and video titles align cleanly across the controller.
 
 ### 1.2 Playlist navigation restricted to the group
 
 - **Up/down controls**: The Top Playlist Menu has **previous/next playlist** controls. These move through the **navigation list** maintained by `playlistStore`.
-- **When a group is active**: If the **group badge** is showing a group (i.e. `activeGroupId` is set), the navigation list is **restricted to** playlists that belong to that group.
-- **"ALL" Toggle**: A persistent **"ALL"** badge appears when a group carousel is active (or when `activeGroupId` is null). Clicking this badge clears the `activeGroupId`, allowing the navigation list to span the entire library within the "Orb" theme context.
-- **When no group is active**: If `activeGroupId` is null (after clicking "ALL"), the navigation list spans the **entire library on the current Hub page** (for Page 1, Page 1 groups + unsorted; for Page 2+, Page 2 groups only).
-- **Result**: Sequential navigation stays within the context of the current page. The "ALL" shortcut provides instant escape from restricted group navigation.
+- **When a group is active**: If the **group dot** is showing a group (i.e. `activeGroupId` is set), the navigation list is **restricted to** playlists that belong to that group.
+- **"ALL" State (White Dot)**: When `activeGroupId` is null (White dot state), the navigation list spans the **entire library on the current Hub page** (for Page 1, Page 1 groups + unsorted; for Page 2+, Page 2 groups only).
+- **Result**: Sequential navigation stays within the context of the current page. The White ALL dot provides instant full-library navigation.
 
 ---
 

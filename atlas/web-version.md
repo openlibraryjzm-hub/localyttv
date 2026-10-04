@@ -74,11 +74,26 @@ Platform environment detection is centralized in [`src/utils/platform.js`](file:
 While desktop uses WASAPI system loopback capture via Rust SIMD `realfft`, the web version leverages two complementary browser strategies:
 
 1. **Tab / Screen Audio Capture (`getDisplayMedia`)**:
-   * Prompts the user once to share tab audio.
+   * Prompts the user to share tab audio.
    * Feeds audio into Web Audio API `AudioContext` $\rightarrow$ `AnalyserNode`.
-   * Computes 113 FFT frequency bins in JS at 60 FPS to drive [`AudioVisualizer.jsx`](file:///c:/Users/jodyn/Desktop/yttv%20in%20october%202026/src/components/AudioVisualizer.jsx).
+   * **Frequency Equalization Curve**: Uses `mapFrequencyToBars` in [`src/utils/audioProcessor.js`](file:///c:/Users/GGPC/Desktop/yttv%20on%20desktop/src/utils/audioProcessor.js) with `eqFactor = 0.65 + 1.85 * (i / barCount)^1.5` to balance low bass frequencies (North-East quadrant, bars 0–28) and treble.
+   * **Decibel Calibration**: Sets `minDecibels = -85` and `maxDecibels = -25` on the `AnalyserNode` with a `1.5x` web gain multiplier in [`AudioVisualizer.jsx`](file:///c:/Users/GGPC/Desktop/yttv%20on%20desktop/src/components/AudioVisualizer.jsx) for clean, un-capped dynamic responsiveness.
 2. **Procedural Organic Sine Fallback**:
    * If audio permissions are declined, the Orb renders an ambient pulse animation so the widget remains visually active.
+
+---
+
+## Web-Exclusive Download Prompt ([`src/components/WebDownloadPrompt.jsx`](file:///c:/Users/GGPC/Desktop/yttv%20on%20desktop/src/components/WebDownloadPrompt.jsx))
+
+On the Web target (`isWeb()`), window controls are hidden and replaced with a dismissable, top-right header banner card (`WebDownloadPrompt.jsx`):
+
+* **Placement & Boundary Control**: Constrained strictly inside a `168px` height container (`top-3 right-4`) within the 200px top app header banner, preventing overlap with the video player or side menus below.
+* **Aesthetic Alignment**: Styled in signature Dark Navy (`#052F4A`) and Light Slate (`bg-slate-100`) with rounded borders (`rounded-2xl shadow-2xl`), matching the adjacent `PlayerController` cards.
+* **Key Commentary Points**:
+  * **Visualizer Magic**: Highlights zero-latency WASAPI audio capture and 240Hz smoothness on desktop.
+  * **Full-Screen Immersion**: Highlights dedicated, distraction-free app window execution free from browser tab clutter.
+  * **Unlimited Storage**: Highlights local SQLite database capabilities free from browser local storage quotas or auto-clearing risks.
+* **Collapsible Narrow Capsule**: Clicking `✕` dismisses the expanded card and persists state to `sessionStorage`, collapsing the UI into a sleek top-right pill badge (`[ ⚡ Get Free Desktop App (30x Speed) ▾ ]`) that can be re-opened anytime.
 
 ---
 

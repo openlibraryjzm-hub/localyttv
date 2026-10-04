@@ -48,6 +48,12 @@ The system uses a "push" architecture where the Rust backend performs the mathem
 *   **Normalization**: A **0.2x scaling factor** is applied in `lib.rs` to prevent clipping on high-gain Android audio stacks.
 *   **Hardware Acceleration**: The canvas is forced onto a separate GPU layer using `translateZ(0)` and `will-change: transform`.
 
+### 2.4 Web Implementation (Decibel Calibration & Equalization Curve)
+*   **Audio Capture**: `navigator.mediaDevices.getDisplayMedia` feeds browser tab audio into an `AudioContext` $\rightarrow$ `AnalyserNode`.
+*   **Frequency Equalization Curve**: `mapFrequencyToBars` in `src/utils/audioProcessor.js` applies a frequency-dependent equalization curve (`eqFactor = 0.65 + 1.85 * (i / barCount)^1.5`). This dampens bass energy at bar 0 (North-East quadrant, bars 0–28) to prevent bass bloat from saturating bars into a solid active ring, while boosting high frequencies for crisp treble responsiveness.
+*   **Decibel Calibration**: Sets `minDecibels = -85` and `maxDecibels = -25` on the `AnalyserNode` with a calibrated `1.5x` web gain multiplier in `AudioVisualizer.jsx`. This maintains a responsive 0–255 dynamic range during standard volume playback.
+*   **Procedural Fallback**: If audio sharing permissions are declined or unavailable, an organic ambient sine wave simulation generates fluid pulse animations so the visualizer stays visually active.
+
 ---
 
 ## 3. Usage & Configuration

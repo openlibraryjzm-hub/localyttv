@@ -100,7 +100,7 @@ export function getFrequencyMapping(barCount, freqMin, freqMax, sampleRate, freq
 /**
  * Map frequency data to bar values (for 113 bars) - OPTIMIZED
  */
-export function mapFrequencyToBars(frequencyData, barCount, freqMin, freqMax, sampleRate) {
+export function mapFrequencyToBars(frequencyData, barCount, freqMin, freqMax, sampleRate, applyEqualization = true) {
   const frequencyBinCount = frequencyData.length;
   const mapping = getFrequencyMapping(barCount, freqMin, freqMax, sampleRate, frequencyBinCount);
   const barValues = new Uint8Array(barCount);
@@ -117,7 +117,18 @@ export function mapFrequencyToBars(frequencyData, barCount, freqMin, freqMax, sa
       count++;
     }
 
-    barValues[i] = count > 0 ? Math.round(sum / count) : 0;
+    let avg = count > 0 ? sum / count : 0;
+
+    if (applyEqualization) {
+      // Frequency equalization curve tuned for Web Audio API:
+      // Controls bass bloat at x=0 (eq_factor=0.65) while boosting higher frequency visibility at x=1 (eq_factor=2.5).
+      // Keeps bass punchy without locking bars 0-28 into a solid active wall.
+      const x = i / barCount;
+      const eqFactor = 0.65 + 1.85 * Math.pow(x, 1.5);
+      avg = avg * eqFactor;
+    }
+
+    barValues[i] = Math.min(255, Math.round(avg));
   }
 
   return barValues;

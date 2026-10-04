@@ -3,7 +3,9 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useLayoutStore } from './store/layoutStore';
 import { useConfigStore } from './store/configStore';
 import WindowControls from './components/WindowControls';
+import WebDownloadPrompt from './components/WebDownloadPrompt';
 import FullscreenVideoInfo from './components/FullscreenVideoInfo';
+import { isWeb } from './utils/platform';
 
 import './LayoutShell.css';
 
@@ -95,7 +97,7 @@ const LayoutShell = ({
         {renderHalfBanner(effectiveLeftBanner, 'left')}
         {renderHalfBanner(effectiveRightBanner, 'right')}
 
-        <WindowControls />
+        {isWeb() ? <WebDownloadPrompt /> : <WindowControls />}
 
         {!showDebugBounds && (
           <div className="layout-shell__top-controller-wrapper">

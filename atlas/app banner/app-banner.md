@@ -22,15 +22,16 @@ Users see a full-width header (200px height) at the very top of the application,
 - **Infinite Scroll Animation**: Each half supports a seamless horizontal scrolling animation (`repeat-x`).
 - **Flip / Mirror Support**: Images can be horizontally flipped to create symmetrical or mirrored aesthetics.
 - **Custom Upload Support**: Independent uploads for each half via the App Configuration page.
-- **Window Controls**: Custom window controls (Minimize, Maximize, Close) float in the top-right corner of the Right Half.
+- **Window Controls / Web Prompt**: Custom window controls (Minimize, Maximize, Close) float in the top-right corner on Desktop targets (`isTauri()` / `isWebView2()`). On Web target (`isWeb()`), a dismissable/collapsible `<WebDownloadPrompt />` card floats in the top-right corner, constrained within the 200px banner height.
 - **Draggable Region**: The banner area is a dedicated drag region (`data-tauri-drag-region`) for moving the application window.
 
 **2: File Manifest**
 
 **UI/Components:**
-- `src/LayoutShell.jsx`: The core rendering engine. It calculates `50vw` widths for each half and applies the store configurations.
+- `src/LayoutShell.jsx`: The core rendering engine. It calculates `50vw` widths for each half, applies store configurations, and conditionally renders `WindowControls` or `WebDownloadPrompt`.
 - `src/components/AppPage.jsx`: The "Two-Bar" editor for configuring both halves side-by-side.
-- `src/components/WindowControls.jsx`: Window controls positioned in the top-right corner.
+- `src/components/WindowControls.jsx`: Desktop window controls positioned in the top-right corner.
+- `src/components/WebDownloadPrompt.jsx`: Web-exclusive dismissable download prompt card and collapsible capsule pill.
 
 **State Management:**
 - `src/store/configStore.js`:

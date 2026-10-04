@@ -131,6 +131,8 @@ const AudioVisualizer = ({
         const analyser = audioCtx.createAnalyser();
         analyser.fftSize = fftSize;
         analyser.smoothingTimeConstant = smoothing;
+        analyser.minDecibels = -85;
+        analyser.maxDecibels = -25;
         analyserRef.current = analyser;
 
         source.connect(analyser);
@@ -141,10 +143,12 @@ const AudioVisualizer = ({
           if (!mounted) return;
           analyser.getByteFrequencyData(freqData);
           
-          const mapped = mapFrequencyToBars(freqData, barCount, freqMin, freqMax, audioCtx.sampleRate);
+          const mapped = mapFrequencyToBars(freqData, barCount, freqMin, freqMax, audioCtx.sampleRate, true);
           
           const adjusted = new Uint8Array(barCount);
-          const sensFactor = (sensitivity / 64) * effectiveGain;
+          // Calibrated Web Gain (1.5x boost) to keep the web visualizer lively and reactive without blowing out into a solid ring
+          const webGainBoost = 1.5;
+          const sensFactor = (sensitivity / 64) * visualizerSensitivity * webGainBoost;
           for (let i = 0; i < barCount; i++) {
             adjusted[i] = Math.min(255, Math.round(mapped[i] * sensFactor));
           }

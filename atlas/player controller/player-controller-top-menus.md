@@ -58,7 +58,7 @@ Displays video information (Title) and core playback controls.
 - **Star Button**: Folder assignment control. Left-click assigns/unassigns to quick folder. Right-click aligns the Play button's filter to the Star's current assigned color.
 - **Shuffle Button**: Left-click to shuffle from current folder/all videos. Right-click opens the 16-color picker modal to set the default shuffle pool.
 - **Like Button**: Left-click to toggle like. Right-click to navigate to Likes Page.
-- **Info Button**: Toggles popup Help Menu for controls.
+- **Key Button**: Toggles popup modal for configuring your YouTube Data API v3 Key.
 - **Priority Pin Button**: 
   - Short Click toggles Normal Pin (Blue).
   - Long Click (>600ms) toggles Priority Pin (Amber).

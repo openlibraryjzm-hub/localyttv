@@ -112,7 +112,7 @@ export const fetchPlaylistMetadata = async (playlistId) => {
 const getApiKey = () => {
   const key = useConfigStore.getState().youtubeApiKey;
   if (!key) {
-    throw new Error('Importing YouTube playlists and channels requires a personal YouTube API Key. Click the Info (ⓘ) button in the top menu to enter your free YouTube API Key to unlock playlist/channel importing.');
+    throw new Error('Importing YouTube playlists and channels requires a personal YouTube API Key. Click the Key (🔑) button in the top menu to enter your free YouTube API Key to unlock playlist/channel importing.');
   }
   return key;
 };

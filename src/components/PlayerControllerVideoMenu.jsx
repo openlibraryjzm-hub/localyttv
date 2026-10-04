@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Play, Home, List, Shuffle, Grid3X3, Star, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Check, CheckCircle2, X, Settings2, Pin, Share2, Info, BarChart2, Bookmark, MoreHorizontal, Heart, ListMusic, Zap, Radio, Flame, ChevronsLeft, ChevronsRight, Upload, Palette, History as HistoryIcon, Layout, Layers, Compass, Library, Eye, EyeOff, RotateCcw, ThumbsUp, Plus, Anchor as AnchorIcon, Type, MousePointer2, ArrowLeftRight, Circle, Settings, Move, LayoutGrid, Clock, HelpCircle } from 'lucide-react';
+import { Play, Home, List, Shuffle, Grid3X3, Star, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Check, CheckCircle2, X, Settings2, Pin, Share2, Info, Key, BarChart2, Bookmark, MoreHorizontal, Heart, ListMusic, Zap, Radio, Flame, ChevronsLeft, ChevronsRight, Upload, Palette, History as HistoryIcon, Layout, Layers, Compass, Library, Eye, EyeOff, RotateCcw, ThumbsUp, Plus, Anchor as AnchorIcon, Type, MousePointer2, ArrowLeftRight, Circle, Settings, Move, LayoutGrid, Clock, HelpCircle } from 'lucide-react';
 import { usePlaylistStore } from '../store/playlistStore';
 import { useNavigationStore } from '../store/navigationStore';
 import { usePinStore } from '../store/pinStore';
@@ -555,22 +555,22 @@ export default function PlayerControllerVideoMenu(props) {
               }}>
                 <button onClick={() => setIsTooltipOpen(!isTooltipOpen)} className="flex items-center justify-center group/tool relative" title={getInspectTitle('YouTube API Settings')}>
                   <span style={ICON_WHITE_OUTLINE}>
-                    <Info size={Math.round(bottomIconSize * 0.5)} color="#052F4A" strokeWidth={3} />
+                    <Key size={Math.round(bottomIconSize * 0.5)} color="#052F4A" strokeWidth={3} />
                   </span>
                 </button>
 
-                {isTooltipOpen && <div className="absolute top-full right-0 mt-3 w-80 bg-slate-900/95 backdrop-blur-xl border border-slate-700/50 rounded-2xl shadow-2xl overflow-hidden z-[10002] animate-in fade-in zoom-in-95 duration-200 p-4 text-xs text-slate-200 font-medium" style={{
+                {isTooltipOpen && <div className="absolute top-full right-0 mt-3 w-80 bg-slate-100 border-2 border-[#052F4A] rounded-2xl shadow-2xl overflow-hidden z-[10002] animate-in fade-in zoom-in-95 duration-200 p-4 text-xs text-[#052F4A] font-medium" style={{
                   zIndex: 10002
                 }}>
                   <div className="flex flex-col gap-3">
-                    <div className="flex items-center justify-between border-b border-slate-700/50 pb-2">
-                      <span className="font-bold text-slate-100 uppercase tracking-wider text-[10px]">YouTube API Key</span>
+                    <div className="flex items-center justify-between border-b border-[#052F4A]/20 pb-2">
+                      <span className="font-bold text-[#052F4A] uppercase tracking-wider text-[10px]">YouTube API Key</span>
                       {youtubeApiKey && (
-                        <span className="bg-emerald-500/10 text-emerald-400 text-[8px] font-bold px-1.5 py-0.5 rounded border border-emerald-500/20 uppercase">Configured</span>
+                        <span className="bg-emerald-500/15 text-emerald-800 text-[8px] font-bold px-1.5 py-0.5 rounded border border-emerald-600/30 uppercase">Configured</span>
                       )}
                     </div>
                     
-                    <p className="text-[10px] text-slate-400 leading-normal">
+                    <p className="text-[10px] text-[#052F4A]/80 leading-normal">
                       Input your personal YouTube Data API v3 key to enable search, playlist import, and subscriptions.
                     </p>
 
@@ -579,13 +579,13 @@ export default function PlayerControllerVideoMenu(props) {
                         type={showKey ? 'text' : 'password'}
                         value={typedApiKey}
                         onChange={(e) => setTypedApiKey(e.target.value)}
-                        placeholder="AIzaSy..."
-                        className="w-full bg-slate-800/80 border border-slate-600/50 rounded-lg p-2 pr-9 text-slate-100 focus:outline-none focus:border-sky-500 font-mono text-[10px] shadow-inner transition-colors"
+                        placeholder="Abc123..."
+                        className="w-full bg-white border-2 border-[#052F4A]/30 rounded-lg p-2 pr-9 text-[#052F4A] focus:outline-none focus:border-[#052F4A] font-mono text-[10px] shadow-inner transition-colors placeholder-slate-400"
                       />
                       <button 
                         type="button" 
                         onClick={() => setShowKey(!showKey)} 
-                        className="absolute right-2 text-slate-400 hover:text-slate-200 transition-colors"
+                        className="absolute right-2 text-[#052F4A]/60 hover:text-[#052F4A] transition-colors"
                         title={showKey ? 'Hide key' : 'Show key'}
                       >
                         {showKey ? <EyeOff size={14} /> : <Eye size={14} />}
@@ -593,22 +593,22 @@ export default function PlayerControllerVideoMenu(props) {
                     </div>
 
                     {validationStatus === 'validating' && (
-                      <div className="text-[9px] text-sky-400 flex items-center gap-1.5 py-0.5 animate-pulse">
-                        <Circle size={8} className="fill-sky-400 animate-ping" />
+                      <div className="text-[9px] text-sky-700 flex items-center gap-1.5 py-0.5 animate-pulse font-semibold">
+                        <Circle size={8} className="fill-sky-600 animate-ping" />
                         <span>Validating API key against Google servers...</span>
                       </div>
                     )}
 
                     {validationStatus === 'success' && (
-                      <div className="text-[9px] text-emerald-400 flex items-center gap-1.5 py-0.5 bg-emerald-500/5 border border-emerald-500/20 rounded p-1.5">
-                        <CheckCircle2 size={12} className="shrink-0" />
+                      <div className="text-[9px] text-emerald-800 flex items-center gap-1.5 py-0.5 bg-emerald-500/10 border border-emerald-600/30 rounded p-1.5 font-semibold">
+                        <CheckCircle2 size={12} className="shrink-0 text-emerald-600" />
                         <span>Success! API Key validated and saved.</span>
                       </div>
                     )}
 
                     {validationStatus === 'error' && (
-                      <div className="text-[9px] text-rose-400 flex items-start gap-1.5 py-0.5 bg-rose-500/5 border border-rose-500/20 rounded p-1.5 leading-normal">
-                        <X size={12} className="shrink-0 mt-0.5" />
+                      <div className="text-[9px] text-rose-800 flex items-start gap-1.5 py-0.5 bg-rose-500/10 border border-rose-600/30 rounded p-1.5 leading-normal font-semibold">
+                        <X size={12} className="shrink-0 mt-0.5 text-rose-600" />
                         <span className="break-all">{validationError}</span>
                       </div>
                     )}
@@ -617,14 +617,14 @@ export default function PlayerControllerVideoMenu(props) {
                       <button
                         onClick={handleTestAndSave}
                         disabled={validationStatus === 'validating'}
-                        className="flex-1 bg-sky-600 text-white rounded-lg py-1.5 font-bold hover:bg-sky-500 transition-colors disabled:opacity-50 active:scale-95 text-[10px]"
+                        className="flex-1 bg-[#052F4A] text-white rounded-lg py-1.5 font-bold hover:bg-[#073f63] transition-colors disabled:opacity-50 active:scale-95 text-[10px] shadow-sm"
                       >
                         Test & Save
                       </button>
                       {youtubeApiKey && (
                         <button
                           onClick={handleClearKey}
-                          className="bg-slate-800 text-slate-300 border border-slate-700 rounded-lg px-2.5 hover:bg-slate-700 hover:text-white transition-all text-[10px]"
+                          className="bg-slate-200 text-[#052F4A] border border-slate-300 rounded-lg px-2.5 hover:bg-slate-300 transition-all text-[10px] font-semibold"
                         >
                           Clear
                         </button>
@@ -635,7 +635,7 @@ export default function PlayerControllerVideoMenu(props) {
                       href="https://developers.google.com/youtube/v3/getting-started" 
                       target="_blank" 
                       rel="noopener noreferrer" 
-                      className="text-[9px] text-sky-400 hover:underline text-center mt-1 font-semibold flex items-center justify-center gap-1 no-drag"
+                      className="text-[9px] text-sky-700 hover:text-sky-900 hover:underline text-center mt-1 font-semibold flex items-center justify-center gap-1 no-drag"
                     >
                       How to get a YouTube API Key
                     </a>

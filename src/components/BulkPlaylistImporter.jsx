@@ -108,7 +108,7 @@ const BulkPlaylistImporter = ({ onImportComplete, onCancel, prismPage = 1 }) => 
   const fetchPlaylistVideos = async (playlistUrl) => {
     const API_KEY = useConfigStore.getState().youtubeApiKey;
     if (!API_KEY) {
-      throw new Error('Importing YouTube playlists and channels requires a personal YouTube API Key. Click the Info (ⓘ) button in the top menu to enter your free YouTube API Key to unlock playlist/channel importing.');
+      throw new Error('Importing YouTube playlists and channels requires a personal YouTube API Key. Click the Key (🔑) button in the top menu to enter your free YouTube API Key to unlock playlist/channel importing.');
     }
 
     // Extract playlist ID from URL

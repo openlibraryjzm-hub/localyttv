@@ -161,7 +161,7 @@ Users see a unified "Config Playlist" modal when clicking the "Config Playlist" 
    - API errors → Caught in try/catch, error message displayed in red box
    - Invalid JSON → Shows "Invalid JSON format. Please check your JSON syntax."
    - Missing videos → Shows "No videos found in JSON data"
-   - YouTube API errors → If no YouTube API key is set, fetching YouTube playlist/channel links surfaces an explicit message instructing the user to configure their free API key via the top menu Info (ⓘ) modal
+   - YouTube API errors → If no YouTube API key is set, fetching YouTube playlist/channel links surfaces an explicit message instructing the user to configure their free API key via the top menu Key (🔑) modal
    - Video add failures → Logged to console, import continues with remaining videos
 
 **Source of Truth:**

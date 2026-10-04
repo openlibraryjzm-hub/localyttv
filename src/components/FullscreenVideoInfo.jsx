@@ -390,7 +390,7 @@ const FullscreenVideoInfo = () => {
                               <div className="flex flex-col items-center justify-center py-6 text-center gap-1.5">
                                 <span className="text-xs font-black uppercase tracking-wider text-sky-400">No API Key Configured</span>
                                 <p className="text-xs text-slate-300/80 max-w-xs leading-relaxed">
-                                  Video descriptions, exact view counts, and channel avatars require a YouTube Data API Key. Add yours in settings for full metadata.
+                                  Video descriptions, exact view counts, and channel avatars require a YouTube Data API Key. Click the Key (🔑) button in the top menu to enter your API key for full metadata.
                                 </p>
                               </div>
                             )}

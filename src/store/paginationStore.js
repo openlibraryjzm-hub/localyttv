@@ -14,10 +14,16 @@ export const usePaginationStore = create((set, get) => ({
   // Flag to preserve scroll position on page change (for TopNav navigation)
   preserveScroll: false,
   
-  setCurrentPage: (page) => set({ currentPage: page, preserveScroll: false }),
+  setCurrentPage: (page) => set((state) => ({ 
+    currentPage: Math.max(1, Math.min(page, state.totalPages)), 
+    preserveScroll: false 
+  })),
   
   // Set page while preserving scroll position (for TopNav)
-  setCurrentPagePreserveScroll: (page) => set({ currentPage: page, preserveScroll: true }),
+  setCurrentPagePreserveScroll: (page) => set((state) => ({ 
+    currentPage: Math.max(1, Math.min(page, state.totalPages)), 
+    preserveScroll: true 
+  })),
   
   // Clear the preserve scroll flag (called after scroll decision is made)
   clearPreserveScroll: () => set({ preserveScroll: false }),
@@ -122,5 +128,5 @@ export const usePaginationStore = create((set, get) => ({
   }),
   
   // Reset pagination (when changing playlists, etc.)
-  resetPagination: () => set({ currentPage: 1, totalPages: 1, isEditingPage: false, pageInputValue: '' }),
+  resetPagination: () => set({ currentPage: 1, isEditingPage: false, pageInputValue: '' }),
 }));

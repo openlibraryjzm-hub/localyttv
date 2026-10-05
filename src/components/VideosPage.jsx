@@ -674,6 +674,7 @@ const VideosPage = ({ onVideoSelect, onSecondPlayerSelect }) => {
       }
 
       setLoadingFolders(true);
+      setDisplayedVideos([]);
       try {
         if (selectedFolder === 'unsorted') {
           // Filter for videos with no folder assignments
@@ -1493,11 +1494,14 @@ const VideosPage = ({ onVideoSelect, onSecondPlayerSelect }) => {
 
   const regularVideos = sortedVideos;
 
-  // Update total pages in store whenever regularVideos changes
+  // Update total pages in store whenever regularVideos changes & clamp currentPage if out of bounds
   useEffect(() => {
     const newTotalPages = Math.max(1, Math.ceil(regularVideos.length / itemsPerPage));
     setTotalPages(newTotalPages);
-  }, [regularVideos.length, itemsPerPage, setTotalPages]);
+    if (currentPage > newTotalPages) {
+      setCurrentPage(Math.max(1, newTotalPages));
+    }
+  }, [regularVideos, itemsPerPage, setTotalPages, currentPage, setCurrentPage]);
 
   // Helper to get banner info
   const activeObject = useMemo(() => {

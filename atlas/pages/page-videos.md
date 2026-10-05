@@ -46,19 +46,21 @@ The "Stickied" video area pins critical or user-promoted videos identically to t
 - **Overrides**: Stickied videos completely ignore watch progress filters (e.g. "Hide Watched"), prioritizing display presence first.
 
 ### Pagination
-Located beneath the grid output (though effectively right-bound due to horizontal scroll mapping):
-- Loads pages in 50-video chunks for maximum browser efficiency.
-- **Auto-Scroll**: Switching pages automatically scrolls the main content window back to the top, ensuring the new page starts at the first video.
-- Prev/Next arrows increment by 1 page (single click), jump by quarter (double click), or charge up to jump to first/last pages directly (long-press ~500ms).
+Integrated into both the top sticky bar (`VideoSortFilters`) and the bottom grid footer:
+- **Chunk Size**: Loads videos in 50-item chunks (`itemsPerPage: 50`) driven by `usePaginationStore`.
+- **Reactive Page Calculation**: Total pages (`totalPages`) are calculated reactively from `regularVideos` (`Math.max(1, Math.ceil(regularVideos.length / 50))`). Re-sorting, applying rating filters, or switching folder context automatically recalculates `totalPages` for the new result set.
+- **Out-of-Bounds Clamping**: If `currentPage` exceeds `totalPages` after filtering (e.g. going from a 200-video view to a 10-video folder), `currentPage` is automatically clamped to `totalPages`.
+- **Auto-Scroll**: Switching pages or changing filters automatically scrolls the main container back to the top (`scrollToTop()`).
+- **Controls & Gestures**:
+  - **Top Bar**: Chevron controls (`< [Page Number] >`) natively embedded in `VideoSortFilters.jsx`.
+  - **Bottom Footer Bar**: Chevron buttons + numbered page buttons. Supports single-click (step 1 page), double-click (jump quarter), and long-press (~500ms charge animation to jump to first/last page).
 
 ## 3. Data Flow & Logic
 
-### Folder Filtering 
-- Driven by `FolderSelector` clicking. 
-- Calling `setSelectedFolder(folderColor)` immediately trips `filterVideos()`.
-- **Auto-Scroll**: Applying a new folder filter or resetting to "All" automatically scrolls the view back to the top.
-- Unsorted dynamically screens `videoFolderAssignments` returning items absent from any other folder bucket. 
-- View updates are instant — if assignments are bulk-changed, the new view recalculates reactively without manual refreshes.
+### Folder & Filter Processing
+- **Folder Filtering**: Driven by `FolderSelector` / `FolderPrism` clicks. `setSelectedFolder(folderColor)` triggers `filterVideos()`. Clearing `displayedVideos` at the start of fetching ensures stale video arrays do not linger during async SQLite calls.
+- **Combined Filtering & Sorting**: Folder filtering, drumstick rating filters (1–5), progress filters, and sort options (chronological, added to app, progress, last viewed, watch count, shuffle) compose deterministically into `regularVideos`.
+- **Pagination State Integration**: Filter or folder changes invoke `resetPagination()`, resetting `currentPage` to 1 while preserving computed `totalPages` so pagination remains functional across all filter combinations.
 
 ### Bulk Tag Mode
 - Enabling updates variables forcing the `BulkTagColorGrid` overlay below every card on the screen.

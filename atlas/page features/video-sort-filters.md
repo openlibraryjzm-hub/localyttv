@@ -98,7 +98,7 @@ Selected segment is emphasized with a ring (inset ring-2); All uses `after:ring-
 - **Populated-only segments**: `prismPopulatedSegments` is a `useMemo`: All + Unsorted (if unsortedCount ≥ 1) + each color with count ≥ 1, in order. Used when `prismOnlyPopulated` is true.
 - **Prism mode**: `prismOnlyPopulated` (useState, default true); toggled via the **right-click context menu** on the prism.
 
-Pagination and scroll position are reset when folder, sort, or rating filters change (including when switching prism mode if it changes which folder is conceptually “focused”; folder change itself triggers reset).
+- **Pagination Integration**: `usePaginationStore` tracks `currentPage`, `totalPages`, and `itemsPerPage` (50). Whenever folder, sort, or drumstick rating filters change, `resetPagination()` resets `currentPage` to 1 while `setTotalPages` reactively recalculates `totalPages` for the new `regularVideos` array. Out-of-bounds `currentPage` values are automatically clamped to `totalPages`.
 
 ---
 

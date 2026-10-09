@@ -178,6 +178,8 @@ export default function PlayerControllerVideoMenu(props) {
   const youtubeApiKey = useConfigStore(state => state.youtubeApiKey);
   const setYoutubeApiKey = useConfigStore(state => state.setYoutubeApiKey);
 
+  const openControlTutorial = useLayoutStore(state => state.openControlTutorial);
+
   const [typedApiKey, setTypedApiKey] = useState('');
   const [showKey, setShowKey] = useState(false);
   const [validationStatus, setValidationStatus] = useState(null); // null | 'validating' | 'success' | 'error'
@@ -327,30 +329,18 @@ export default function PlayerControllerVideoMenu(props) {
               {/* Previous Video - Left of Grid */}
               <button onClick={handlePrevVideo} className="absolute left-1/2 top-1/2 p-0.5 text-[#052F4A]" style={{
                 transform: `translate(calc(-50% - 148px), -50%)`
-              }} title={getInspectTitle('Previous video')}>
+              }} title={getInspectTitle('Previous Video in Queue')}>
                 <ChevronLeft size={navChevronSize} strokeWidth={3} />
               </button>
 
               {/* Video Grid Button - Center of Cluster */}
               <MenuButton
                 onClick={handleVideosGrid}
-                onLongPress={(e) => {
-                  if (e && e.preventDefault) e.preventDefault();
-                  if (viewMode === 'full') {
-                    setFullscreenInfoBlanked(true);
-                    requestAnimationFrame(() => {
-                      setViewMode('half');
-                      setCurrentPage('history');
-                    });
-                  } else {
-                    setCurrentPage('history');
-                  }
-                }}
                 className="absolute left-1/2 top-1/2 flex items-center justify-center group/tool"
                 style={{
                   transform: `translate(calc(-50% - 120px), -50%)`
                 }}
-                title={getInspectTitle('View videos grid (Long-press for history)')}
+                title={getInspectTitle('Videos Grid View (Click to open Videos Grid page)')}
               >
                 <span style={ICON_WHITE_OUTLINE}>
                   <svg width={Math.round(bottomIconSize * 0.55)} height={Math.round(bottomIconSize * 0.55)} viewBox="0 0 24 24" fill="none" style={{
@@ -373,7 +363,7 @@ export default function PlayerControllerVideoMenu(props) {
               {/* Next Video - Right of Grid */}
               <button onClick={handleNextVideo} className="absolute left-1/2 top-1/2 p-0.5 text-[#052F4A]" style={{
                 transform: `translate(calc(-50% - 92px), -50%)`
-              }} title={getInspectTitle('Next video')}>
+              }} title={getInspectTitle('Next Video in Queue')}>
                 <ChevronRight size={navChevronSize} strokeWidth={3} />
               </button>
 
@@ -395,7 +385,7 @@ export default function PlayerControllerVideoMenu(props) {
                 style={{
                   transform: `translate(calc(-50% - 60px), -50%)`
                 }}
-                title={getInspectTitle('Cycle Folder Filter (Tap: Forward, Long-press: Reverse)')}
+                title={getInspectTitle('Cycle Folder Filter (Click: Forward, Right-click: Reverse, Double Right-click: Reset to ALL)')}
               >
                 {(() => {
                   const activeColorData = currentFolder ? FOLDER_COLORS.find(c => c.id === currentFolder.folder_color) : null;
@@ -423,7 +413,7 @@ export default function PlayerControllerVideoMenu(props) {
                 style={{
                   transform: `translate(calc(-50% + ${shuffleButtonX}px), -50%)`
                 }}
-                title={getInspectTitle('Shuffle videos (Long-press for color selection)')}
+                title={getInspectTitle('Shuffle Videos (Click: Shuffle pool, Right-click: Choose 16-Color Shuffle Pool)')}
               >
                 {(() => {
                   const shuffleColorObj = quickShuffleColor === 'all' ? {
@@ -449,7 +439,7 @@ export default function PlayerControllerVideoMenu(props) {
                 style={{
                   transform: `translate(calc(-50% + ${starButtonX}px), -50%)`
                 }}
-                title={getInspectTitle('Star button (Tap: assign to folder, Long-press: filter to this color)')}
+                title={getInspectTitle('Star Folder Assignment (Click: Assign to Quick Folder, Right-click: Filter to Assigned Color)')}
               >
                 {(() => {
                   const firstFolder = currentVideoFolders.length > 0 ? currentVideoFolders[0] : null;
@@ -485,7 +475,7 @@ export default function PlayerControllerVideoMenu(props) {
                 style={{
                   transform: `translate(calc(-50% + ${pinFirstButtonX}px), -50%)`
                 }}
-                title={getInspectTitle('Pin Video (Click: Pin/Follower, Hold: Priority, Double-click: Unpin, Long-press: Pins Page)')}
+                title={getInspectTitle('Pin Systems (Click: Normal/Follower Pin, Hold >600ms: Priority Pin, Right-click: Pins Page)')}
               >
                 {(() => {
                   const targetVideo = activeVideoItem || currentVideo;
@@ -540,7 +530,7 @@ export default function PlayerControllerVideoMenu(props) {
                 style={{
                   transform: `translate(calc(-50% + ${likeButtonX}px), -50%)`
                 }}
-                title={getInspectTitle('Like button (Long-press for Likes)')}
+                title={getInspectTitle('Like Video (Click: Toggle Like, Right-click: Liked Videos Page)')}
               >
                 {isVideoLiked ? <span style={ICON_WHITE_OUTLINE}>
                   <ThumbsUp size={Math.round(bottomIconSize * 0.5)} color={likeColor} fill={likeColor} strokeWidth={3} />
@@ -549,13 +539,17 @@ export default function PlayerControllerVideoMenu(props) {
                 </span>}
               </MenuButton>
 
-              {/* Tooltip Button */}
+              {/* Help / Control Tutorial Button (Formerly Key button) */}
               <div className="absolute left-1/2 top-1/2" style={{
                 transform: `translate(calc(-50% + ${tooltipButtonX}px), -50%)`
               }}>
-                <button onClick={() => setIsTooltipOpen(!isTooltipOpen)} className="flex items-center justify-center group/tool relative" title={getInspectTitle('YouTube API Settings')}>
+                <button 
+                  onClick={() => openControlTutorial(0)} 
+                  className="flex items-center justify-center group/tool relative hover:scale-110 active:scale-95 transition-all" 
+                  title={getInspectTitle('App Control Tutorial & Guide (Click to open Control Guide)')}
+                >
                   <span style={ICON_WHITE_OUTLINE}>
-                    <Key size={Math.round(bottomIconSize * 0.5)} color="#052F4A" strokeWidth={3} />
+                    <span className="text-[16px] font-black text-[#052F4A] leading-none select-none">?</span>
                   </span>
                 </button>
 

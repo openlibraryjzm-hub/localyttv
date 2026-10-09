@@ -5,6 +5,7 @@ The Central Orb is a circular element (154px diameter by default) positioned at 
 **Related Documentation:**
 - **App Banner**: See `app-banner.md` for the banner background it sits on.
 - **Player Controller Hub**: See `player-controller-unified.md`.
+- **Control Guide Modal**: See `control-tutorial-guide-modal.md`.
 
 ---
 
@@ -13,15 +14,13 @@ The Central Orb is a circular element (154px diameter by default) positioned at 
 - **Transparent Backdrop & Dark Navy Styling**: The Central Orb Menu container background is 100% transparent down to the underlying App Banner. All floating circular orb buttons, borders, and icons strictly enforce the signature **Dark Navy** (`#052F4A`) outline styling.
 - **Audio Visualizer Border**: The static blue border has been replaced. The Audio Visualizer acts as the dynamic, reactive border for the orb, starting exactly where the image ends (Radius 77px).
 - **Orb Image**: Displays the current video's thumbnail by default, or a custom uploaded image. Supports **Orb Group Overrides** (random image from an assigned group). Clipped to a circular shape with optional "spill" effects.
-- **Cycle Button**: (Bottom-Left) Replaces the old Upload Button. Displays a dice face symbol (e.g., `Dice1` or `Dice2`) representing the current button layout cycle. Clicking/tapping it toggles the active button cycle layout (Cycle 1 vs Cycle 2). Custom orb images can still be uploaded via Settings -> Orb tab.
-- **Cycle 1 (Primary Layout)**:
+- **Orb Buttons Layout**:
   - **Orb Config Button**: (Top-Left) Opens the Orb Tab in Settings.
-  - **Settings Button**: (Top-Right) Opens the Settings Page.
-  - **Orb Navigation Chevrons**: 4 icons hugging the direct left/right curve of the 154px orb to cycle Orbs/Playlists or Banners/Categories depending on toggle state.
+  - **App Banner Button**: (Top-Right) Simple rectangle icon. Opens the App Banner Customization & Configuration page.
+  - **YouTube API Key Button**: (Bottom-Left) `Key` icon button. Left-clicking toggles the YouTube Data API v3 Key configuration popup modal.
+  - **Navigation Mode Toggle**: (Bottom-Right) Switches between Orb mode (`Circle` icon) and Banner mode (simple rectangle icon).
   - **Home Hub Button**: (Bottom-Center) Returns to the Explorer page. The icon dynamically displays the **current Explorer page number** (e.g., "1", "2") for instant orientation within the Hub. On click, it locks the app and returns to the gamified dashboard.
-  - **Navigation Mode Toggle**: (Bottom-Right) Switches between Orb and Banner navigation modes.
-- **Cycle 2 (Secondary/Expanded Layout)**:
-  - **Placeholder Button**: (Bottom-Center) A circular button styled like existing buttons with a `HelpCircle` icon, reserved for future expansion.
+  - **Orb Navigation Chevrons**: 4 icons hugging the direct left/right curve of the 154px orb to cycle Orbs/Playlists or Banners/Categories depending on toggle state.
 - **Spill Toggle**: When enabled, the image extends beyond the circular boundary via configurable quadrants.
 
 ## 2. Configuration & Settings (Orb Tab)

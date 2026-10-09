@@ -4,6 +4,7 @@ The Top Video Menu and Top Playlist Menu form the right and left control cluster
 
 **Related Documentation:**
 - **Central Orb**: See `player-controller-orb-menu.md`.
+- **Control Guide Modal**: See `control-tutorial-guide-modal.md`.
 - **Navigation Flows**: See `navigation-routing.md`.
 - **Video Player**: See `videoplayer.md`.
 
@@ -39,7 +40,7 @@ Displays the current playlist's title, centered with contextual badges below it:
 A horizontally evenly-spaced set of tool buttons positioned across the bottom of the menu.
 
 1. **Three Dot Menu (More Options)** (Left Half): Toggles advanced configurations (Preview Menus, Change Banner, Audio Visualizer toggle, and Visualizer Color Picker). Visually nudged outwards (24px left) toward the container edge to improve peripheral balance.
-2. **History** (Left Half): Clock icon. Left-click to view History page (Placeholder). Left-clicking the flanking left/right arrows navigates Older/Newer in playback history. Visually nudged outwards (5px left) toward the container edge to improve peripheral balance.
+2. **History** (Left Half): Clock icon. Left-click center Clock icon to navigate directly to the Watch History page. Left-clicking the flanking left/right chevrons steps Older/Newer backward and forward in playback history. Visually nudged outwards (5px left) toward the container edge to improve peripheral balance.
 3. **Add (Plus)** (Absolute Center): Perfect dead-center anchor of the bar. Functions as a dropdown menu ("Add to quick videos", "Add to current playlist", and 4 customizable **Quick Assign Slots** mapped persistently to user-specified target playlists). Each option features a companion Play button extension on its right side that seamlessly switches playback immediately upon addition.
 4. **Group Carousel Dot** (Right Half): Circle button filled with the active group carousel's folder color (or Sky Blue in ALL mode). Left-clicking the circle toggles between ALL mode and group carousel context.
 5. **Grid / Library** (Right Half): 3 horizontal lines stacked icon. Left-clicking the flanking left/right arrows navigates Previous/Next between playlists. Left-clicking the center button returns to the Playlists grid view. Visually nudged outwards (14px right) toward the container edge to improve peripheral balance.
@@ -50,7 +51,7 @@ Displays video information (Title) and core playback controls.
 
 ### Navigation Controls (Left-Aligned Cluster)
 - **Previous/Next Video** (Chevron Left/Right).
-- **Grid Button**: Left-click for Videos grid; Right-click for History page.
+- **Grid Button**: Left-click to navigate to the Videos grid page.
 - **Play Button (Folder Cycle)**: Cycles through colored folders within the playlist. 
   - Left-Click cycles forward, Right-Click backward. Double Right-Click resets to "All Videos".
   - Auto-plays the first video of a new folder if current is hidden.
@@ -59,7 +60,7 @@ Displays video information (Title) and core playback controls.
 - **Star Button**: Folder assignment control. Left-click assigns/unassigns to quick folder. Right-click aligns the Play button's filter to the Star's current assigned color.
 - **Shuffle Button**: Left-click to shuffle from current folder/all videos. Right-click opens the 16-color picker modal to set the default shuffle pool.
 - **Like Button**: Left-click to toggle like. Right-click to navigate to Likes Page.
-- **Key Button**: Toggles popup modal for configuring your YouTube Data API v3 Key.
+- **`?` Help / Control Guide Button**: Bold `?` button. Left-click opens the video-gamey, hyper-minimalist **Control Guide & Tutorial Modal** (`ControlTutorialModal.jsx`).
 - **Priority Pin Button**: 
   - Short Click toggles Normal Pin (Blue).
   - Long Click (>600ms) toggles Priority Pin (Amber).
@@ -82,8 +83,9 @@ Users can safely preview playlists and videos without interrupting playback via 
 
 - `src/components/PlayerController.jsx`: Main UI controller that manages state and passes props to sub-components.
 - `src/components/PlayerControllerPlaylistMenu.jsx`: Renders the left-side Top Playlist Menu, including badges, group carousel arrows, and preview/queue/history nav.
-- `src/components/PlayerControllerVideoMenu.jsx`: Renders the right-side Top Video Menu, including video details, shuffle, like, and folder assignments.
+- `src/components/PlayerControllerVideoMenu.jsx`: Renders the right-side Top Video Menu, including video details, shuffle, like, folder assignments, and `?` Help button.
 - `src/components/PlayerControllerOrbMenu.jsx`: Renders the central Orb, image masking, and audio visualizer.
+- `src/components/ControlTutorialModal.jsx`: Renders the Control Guide & Tutorial Modal.
 - `src/components/BottomNavigation.jsx`: Secondary navigation component displayed on non-player views.
 - `src/store/*.js`: Zustand stores handling application state.
 - `src/store/playlistStore.js`: Playlist items, navigation indexes, and preview state (`previewPlaylistItems`).

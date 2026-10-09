@@ -20,6 +20,7 @@ import TweetPage from './components/TweetPage';
 import MainSettingsPage from './components/MainSettingsPage';
 import InlineBannerCropMode from './components/InlineBannerCropMode';
 import ExplorerPage from './components/ExplorerPage';
+import ControlTutorialModal from './components/ControlTutorialModal';
 
 import { listen, invoke } from './api/platformBridge';
 import { AnimatePresence } from 'framer-motion';
@@ -638,6 +639,8 @@ function App() {
             ) : null
           }
         />
+
+        <ControlTutorialModal />
 
       </>
     </div>

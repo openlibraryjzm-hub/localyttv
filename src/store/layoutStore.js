@@ -100,6 +100,13 @@ export const useLayoutStore = create((set) => ({
       [type]: !state.visibleSourceTypes[type]
     }
   })),
+
+  // Control Tutorial Modal state
+  isControlTutorialOpen: false,
+  setIsControlTutorialOpen: (v) => set({ isControlTutorialOpen: !!v }),
+  controlTutorialActiveTab: 0,
+  setControlTutorialActiveTab: (tab) => set({ controlTutorialActiveTab: tab }),
+  openControlTutorial: (tab = 0) => set({ isControlTutorialOpen: true, controlTutorialActiveTab: tab }),
 }));
 
 if (typeof window !== 'undefined') {

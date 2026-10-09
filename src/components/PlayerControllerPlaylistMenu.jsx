@@ -190,6 +190,7 @@ export default function PlayerControllerPlaylistMenu(props) {
   const groupsOnPage = (groups || []).filter(g => (g.page || 1) === (activePage || 1) && g.playlistIds && g.playlistIds.length > 0);
 
   const setViewMode = useLayoutStore(state => state.setViewMode);
+  const setFullscreenInfoBlanked = useLayoutStore(state => state.setFullscreenInfoBlanked);
   const fullscreenInfoBlanked = useLayoutStore(state => state.fullscreenInfoBlanked);
 
   const currentPage = useNavigationStore(state => state.currentPage);
@@ -228,7 +229,7 @@ export default function PlayerControllerPlaylistMenu(props) {
             <h1 ref={playlistTitleRef} className="font-black text-center leading-tight line-clamp-3 tracking-tight transition-all pb-1 cursor-pointer hover:opacity-90 select-none text-[#052F4A]" style={{
               fontSize: `${titleFontSize}px`,
               pointerEvents: 'none'
-            }} title={`${playlistTitle} (Long-press for mega shuffle)`}>
+            }} title={getInspectTitle(`Playlist: ${playlistTitle} (Click for Playlists Grid, Right-click for Mega Shuffle)`) || `${playlistTitle} (Long-press for mega shuffle)`}>
               {playlistTitle}
             </h1>
 
@@ -267,7 +268,7 @@ export default function PlayerControllerPlaylistMenu(props) {
               <div className="flex-1 flex items-center justify-evenly h-full pr-4">
                 {/* 1. More Options / Settings Menu */}
                 <div className="relative flex items-center justify-center -translate-x-6">
-                  <button onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)} onTouchStart={() => setIsMoreMenuOpen(!isMoreMenuOpen)} className="flex items-center justify-center group/tool" title={getInspectTitle('More options')}>
+                  <button onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)} onTouchStart={() => setIsMoreMenuOpen(!isMoreMenuOpen)} className="flex items-center justify-center group/tool" title={getInspectTitle('More Options (Visualizer, Banners & Color Pickers)')}>
                     <span style={ICON_WHITE_OUTLINE}>
                       <MoreHorizontal size={Math.round(bottomIconSize * 0.5)} color="#052F4A" strokeWidth={3} />
                     </span>
@@ -394,19 +395,31 @@ export default function PlayerControllerPlaylistMenu(props) {
                 {/* 2. History Clock Icon */}
                 <div className="relative flex items-center justify-center h-full -translate-x-[5px]">
                   <div className="absolute -left-6 opacity-100 pointer-events-auto">
-                    <button onClick={handleHistoryBack} onTouchStart={handleHistoryBack} className="p-0.5 text-[#052F4A] hover:scale-110 active:scale-95 transition-transform" title="History Back (Older)">
+                    <button onClick={handleHistoryBack} onTouchStart={handleHistoryBack} className="p-0.5 text-[#052F4A] hover:scale-110 active:scale-95 transition-transform" title={getInspectTitle('History Back (Previous video in history)')}>
                       <ChevronLeft size={navChevronSize} strokeWidth={3} />
                     </button>
-                  </div>
-
-                  <button onClick={() => console.log('History button clicked')} className={`flex items-center justify-center group/tool transition-all ${historyIndex >= Math.min(historyStack.length - 1, 5) || historyStack.length <= 1 ? historyIndex === 0 ? 'opacity-30' : '' : ''}`} title={getInspectTitle('History')}>
+                  </div>                  <button 
+                    onClick={() => {
+                      if (viewMode === 'full') {
+                        setFullscreenInfoBlanked(true);
+                        requestAnimationFrame(() => {
+                          setViewMode('half');
+                          setCurrentPage('history');
+                        });
+                      } else {
+                        setCurrentPage('history');
+                      }
+                    }} 
+                    className={`flex items-center justify-center group/tool transition-all ${historyIndex >= Math.min(historyStack.length - 1, 5) || historyStack.length <= 1 ? historyIndex === 0 ? 'opacity-30' : '' : ''}`} 
+                    title={getInspectTitle('Watch History Page (Click to open Watch History page)')}
+                  >
                     <span style={ICON_WHITE_OUTLINE}>
                       <Clock size={Math.round(bottomIconSize * 0.5)} color="#052F4A" strokeWidth={3} />
                     </span>
                   </button>
 
                   <div className="absolute -right-6 opacity-100 pointer-events-auto">
-                    <button onClick={handleHistoryForward} onTouchStart={handleHistoryForward} className="p-0.5 text-[#052F4A] hover:scale-110 active:scale-95 transition-transform" title="History Forward (Newer)">
+                    <button onClick={handleHistoryForward} onTouchStart={handleHistoryForward} className="p-0.5 text-[#052F4A] hover:scale-110 active:scale-95 transition-transform" title={getInspectTitle('History Forward (Next video in history)')}>
                       <ChevronRight size={navChevronSize} strokeWidth={3} />
                     </button>
                   </div>
@@ -415,7 +428,7 @@ export default function PlayerControllerPlaylistMenu(props) {
 
               {/* 3. Plus Button - Absolute Centered */}
               <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center z-10 w-10">
-                <button onClick={() => setIsAddMenuOpen(!isAddMenuOpen)} onTouchStart={() => setIsAddMenuOpen(!isAddMenuOpen)} className="flex items-center justify-center group/tool" title={getInspectTitle('Add to Playlist')}>
+                <button onClick={() => setIsAddMenuOpen(!isAddMenuOpen)} onTouchStart={() => setIsAddMenuOpen(!isAddMenuOpen)} className="flex items-center justify-center group/tool" title={getInspectTitle('Add to Playlist (Add link or Quick Assign)')}>
                   <span style={ICON_WHITE_OUTLINE}>
                     <Plus size={Math.round(bottomIconSize * 0.5)} color="#052F4A" strokeWidth={3} />
                   </span>
@@ -501,7 +514,7 @@ export default function PlayerControllerPlaylistMenu(props) {
                           cycleGroupBadge('next');
                         }}
                         className="flex items-center justify-center group/tool hover:scale-110 active:scale-95 transition-transform cursor-pointer"
-                        title={singleGroupForBadge ? `Carousel: ${singleGroupForBadge.name} (Left-click next, Right-click prev)` : 'Showing ALL Playlists (Left-click next, Right-click prev)'}
+                        title={getInspectTitle(singleGroupForBadge ? `Group Carousel: ${singleGroupForBadge.name} (Click next group, Right-click prev group)` : 'Library Mode: ALL Playlists (Click to switch to Group Carousel)')}
                       >
                         <span style={ICON_WHITE_OUTLINE} className="flex items-center justify-center">
                           <Circle 
@@ -524,7 +537,7 @@ export default function PlayerControllerPlaylistMenu(props) {
                     </button>
                   </div>
 
-                  <button onClick={handlePlaylistsGrid} onTouchStart={handlePlaylistsGrid} className="flex items-center justify-center group/tool transition-all" title={getInspectTitle('View playlists grid')}>
+                  <button onClick={handlePlaylistsGrid} onTouchStart={handlePlaylistsGrid} className="flex items-center justify-center group/tool transition-all" title={getInspectTitle('Playlists Grid View (Browse all playlist cards)')}>
                     <span style={ICON_WHITE_OUTLINE}>
                       <Menu size={Math.round(bottomIconSize * 0.5)} color="#052F4A" strokeWidth={3} />
                     </span>

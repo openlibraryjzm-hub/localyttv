@@ -11,17 +11,25 @@ To prevent documentation bloat and improve code maintainability, the logic and p
 - Dynamic Audio Visualizer Borders.
 - Orb image uploading, resizing, and precision 4-quadrant mask spills.
 - Configuration settings via the Orb Tab.
-- Home Hub & Twitter Pop-Out toggles.
+- Home Hub & Navigation Mode toggles.
+- YouTube Data API Key configuration button.
 
 ### 2. The Top Menus (Video & Playlist)
 **File:** `player-controller-top-menus.md`
 - The Split-Screen Stacked architectural layout.
-- **Top Video Menu:** Controls to navigate videos, assign folders (Star button), cycle colored play filters, and manage Pins (Normal, Priority, Follower modifiers).
-- **Top Playlist Menu:** Badge displays (Group Carousel, Preset, Folder) and list navigation.
+- **Top Video Menu:** Controls to navigate videos, assign folders (Star button), cycle colored play filters, `?` Control Guide button, and manage Pins (Normal, Priority, Follower modifiers).
+- **Top Playlist Menu:** Badge displays (Group Carousel, Preset, Folder), Watch History hub, and list navigation.
 - **Bottom Placeholder Menus:** Shell components situated beneath the main video/playlist menus in standard mode, currently housing Compact Layout toggles and reserved for future dedicated menu systems.
 - **Preview System:** "Alt-Nav" Up/Down previewer logic with Commit/Revert options.
 
-### 3. Integrated Components
+### 3. Control Guide & Tutorial Modal
+**File:** `control-tutorial-guide-modal.md`
+- Video-game inspired, hyper-minimalist, borderless, transparent guide modal (`ControlTutorialModal.jsx`).
+- **Spritesheet Menu Select Mode**: Floating 1:1 menu UIs for menu selection.
+- **1:1 Live Hover Inspection Mode**: Live subcomponent rendering on left + minimalist floating glass explanation card on right.
+- **Orb Crop & Visualizer Sync**: Preserves active orb crop/masks and runs non-functional visualizer ring (`isVisualizerActive={false}`).
+
+### 4. Integrated Components
 These broader topics heavily interface with the Player Controller:
 - **App Banner Architecture:** `app-banner.md` (How the controller aligns with the background).
 - **Navigation Flows:** `navigation-routing.md` (Deep dive into the routing mechanisms).

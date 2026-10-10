@@ -125,6 +125,8 @@ const PlaylistCard = ({
   headerExtension = null,
   contentAboveGrid = null,
   showOnlyShuffleHover = false,
+  hideTitleBar = false,
+  miniGridLimit = 15,
 }) => {
   const { currentPlaylistId, setPlaylistItems, setPreviewPlaylist, setCurrentVideoIndex, currentPlaylistItems } =
     usePlaylistStore();
@@ -176,13 +178,13 @@ const PlaylistCard = ({
     if (!previewThumbnail?.isShuffled) {
       if (isFolderCard && folderColorFilter) {
         getVideosInFolder(playlist.id, folderColorFilter).then(items => {
-          setLocalPreviewVideos(filterTrackerAndChannelItems(items).slice(0, 15));
+          setLocalPreviewVideos(filterTrackerAndChannelItems(items).slice(0, miniGridLimit));
         }).catch(err => console.error("Failed to load initial folder preview videos", err));
       } else {
-        setLocalPreviewVideos(filterTrackerAndChannelItems(initialPreviewVideos).slice(0, 15));
+        setLocalPreviewVideos(filterTrackerAndChannelItems(initialPreviewVideos).slice(0, miniGridLimit));
       }
     }
-  }, [initialPreviewVideos, previewThumbnail?.isShuffled, isFolderCard, folderColorFilter, playlist.id]);
+  }, [initialPreviewVideos, previewThumbnail?.isShuffled, isFolderCard, folderColorFilter, playlist.id, miniGridLimit]);
 
   // Handle Global Info Toggle
   useEffect(() => {
@@ -403,7 +405,7 @@ const PlaylistCard = ({
         const randomVideo = items[Math.floor(Math.random() * items.length)];
         setPreviewThumbnail(previewThumbnailFromItem(randomVideo));
         const shuffledItems = [...items].sort(() => 0.5 - Math.random());
-        setLocalPreviewVideos(shuffledItems.slice(0, 16));
+        setLocalPreviewVideos(shuffledItems.slice(0, miniGridLimit));
       } else {
         const orbsAndBanners = (initialPreviewVideos || []).filter(
           (item) => item.isOrb || item.isBannerPreset
@@ -415,7 +417,7 @@ const PlaylistCard = ({
         const randomItem = pool[Math.floor(Math.random() * pool.length)];
         setPreviewThumbnail(previewThumbnailFromItem(randomItem));
         const shuffled = [...pool].sort(() => 0.5 - Math.random());
-        setLocalPreviewVideos(shuffled.slice(0, 15));
+        setLocalPreviewVideos(shuffled.slice(0, miniGridLimit));
       }
     } catch (error) {
       console.error("Failed to shuffle thumbnail:", error);
@@ -429,11 +431,11 @@ const PlaylistCard = ({
       const filterToUse = activeFolderFilter || (isFolderCard ? folderColorFilter : null);
       if (filterToUse) {
         const rawItems = await getVideosInFolder(playlist.id, filterToUse);
-        const items = filterTrackerAndChannelItems(rawItems).slice(0, 15);
+        const items = filterTrackerAndChannelItems(rawItems).slice(0, miniGridLimit);
         setLocalPreviewVideos(items);
       } else {
-        // Restore default order: first 15 of combined list (orbs + banners + videos)
-        setLocalPreviewVideos(filterTrackerAndChannelItems(initialPreviewVideos).slice(0, 15));
+        // Restore default order: first items of combined list (orbs + banners + videos)
+        setLocalPreviewVideos(filterTrackerAndChannelItems(initialPreviewVideos).slice(0, miniGridLimit));
       }
     } catch (error) {
       console.error("Failed to reset preview videos:", error);
@@ -686,13 +688,13 @@ const PlaylistCard = ({
       data-playlist-name={playlist.name}
     >
       <div
-        className={`rounded-xl h-full flex flex-col ${inCarousel ? 'bg-white' : size === 'small' ? 'bg-slate-100/90 border-2 border-slate-700/50 hover:border-sky-500/50 transition-colors' : 'bg-transparent border-0 shadow-none'} ${size === 'small' ? 'p-0 overflow-hidden' : 'pt-1.25 pb-0.25 px-1.5'} ${String(playlist.id) === String(currentPlaylistId) ? "active-playlist-marker" : ""}`}
+        className={`rounded-xl h-full flex flex-col ${inCarousel ? 'bg-white' : size === 'small' ? 'bg-slate-100/90 border-2 border-slate-700/50 hover:border-sky-500/50 transition-colors' : 'bg-transparent border-0 shadow-none'} ${size === 'small' ? 'p-0 overflow-hidden' : 'pt-1.25 pb-0.25 px-2.5'} ${String(playlist.id) === String(currentPlaylistId) ? "active-playlist-marker" : ""}`}
         data-active-playlist={
           String(playlist.id) === String(currentPlaylistId) ? "true" : "false"
         }
       >
         {/* Title bar – only in large size; small carousel uses title below thumbnail (VideoCard-style) */}
-        {size !== 'small' && (
+        {size !== 'small' && !hideTitleBar && (
           <div className={`mb-1.25 border-2 border-[#052F4A] rounded-2xl bg-slate-100 shadow-sm relative overflow-hidden flex flex-col p-1`}>
             <div className="flex items-center justify-between relative h-[32px] w-full">
               <h3
@@ -1113,16 +1115,16 @@ const PlaylistCard = ({
         )}
 
         {contentAboveGrid && (
-          <div className="w-full px-1 mt-1 mb-1">
+          <div className="w-full px-0 mt-1 mb-1">
             {contentAboveGrid}
           </div>
         )}
 
-        {/* Mini Preview Grid – 15 items (3 cols x 5 rows) for large size, hidden in small size */}
+        {/* Mini Preview Grid – miniGridLimit items for large size, hidden in small size */}
         {size !== 'small' && (
           <div className="mt-1 flex-1 flex flex-col justify-center my-auto py-2 transition-all">
-            <div className="grid grid-cols-3 gap-1.5 px-1">
-              {localPreviewVideos.slice(0, 15).map((item, index) => {
+            <div className="grid grid-cols-3 gap-1.5 px-0">
+              {localPreviewVideos.slice(0, miniGridLimit).map((item, index) => {
               const slotKey = getPreviewItemKey(item, index);
               const thumbSrc = getPreviewItemThumbnail(item);
               const thumbFailed = miniImageErrors.has(slotKey);
@@ -1150,7 +1152,7 @@ const PlaylistCard = ({
               );
             })}
             {Array.from({
-              length: Math.max(0, (localPreviewVideos.length > 0 ? Math.min(15, Math.max(3, Math.ceil(localPreviewVideos.length / 3) * 3)) : 3) - localPreviewVideos.length),
+              length: Math.max(0, (localPreviewVideos.length > 0 ? Math.min(miniGridLimit, Math.max(3, Math.ceil(localPreviewVideos.length / 3) * 3)) : 3) - localPreviewVideos.length),
             }).map((_, i) => (
               <div
                 key={`empty-${i}`}

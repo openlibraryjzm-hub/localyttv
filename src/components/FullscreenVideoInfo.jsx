@@ -302,7 +302,7 @@ const FullscreenVideoInfo = () => {
             const isLocal = video.is_local || (!video.video_url?.includes('youtube.com') && !video.video_url?.includes('youtu.be'));
 
             const renderVideoThumbnail = () => (
-              <div className="relative group/thumb px-0.5 my-1">
+              <div className="relative group/thumb px-0 my-1">
                 {thumbnailUrl ? (
                   <div className="rounded-xl overflow-hidden shadow-2xl border-[2px] border-black/50 aspect-video relative">
                     <img
@@ -310,6 +310,108 @@ const FullscreenVideoInfo = () => {
                       alt={video.title || 'Video thumbnail'}
                       className="block w-full h-full object-cover"
                     />
+
+                    {/* Hover Overlay Controls Bar */}
+                    <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/90 via-black/60 to-transparent flex items-center justify-between gap-2 opacity-0 group-hover/thumb:opacity-100 transition-opacity duration-200 z-20">
+                      {/* Left: Volume Controller */}
+                      <div className="flex items-center gap-1.5 flex-1 min-w-[90px]" onClick={(e) => e.stopPropagation()}>
+                        <style>{`
+                          .volume-slider-thumb::-webkit-slider-thumb {
+                            -webkit-appearance: none;
+                            appearance: none;
+                            width: 14px;
+                            height: 14px;
+                            border-radius: 50%;
+                            background: #ffffff;
+                            border: 2px solid #000000;
+                            box-shadow: 0 1px 3px rgba(0,0,0,0.6);
+                            cursor: pointer;
+                            transition: transform 0.15s ease;
+                          }
+                          .volume-slider-thumb::-webkit-slider-thumb:hover {
+                            transform: scale(1.15);
+                          }
+                          .volume-slider-thumb::-moz-range-thumb {
+                            width: 14px;
+                            height: 14px;
+                            border-radius: 50%;
+                            background: #ffffff;
+                            border: 2px solid #000000;
+                            box-shadow: 0 1px 3px rgba(0,0,0,0.6);
+                            cursor: pointer;
+                            transition: transform 0.15s ease;
+                          }
+                          .volume-slider-thumb::-moz-range-thumb:hover {
+                            transform: scale(1.15);
+                          }
+                        `}</style>
+                        <button
+                          onClick={() => handleVolumeChange({ target: { value: volume === 0 ? 100 : 0 } })}
+                          className="transition-transform shrink-0 hover:scale-110 active:scale-95 flex items-center justify-center text-white"
+                          style={ICON_STYLE}
+                          title={volume === 0 ? "Unmute" : "Mute"}
+                        >
+                          {volume === 0 ? (
+                            <VolumeX size={18} strokeWidth={2.5} />
+                          ) : volume < 50 ? (
+                            <Volume1 size={18} strokeWidth={2.5} />
+                          ) : (
+                            <Volume2 size={18} strokeWidth={2.5} />
+                          )}
+                        </button>
+                        <input
+                          type="range"
+                          min="0"
+                          max="100"
+                          value={volume}
+                          onChange={handleVolumeChange}
+                          style={{
+                            background: `linear-gradient(to right, #ffffff 0%, #ffffff ${volume}%, #475569 ${volume}%, #475569 100%)`
+                          }}
+                          className="volume-slider-thumb w-full h-2 border border-black rounded-full appearance-none cursor-pointer outline-none"
+                          title={`Volume: ${volume}%`}
+                        />
+                      </div>
+
+                      {/* Right: Info/Playlist Toggle & Shield Capsule */}
+                      <div className="flex items-center gap-1.5 shrink-0" onClick={(e) => e.stopPropagation()}>
+                        {/* Info / Playlist Toggle Button */}
+                        <button
+                          onClick={() => setActiveTab(activeTab === 'info' ? 'playlist' : 'info')}
+                          className={`border border-white/40 rounded-lg px-2 py-0.5 shadow-md flex items-center gap-1 font-black text-[11px] uppercase tracking-wider transition-all active:scale-95 cursor-pointer shrink-0 ${activeTab === 'info' ? 'bg-sky-500 text-white' : 'bg-black/70 hover:bg-slate-800 text-white'}`}
+                          title={activeTab === 'info' ? "Show Playlist" : "Show Video Info"}
+                        >
+                          {activeTab === 'info' ? (
+                            <>
+                              <ListMusic size={13} strokeWidth={2.5} />
+                              <span>Playlist</span>
+                            </>
+                          ) : (
+                            <>
+                              <Info size={13} strokeWidth={2.5} />
+                              <span>Info</span>
+                            </>
+                          )}
+                        </button>
+
+                        {/* Shield Toggle Capsule */}
+                        <button
+                          onClick={toggleScreenProtector}
+                          className={`group shrink-0 h-6 rounded-full flex items-center transition-all duration-300 relative border border-white/40 px-0.5 shadow-md ${screenProtectorActive ? 'bg-emerald-500 w-11' : 'bg-black/70 hover:bg-slate-800 w-11'}`}
+                          title={screenProtectorActive ? "Disable Shield (Enable Embed UI)" : "Enable Shield (Hide Embed UI)"}
+                        >
+                          <div
+                            className={`w-4 h-4 rounded-full bg-white shadow-md transition-transform duration-300 flex items-center justify-center ${screenProtectorActive ? 'translate-x-5' : 'translate-x-0'}`}
+                          >
+                            {screenProtectorActive ? (
+                              <Shield size={10} fill="currentColor" className="text-emerald-700" />
+                            ) : (
+                              <ShieldOff size={10} className="text-slate-800" />
+                            )}
+                          </div>
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 ) : isLocal ? (
                   <div className="rounded-xl overflow-hidden shadow-2xl border-[2px] border-black/50 aspect-video relative bg-gradient-to-br from-slate-800 via-indigo-950 to-slate-900 flex flex-col items-center justify-center text-white select-none">
@@ -334,63 +436,68 @@ const FullscreenVideoInfo = () => {
 
             return (
               <div className="flex flex-col gap-0.5">
-                {/* Single Unified Author & Video Info Card */}
+                {/* Single Unified Hero Video Metadata Card */}
                 <div className="mt-1 px-2.5">
-                  <div className="border-2 border-[#052F4A] rounded-2xl p-3 bg-slate-100 shadow-md relative overflow-hidden flex items-center gap-3 shrink-0">
-                    {/* Avatar */}
-                    {isValidProfileImg ? (
-                      <img
-                        src={profileImg}
-                        alt={author}
-                        className="w-12 h-12 rounded-full border-2 border-[#052F4A] object-cover bg-slate-900 shrink-0 shadow-sm"
-                        onError={(e) => {
-                          e.target.style.display = 'none';
-                        }}
-                      />
-                    ) : (
-                      <div className="w-12 h-12 rounded-full border-2 border-[#052F4A] bg-[#052F4A] flex items-center justify-center text-white shrink-0 shadow-sm">
-                        <User size={22} strokeWidth={2.5} />
-                      </div>
-                    )}
+                  <div className="border-2 border-[#052F4A] rounded-2xl p-3 bg-slate-100 shadow-md relative overflow-hidden flex flex-col gap-2.5 shrink-0 text-[#052F4A]">
+                    {/* Row 1: Centered Avatar (48px) & Uploader Name with Subtle YouTube Icon Button on Right */}
+                    <div className="relative flex items-center justify-center w-full min-w-0">
+                      <div className="flex items-center justify-center gap-3 min-w-0 max-w-full px-7">
+                        {isValidProfileImg ? (
+                          <img
+                            src={profileImg}
+                            alt={author}
+                            className="w-12 h-12 rounded-full border-2 border-[#052F4A] object-cover bg-slate-900 shrink-0 shadow-sm"
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                            }}
+                          />
+                        ) : (
+                          <div className="w-12 h-12 rounded-full border-2 border-[#052F4A] bg-[#052F4A] flex items-center justify-center text-white shrink-0 shadow-sm">
+                            <User size={22} strokeWidth={2.5} />
+                          </div>
+                        )}
 
-                    {/* Info Column (Author + Subtitle View Count & Date) */}
-                    <div className="flex flex-col min-w-0 flex-1 justify-center">
-                      <span className="font-black text-base text-[#052F4A] truncate leading-tight" title={author}>
-                        {author}
-                      </span>
-                      {(viewCountText || formattedDate) && (
-                        <div className="font-bold text-[11px] uppercase tracking-wide text-[#052F4A]/80 truncate mt-0.5">
-                          {viewCountText && <span>{viewCountText} views</span>}
-                          {viewCountText && formattedDate && <span className="mx-1.5 opacity-50">•</span>}
-                          {formattedDate && <span>{formattedDate}</span>}
-                        </div>
-                      )}
+                        <span className="font-black text-lg text-[#052F4A] truncate leading-tight text-center" title={author}>
+                          {author}
+                        </span>
+                      </div>
+
+                      {/* Subtle Compact YouTube External Link Button */}
+                      {(() => {
+                        const ytUrl = video.video_url || video.videoUrl || (video.video_id ? `https://www.youtube.com/watch?v=${video.video_id}` : null);
+                        if (!ytUrl) return null;
+                        return (
+                          <a
+                            href={ytUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="absolute right-0 top-1/2 -translate-y-1/2 border-2 border-[#052F4A] rounded-xl p-1.5 bg-slate-200/60 hover:bg-sky-100 shadow-sm flex items-center justify-center text-[#052F4A] transition-all active:scale-95 cursor-pointer select-none shrink-0"
+                            title="View on YouTube"
+                          >
+                            <ExternalLink size={16} strokeWidth={2.5} />
+                          </a>
+                        );
+                      })()}
                     </div>
 
-                    {/* YouTube Action Button */}
-                    {(() => {
-                      const ytUrl = video.video_url || video.videoUrl || (video.video_id ? `https://www.youtube.com/watch?v=${video.video_id}` : null);
-                      if (!ytUrl) return null;
-                      return (
-                        <a
-                          href={ytUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="border-2 border-[#052F4A] rounded-xl px-2.5 py-1.5 bg-slate-200/60 hover:bg-sky-100 shadow-sm flex items-center gap-1.5 text-[#052F4A] font-black text-xs uppercase tracking-wider transition-all active:scale-95 cursor-pointer select-none shrink-0"
-                          title="View on YouTube"
-                        >
-                          <ExternalLink size={14} strokeWidth={2.5} />
-                          <span>YouTube</span>
-                        </a>
-                      );
-                    })()}
+                    {/* Horizontal Divider */}
+                    <div className="w-full h-px bg-[#052F4A]/20" />
+
+                    {/* Row 2: Dedicated Full-Width Prominent View Count & Upload Date */}
+                    {(viewCountText || formattedDate) && (
+                      <div className="flex items-center justify-center text-center font-black text-[15px] text-[#052F4A] truncate py-0.5 tracking-tight">
+                        {viewCountText && <span>{viewCountText} views</span>}
+                        {viewCountText && formattedDate && <span className="mx-2.5 opacity-40">•</span>}
+                        {formattedDate && <span>{formattedDate}</span>}
+                      </div>
+                    )}
                   </div>
                 </div>
 
                 {/* Tab Content */}
                 <div className="px-0 min-h-0 flex-1 mt-2">
                   {activeTab === 'info' ? (
-                    <div className="flex flex-col gap-3 px-2">
+                    <div className="flex flex-col gap-3 px-2.5">
                       {renderVideoThumbnail()}
                       {/* Integrated Description Box */}
                       <div className="flex flex-col">
@@ -427,7 +534,7 @@ const FullscreenVideoInfo = () => {
                   ) : (
                     /* Playlist Tab */
                     currentPlaylistId && (
-                      <div className="w-full px-1 mt-0 flex justify-center">
+                      <div className="w-full px-0 mt-0 flex justify-center">
                         <div className="w-full">
                           {(() => {
                             const playlistObj = allPlaylists.find(p => String(p.id) === String(currentPlaylistId));
@@ -470,6 +577,8 @@ const FullscreenVideoInfo = () => {
                                 inCarousel={false}
                                 contentAboveGrid={renderVideoThumbnail()}
                                 showOnlyShuffleHover={true}
+                                hideTitleBar={true}
+                                miniGridLimit={18}
                                 onVideoSelect={handleVideoSelect}
                               />
                             );
@@ -483,107 +592,6 @@ const FullscreenVideoInfo = () => {
             );
           })()}
         </div>
-
-        {/* Standalone Floating Bottom Control Dock */}
-        {!fullscreenInfoBlanked && video && (
-          <div className="shrink-0 w-full mt-2 px-2.5 pb-2.5 relative transition-all duration-300 z-20 flex items-center justify-between gap-3">
-            {/* Left: Volume Control (White Fill, Dimmer Grey Unfilled Track, Thick Black Outlined Circle Thumb) */}
-            <div className="flex items-center gap-2.5 flex-1 min-w-[110px]">
-              <style>{`
-                .volume-slider-input::-webkit-slider-thumb {
-                  -webkit-appearance: none;
-                  appearance: none;
-                  width: 16px;
-                  height: 16px;
-                  border-radius: 50%;
-                  background: #ffffff;
-                  border: 2.5px solid #000000;
-                  box-shadow: 0 2px 4px rgba(0,0,0,0.7);
-                  cursor: pointer;
-                  transition: transform 0.15s ease;
-                }
-                .volume-slider-input::-webkit-slider-thumb:hover {
-                  transform: scale(1.15);
-                }
-                .volume-slider-input::-moz-range-thumb {
-                  width: 16px;
-                  height: 16px;
-                  border-radius: 50%;
-                  background: #ffffff;
-                  border: 2.5px solid #000000;
-                  box-shadow: 0 2px 4px rgba(0,0,0,0.7);
-                  cursor: pointer;
-                  transition: transform 0.15s ease;
-                }
-                .volume-slider-input::-moz-range-thumb:hover {
-                  transform: scale(1.15);
-                }
-              `}</style>
-              <button
-                onClick={() => handleVolumeChange({ target: { value: volume === 0 ? 100 : 0 } })}
-                className="transition-transform shrink-0 hover:scale-110 active:scale-95 flex items-center justify-center"
-                style={ICON_STYLE}
-                title={volume === 0 ? "Unmute" : "Mute"}
-              >
-                {volume === 0 ? (
-                  <VolumeX size={22} strokeWidth={2.5} />
-                ) : volume < 50 ? (
-                  <Volume1 size={22} strokeWidth={2.5} />
-                ) : (
-                  <Volume2 size={22} strokeWidth={2.5} />
-                )}
-              </button>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={volume}
-                onChange={handleVolumeChange}
-                style={{
-                  background: `linear-gradient(to right, #ffffff 0%, #ffffff ${volume}%, #475569 ${volume}%, #475569 100%)`
-                }}
-                className="volume-slider-input w-full h-2.5 border-2 border-black rounded-full appearance-none cursor-pointer shadow-[0_2px_5px_rgba(0,0,0,0.8)] transition-all outline-none"
-                title={`Volume: ${volume}%`}
-              />
-            </div>
-
-            {/* Center: Info vs Playlist Mode Toggle Button */}
-            <button
-              onClick={() => setActiveTab(activeTab === 'info' ? 'playlist' : 'info')}
-              className={`border-2 border-[#052F4A] rounded-xl px-2.5 py-1.5 shadow-md flex items-center gap-1.5 font-black text-xs uppercase tracking-wider transition-all active:scale-95 cursor-pointer shrink-0 ${activeTab === 'info' ? 'bg-[#052F4A] text-slate-100' : 'bg-slate-100/90 hover:bg-sky-100 text-[#052F4A]'}`}
-              title={activeTab === 'info' ? "Show Playlist" : "Show Video Info"}
-            >
-              {activeTab === 'info' ? (
-                <>
-                  <ListMusic size={15} strokeWidth={2.5} />
-                  <span>Playlist</span>
-                </>
-              ) : (
-                <>
-                  <Info size={15} strokeWidth={2.5} />
-                  <span>Info</span>
-                </>
-              )}
-            </button>
-
-            {/* Right: Shield Toggle Capsule */}
-            <button
-              onClick={toggleScreenProtector}
-              className={`group shrink-0 h-8 rounded-full flex items-center transition-all duration-300 relative border-2 border-[#052F4A] px-1 shadow-md ${screenProtectorActive ? 'bg-emerald-500 w-14' : 'bg-slate-100/90 hover:bg-slate-200 w-14'}`}
-              title={screenProtectorActive ? "Disable Shield (Enable Embed UI)" : "Enable Shield (Hide Embed UI)"}
-            >
-              <div
-                className={`w-5 h-5 rounded-full bg-slate-100 shadow-md border border-[#052F4A] transition-transform duration-300 flex items-center justify-center ${screenProtectorActive ? 'translate-x-6' : 'translate-x-0'}`}
-              >
-                {screenProtectorActive ? (
-                  <Shield size={12} fill="currentColor" className="text-emerald-700" />
-                ) : (
-                  <ShieldOff size={12} className="text-[#052F4A]" />
-                )}
-              </div>
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );

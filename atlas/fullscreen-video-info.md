@@ -16,11 +16,12 @@ The Fullscreen Video Info panel is a dedicated component that appears in the rig
 |  +-------------------------------------------------+  |
 |  | [Content Layer: z-10]                           |  |
 |  |                                                 |  |
-|  |  1. Channel Info & Metadata (Avatar, View Count) |  |
-|  |  2. Playlist Card (Solid Header)                |  |
-|  |  3. Video Thumbnail (16:9, rounded, shadow)     |  |
-|  |  4. 15 Mini Thumbnail Grid                      |  |
-|  |  5. Bottom Controls (Volume Slider & Playback)  |  |
+|  |  1. Hero Video Metadata Card                    |  |
+|  |     Row 1: Centered Avatar & Uploader           |  |
+|  |     Row 2: View Count & Upload Date             |  |
+|  |  2. Main Video Thumbnail (16:9, rounded, shadow)  |  |
+|  |     [Hover Overlay Controls: Vol, Tab, Shield]  |  |
+|  |  3. 18 Mini Thumbnail Grid (3 x 6)              |  |
 |  +-------------------------------------------------+  |
 +-------------------------------------------------------+
 ```
@@ -34,24 +35,21 @@ The Fullscreen Video Info panel is a dedicated component that appears in the rig
 
 ### 2. Layout Sections (Top to Bottom)
 
-- **Channel Info & Metadata Card**:
-  - A single solid light card (`bg-slate-100 border-2 border-[#052F4A] rounded-2xl p-3 shadow-md`).
-  - **Left**: Circular author avatar (48px) with a dark navy border. Automatically resolves profile pictures via YouTube Channels API or fallback enrichment if missing.
-  - **Middle Column**: Channel author name (large, bold `#052F4A`) stacked with view count, upload date, and enriched description.
-  - **Right**: Compact YouTube action pill button with `ExternalLink` icon and `"YouTube"` text.
-- **Playlist Tab & Card Container**:
-  - Displays parent playlist metadata and mini previews via `PlaylistCard` in `large` size mode.
-  - Container is horizontally indented (`px-5 mt-2`) for clean visual hierarchy.
-  - Renders a **2-row solid Playlist Header Card** (`bg-slate-100 border-2 border-[#052F4A] rounded-2xl p-1 shadow-md h-[68px]` matching Author Card height):
-    - **Row 1**: Playlist Title.
-    - **Row 2**: Content type indicators (`🎬 Videos`, `🔮 Orbs`, `🖼️ Banners`) on left + Colored folder distribution pill badges (`[🔴 4] [🔵 2]`) on right.
-  - **Main Video Thumbnail**: 16:9 aspect ratio thumbnail positioned directly underneath the 2-row Playlist Header Card (and above the 15 mini thumbnail grid).
-  - **Mini Thumbnail Grid**: 15 preview items ($3 \text{ columns} \times 5 \text{ rows}$, `grid-cols-3 gap-1`) floating directly underneath the Main Video Thumbnail, filtered strictly to display **video thumbnails** (Orbs and Banner presets excluded) ordered by most recently watched. Previews feature a clean hover transition (`opacity-80 group-hover/mini:opacity-100`) without play button overlays or browser title tooltips. Clicking any mini thumbnail immediately launches playback for that video via `onVideoSelect`.
-- **Bottom Control Dock**:
-  - A frameless floating control dock (`flex items-center justify-between gap-3 px-2.5 pb-2.5`). The shared card background backdrop has been removed so controls float directly over the atmospheric banner background.
-  - **Left (Volume Controller)**: Frameless volume control section featuring a white mute icon with a 4-direction black outline drop shadow (`filter: drop-shadow(...)`), a dynamic range track with a solid bright white fill to the left of the marker (`linear-gradient(to right, #ffffff 0%, #ffffff ${volume}%, #475569 ${volume}%, #475569 100%)`) against a dimmer slate-grey unfilled track (`#475569`), a 2px solid black track border, and a circular white thumb handle with a thick 2.5px solid black outline border (`border: 2.5px solid #000000`).
-  - **Center**: Standalone interactive Info vs Playlist mode toggle pill button (`border-2 border-[#052F4A] shadow-md`).
-  - **Right**: Standalone Screen Protector Shield toggle capsule with a dark navy border (`border-2 border-[#052F4A] shadow-md`).
+- **Hero Video Metadata Card**:
+  - A single consolidated light card (`bg-slate-100 border-2 border-[#052F4A] rounded-2xl p-3 shadow-md flex flex-col gap-2.5`).
+  - **Outer Alignment**: Outer border aligns pixel-perfectly with the main thumbnail and mini preview grid edges via consistent 10px (`px-2.5`) outer container padding.
+  - **Row 1 (Centered Hero Uploader & Subtle YouTube Link)**:
+    - **Center**: Centered circular author avatar (48px) with dark navy border alongside channel uploader name in prominent hero font (**`text-lg font-black text-[#052F4A]`**).
+    - **Right Edge**: Subtle, low-profile YouTube icon button (`ExternalLink` icon button, absolute-positioned on the right).
+  - **Row 2 (Dedicated Prominent Full-Width Metadata Bar)**:
+    - **Center**: Full-width dedicated row displaying View Count & Upload Date in large, bold, high-visibility typography (**`text-[15px] font-black text-[#052F4A]`**, e.g. `1,234,567 views  •  October 10, 2026`).
+- **Main Video Thumbnail (Hover Controls Overlay)**: 
+  - 16:9 aspect ratio thumbnail positioned directly underneath the Hero Video Metadata Card.
+  - **Hover Overlay Controls Bar**: Hovering over the main video thumbnail reveals a gradient backdrop bar at the bottom of the thumbnail containing:
+    - Integrated Volume Slider controller (mute button + volume range track)
+    - Info vs. Playlist mode tab toggle button (`ListMusic` / `Info`)
+    - Screen Protector Shield toggle capsule (`Shield` / `ShieldOff`)
+- **Mini Thumbnail Grid (18 Items)**: 18 preview items ($3 \text{ columns} \times 6 \text{ rows}$, `grid-cols-3 gap-1.5`) floating directly underneath the Main Video Thumbnail, filling the sidebar panel vertically. Filtered strictly to display **video thumbnails** (Orbs and Banner presets excluded) ordered by most recently watched (`COALESCE(vp.last_updated, '1970-01-01') DESC, pi.position DESC`). Previews feature a clean hover transition (`opacity-80 group-hover/mini:opacity-100`) without play button overlays or browser title tooltips. Clicking any mini thumbnail immediately launches playback for that video via `onVideoSelect`.
 
 ---
 

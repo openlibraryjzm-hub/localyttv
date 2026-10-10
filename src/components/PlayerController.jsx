@@ -1715,6 +1715,7 @@ export default function PlayerController({
       const reader = new FileReader();
       reader.onloadend = () => {
         setCustomOrbImage(reader.result);
+        setCustomOrbImageName(file.name);
         setIsAdjustingImage(true);
       };
       reader.readAsDataURL(file);
@@ -1730,11 +1731,13 @@ export default function PlayerController({
         // Update the banner that is currently visible
         if (viewMode === 'full') {
           updateFullscreenBanner({
-            image: imageDataUrl
+            image: imageDataUrl,
+            name: file.name
           });
         } else {
           updateSplitscreenBanner({
-            image: imageDataUrl
+            image: imageDataUrl,
+            name: file.name
           });
         }
       };
@@ -1829,6 +1832,8 @@ export default function PlayerController({
     // Orb State (From Config Store now)
     customOrbImage,
     setCustomOrbImage,
+    customOrbImageName,
+    setCustomOrbImageName,
     isSpillEnabled,
     setIsSpillEnabled,
     orbSpill,
@@ -1890,178 +1895,6 @@ export default function PlayerController({
   };
 
   // --- Orb Image Override Logic ---
-  // New Orb Navigation State (Now derived from Store)
-
-  // Computed: Playlists that have at least one Orb assigned
-  const availableOrbPlaylists = useMemo(() => {
-    if (!allPlaylists || !orbFavorites) return [];
-    // Get all playlist IDs that have at least one orb assigned
-    const playlistIdsWithOrbs = new Set();
-    orbFavorites.forEach(orb => {
-      if (orb.playlistIds && orb.playlistIds.length > 0) {
-        orb.playlistIds.forEach(id => playlistIdsWithOrbs.add(String(id)));
-      }
-    });
-    // Filter allPlaylists
-    return allPlaylists.filter(p => playlistIdsWithOrbs.has(String(p.id)));
-  }, [allPlaylists, orbFavorites]);
-
-  // Computed: Orbs in the currently selected Orb-Nav playlist
-  const availableOrbsInPlaylist = useMemo(() => {
-    if (!orbNavPlaylistId || !orbFavorites) return [];
-    return orbFavorites.filter(orb => orb.playlistIds && orb.playlistIds.map(String).includes(String(orbNavPlaylistId)));
-  }, [orbNavPlaylistId, orbFavorites]);
-
-  // Handler: Navigate Orb Playlists
-  const navigateOrbPlaylist = direction => {
-    if (availableOrbPlaylists.length === 0) return;
-    let nextIndex = 0;
-    const currentIndex = orbNavPlaylistId ? availableOrbPlaylists.findIndex(p => String(p.id) === String(orbNavPlaylistId)) : -1;
-    if (direction === 'next') {
-      nextIndex = (currentIndex + 1) % availableOrbPlaylists.length;
-    } else {
-      nextIndex = (currentIndex - 1 + availableOrbPlaylists.length) % availableOrbPlaylists.length;
-    }
-    const nextPlaylist = availableOrbPlaylists[nextIndex];
-    if (nextPlaylist) {
-      setOrbNavPlaylistId(nextPlaylist.id);
-
-      // Auto-select first orb in new playlist
-      const orbsInNext = orbFavorites.filter(orb => orb.playlistIds && orb.playlistIds.map(String).includes(String(nextPlaylist.id)));
-      if (orbsInNext.length > 0) {
-        setOrbNavOrbId(orbsInNext[0].id);
-      } else {
-        setOrbNavOrbId(null);
-      }
-    }
-  };
-
-  // Handler: Navigate Orbs in current Orb-Nav Playlist
-  const navigateOrb = direction => {
-    if (availableOrbsInPlaylist.length === 0) return;
-    let nextIndex = 0;
-    const currentIndex = orbNavOrbId ? availableOrbsInPlaylist.findIndex(o => o.id === orbNavOrbId) : -1;
-    if (direction === 'next') {
-      nextIndex = (currentIndex + 1) % availableOrbsInPlaylist.length;
-    } else {
-      nextIndex = (currentIndex - 1 + availableOrbsInPlaylist.length) % availableOrbsInPlaylist.length;
-    }
-    const nextOrb = availableOrbsInPlaylist[nextIndex];
-    if (nextOrb) {
-      setOrbNavOrbId(nextOrb.id);
-    }
-  };
-
-  // --- Banner Navigation Logic ---
-
-  // Computed: Playlists that have at least one Banner assigned
-  const availableBannerPlaylists = useMemo(() => {
-    if (!allPlaylists || !bannerPresets) return [];
-    const playlistIdsWithBanners = new Set();
-    bannerPresets.forEach(preset => {
-      if (preset.playlistIds && preset.playlistIds.length > 0) {
-        preset.playlistIds.forEach(id => playlistIdsWithBanners.add(String(id)));
-      }
-    });
-    return allPlaylists.filter(p => playlistIdsWithBanners.has(String(p.id)));
-  }, [allPlaylists, bannerPresets]);
-
-  // Computed: Banners in the currently selected Banner-Nav playlist
-  const availableBannersInPlaylist = useMemo(() => {
-    if (!bannerNavPlaylistId || !bannerPresets) return [];
-    return bannerPresets.filter(preset => preset.playlistIds && preset.playlistIds.map(String).includes(String(bannerNavPlaylistId)));
-  }, [bannerNavPlaylistId, bannerPresets]);
-
-  // Handler: Navigate Banner Playlists
-  const navigateBannerPlaylist = direction => {
-    if (availableBannerPlaylists.length === 0) return;
-    let nextIndex = 0;
-    const currentIndex = bannerNavPlaylistId ? availableBannerPlaylists.findIndex(p => String(p.id) === String(bannerNavPlaylistId)) : -1;
-    if (direction === 'next') {
-      nextIndex = (currentIndex + 1) % availableBannerPlaylists.length;
-    } else {
-      nextIndex = (currentIndex - 1 + availableBannerPlaylists.length) % availableBannerPlaylists.length;
-    }
-    const nextPlaylist = availableBannerPlaylists[nextIndex];
-    if (nextPlaylist) {
-      setBannerNavPlaylistId(nextPlaylist.id);
-
-      // Auto-select first banner in new playlist
-      const bannersInNext = bannerPresets.filter(preset => preset.playlistIds && preset.playlistIds.map(String).includes(String(nextPlaylist.id)));
-      if (bannersInNext.length > 0) {
-        setBannerNavBannerId(bannersInNext[0].id);
-      } else {
-        setBannerNavBannerId(null);
-      }
-    }
-  };
-
-  // Handler: Navigate Banners in current Banner-Nav Playlist
-  const navigateBanner = direction => {
-    if (availableBannersInPlaylist.length === 0) return;
-    let nextIndex = 0;
-    const currentIndex = bannerNavBannerId ? availableBannersInPlaylist.findIndex(b => b.id === bannerNavBannerId) : -1;
-    if (direction === 'next') {
-      nextIndex = (currentIndex + 1) % availableBannersInPlaylist.length;
-    } else {
-      nextIndex = (currentIndex - 1 + availableBannersInPlaylist.length) % availableBannersInPlaylist.length;
-    }
-    const nextBanner = availableBannersInPlaylist[nextIndex];
-    if (nextBanner) {
-      setBannerNavBannerId(nextBanner.id);
-    }
-  };
-
-  // --- Unified Navigation Handlers ---
-  const handlePlaylistNav = direction => {
-    // direction: 'prev' | 'next'
-    // Filter navigationItems to only include playlists, then map to their data
-    const playlistItems = navigationItems.filter(item => item.type === 'playlist').map(item => item.data);
-    if (playlistItems.length === 0) return;
-
-    const navigatedId = activeNavigationMode === 'orb' ? orbNavPlaylistId : bannerNavPlaylistId;
-    const currentId = navigatedId || currentPlaylistId;
-    const currentIndex = playlistItems.findIndex(p => String(p.id) === String(currentId));
-
-    console.log('[DEBUG_NAV] handlePlaylistNav:', {
-      direction,
-      activeNavigationMode,
-      navigatedId,
-      currentPlaylistId,
-      currentId,
-      playlistCount: playlistItems.length,
-      currentIndex
-    });
-
-    let nextIndex;
-    if (direction === 'next') {
-      nextIndex = (currentIndex + 1) % playlistItems.length;
-    } else {
-      nextIndex = (currentIndex - 1 + playlistItems.length) % playlistItems.length;
-    }
-
-    console.log('[DEBUG_NAV] nextIndex calculated:', nextIndex);
-
-    const nextPlaylist = playlistItems[nextIndex];
-    if (nextPlaylist) {
-      if (activeNavigationMode === 'orb') {
-        setOrbNavPlaylistId(nextPlaylist.id);
-        // Auto-select first orb in new playlist
-        const orbsInNext = orbFavorites.filter(orb => orb.playlistIds && orb.playlistIds.map(String).includes(String(nextPlaylist.id)));
-        setOrbNavOrbId(orbsInNext.length > 0 ? orbsInNext[0].id : null);
-      } else {
-        setBannerNavPlaylistId(nextPlaylist.id);
-      }
-    }
-  };
-  const handleItemNav = direction => {
-    // direction: 'prev' | 'next'
-    if (activeNavigationMode === 'orb') {
-      navigateOrb(direction);
-    } else {
-      navigateBanner(direction);
-    }
-  };
   const getEffectiveOrbImage = () => {
     // -1. CHECK LIVE PREVIEW MODE (Highest Priority)
     if (isOrbPreviewMode) {
@@ -2406,8 +2239,6 @@ export default function PlayerController({
     setCurrentPage,
     setActiveNavigationMode,
     activeNavigationMode,
-    handlePlaylistNav,
-    handleItemNav,
     showColorPicker,
     setShowColorPicker,
     setHoveredColorName,

@@ -176,7 +176,7 @@ export const useConfigStore = create(
                 bannerPresets: [...state.bannerPresets, {
                     ...preset,
                     id: preset.id || Date.now().toString(),
-                    name: preset.name || `Banner ${state.bannerPresets.length + 1}`,
+                    name: preset.name || state.fullscreenBanner?.name || state.splitscreenBanner?.name || `Banner ${state.bannerPresets.length + 1}`,
                     createdAt: Date.now(),
                     playlistIds: preset.playlistIds || [],
                     // Ensure we save both configs if present, or fallback to flat inputs if coming from legacy
@@ -235,6 +235,8 @@ export const useConfigStore = create(
             // Custom Orb Image & Spill
             customOrbImage: null,
             setCustomOrbImage: (val) => set({ customOrbImage: val }),
+            customOrbImageName: null,
+            setCustomOrbImageName: (val) => set({ customOrbImageName: val }),
             isSpillEnabled: false,
             setIsSpillEnabled: (val) => set({ isSpillEnabled: val }),
             orbSpill: { tl: true, tr: true, bl: true, br: true },
@@ -284,7 +286,7 @@ export const useConfigStore = create(
             addOrbFavorite: (favorite) => set((state) => ({
                 orbFavorites: [...state.orbFavorites, {
                     id: favorite.id || Date.now().toString(),
-                    name: favorite.name || `Favorite ${state.orbFavorites.length + 1}`,
+                    name: favorite.name || state.customOrbImageName || `Favorite ${state.orbFavorites.length + 1}`,
                     createdAt: Date.now(),
                     customOrbImage: favorite.customOrbImage,
                     isSpillEnabled: favorite.isSpillEnabled,

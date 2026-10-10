@@ -126,30 +126,28 @@ export default function AppPage({ onBack }) {
             const reader = new FileReader();
             reader.onloadend = async () => {
                 const cachedUrl = await saveImageToCache(reader.result, 'banner');
-                if (side === 'left') updateFullscreenBanner({ image: cachedUrl });
-                else updateSplitscreenBanner({ image: cachedUrl });
+                if (side === 'left') updateFullscreenBanner({ image: cachedUrl, name: file.name });
+                else updateSplitscreenBanner({ image: cachedUrl, name: file.name });
             };
             reader.readAsDataURL(file);
         }
     };
 
     const handleSavePreset = () => {
-        const name = prompt("Enter a name for this preset:", `Banner ${new Date().toLocaleDateString()}`);
-        if (!name) return;
-
+        const defaultName = fullscreenBanner?.name || splitscreenBanner?.name || `Banner ${new Date().toLocaleDateString()}`;
         const newPreset = {
             id: Date.now().toString(),
-            name: name,
+            name: defaultName,
             fullscreenBanner: fullscreenBanner,
             splitscreenBanner: splitscreenBanner,
             playlistIds: selectedPlaylistIds,
             // Legacy fallbacks for card thumbnail
-            customBannerImage: fullscreenBanner.image || splitscreenBanner.image
+            customBannerImage: fullscreenBanner?.image || splitscreenBanner?.image
         };
 
         addBannerPreset(newPreset);
         setSelectedPlaylistIds([]);
-        alert('Banner Preset Saved!');
+        alert(`Banner Preset "${defaultName}" Saved!`);
     };
 
     const handleCopy = (fromSide) => {

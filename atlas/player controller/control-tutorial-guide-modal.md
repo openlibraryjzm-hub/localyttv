@@ -42,7 +42,7 @@ State is managed by `selectedMenuId` in `ControlTutorialModal.jsx`:
 | Menu ID | Subcomponent | Description |
 | :--- | :--- | :--- |
 | `'playlist'` | `PlayerControllerPlaylistMenu` | Top Playlist Menu (title, presets, group carousel, history chevrons) |
-| `'orb'` | `PlayerControllerOrbMenu` | Central Orb Menu (8 surrounding buttons: Orb Config, Banners, API Key, Nav Toggle, Explorer Hub, Chevrons) |
+| `'orb'` | `PlayerControllerOrbMenu` | Central Orb Menu (5 surrounding elements: Orb Config, Banners, API Key, Cat Icon, Explorer Hub) |
 | `'video'` | `PlayerControllerVideoMenu` | Top Video Menu (chevrons, folder filters, pin, like, shuffle, `?` Control Guide button) |
 
 ---

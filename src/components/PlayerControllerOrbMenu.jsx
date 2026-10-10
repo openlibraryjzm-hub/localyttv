@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Folder, Play, Home, List, Shuffle, Grid3X3, Star, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, Check, CheckCircle2, X, Settings2, Pin, Share2, Info, Key, BarChart2, Bookmark, MoreHorizontal, Heart, ListMusic, Zap, Radio, Flame, ChevronsLeft, ChevronsRight, Upload, Palette, History as HistoryIcon, Layout, Layers, Compass, Library, Eye, EyeOff, RotateCcw, ThumbsUp, Plus, Anchor as AnchorIcon, Type, MousePointer2, ArrowLeftRight, Circle, Settings, Move, LayoutGrid, Clock, HelpCircle, Monitor, Smartphone, Target } from 'lucide-react';
+import { Folder, Play, Home, List, Shuffle, Grid3X3, Star, ChevronUp, ChevronDown, Check, CheckCircle2, X, Settings2, Pin, Share2, Info, Key, BarChart2, Bookmark, MoreHorizontal, Heart, ListMusic, Zap, Radio, Flame, Upload, Palette, History as HistoryIcon, Layout, Layers, Compass, Library, Eye, EyeOff, RotateCcw, ThumbsUp, Plus, Anchor as AnchorIcon, Type, MousePointer2, ArrowLeftRight, Circle, Settings, Move, LayoutGrid, Clock, HelpCircle, Monitor, Smartphone, Target, Cat } from 'lucide-react';
 import { usePlaylistStore } from '../store/playlistStore';
 import { useNavigationStore } from '../store/navigationStore';
 import { usePinStore } from '../store/pinStore';
@@ -73,8 +73,6 @@ export default function PlayerControllerOrbMenu(props) {
     setFullscreenInfoBlanked,
     setViewMode,
     setCurrentPage,
-    handlePlaylistNav,
-    handleItemNav,
     activePage,
     isOrbPreviewMode,
     // Orb Navigation State (Shared)
@@ -83,8 +81,6 @@ export default function PlayerControllerOrbMenu(props) {
     orbNavOrbId,
     setOrbNavOrbId,
     // Banner Navigation State (Shared)
-    activeNavigationMode,
-    setActiveNavigationMode,
     bannerNavPlaylistId,
     setBannerNavPlaylistId,
     bannerNavBannerId,
@@ -245,66 +241,16 @@ export default function PlayerControllerOrbMenu(props) {
           <span className="text-[14px] font-black text-[#052F4A] leading-none">{activePage || 1}</span>
         </button>
 
-        {/* Navigation Mode Toggle (Bottom Right) */}
-        <button onClick={() => setActiveNavigationMode(activeNavigationMode === 'orb' ? 'banner' : 'orb')} onTouchStart={() => setActiveNavigationMode(activeNavigationMode === 'orb' ? 'banner' : 'orb')} className={`absolute rounded-full flex items-center justify-center bg-white shadow-xl hover:scale-110 active:scale-95 group/btn z-50 border-2 border-[#052F4A] text-[#052F4A] opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300`} style={{
+        {/* Cat Decorative Icon (Bottom Right) */}
+        <div className="absolute rounded-full flex items-center justify-center bg-white shadow-xl group/btn z-50 border-2 border-[#052F4A] text-[#052F4A] opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 pointer-events-none" style={{
           left: '85%',
           top: '85%',
           transform: 'translate(-50%, -50%)',
           width: `28px`,
           height: `28px`
-        }} title={getInspectTitle(activeNavigationMode === 'orb' ? "Switch to Banner Navigation Mode" : "Switch to Orb Navigation Mode")}>
-          {activeNavigationMode === 'orb' ? (
-            <Circle size={14} className="text-[#052F4A]" strokeWidth={2.5} />
-          ) : (
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#052F4A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="2" y="6" width="20" height="12" rx="2" />
-            </svg>
-          )}
-        </button>
-
-        {/* Prev Playlist */}
-        <button onClick={() => handlePlaylistNav('prev')} onTouchStart={() => handlePlaylistNav('prev')} className="absolute rounded-full flex items-center justify-center bg-white shadow-xl hover:scale-110 active:scale-95 group/btn z-50 border-2 border-[#052F4A] opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300" style={{
-          left: '2%',
-          top: '38%',
-          transform: 'translate(-50%, -50%)',
-          width: `28px`,
-          height: `28px`
-        }} title={getInspectTitle(activeNavigationMode === 'orb' ? "Previous Orb Playlist" : "Previous Banner Category")}>
-          <ChevronsLeft size={14} className="text-[#052F4A]" strokeWidth={2.5} />
-        </button>
-
-        {/* Prev Item */}
-        <button onClick={() => handleItemNav('prev')} onTouchStart={() => handleItemNav('prev')} className="absolute rounded-full flex items-center justify-center bg-white shadow-xl hover:scale-110 active:scale-95 group/btn z-50 border-2 border-[#052F4A] opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300" style={{
-          left: '2%',
-          top: '62%',
-          transform: 'translate(-50%, -50%)',
-          width: `28px`,
-          height: `28px`
-        }} title={getInspectTitle(activeNavigationMode === 'orb' ? "Previous Orb" : "Previous Banner Item")}>
-          <ChevronLeft size={14} className="text-[#052F4A]" strokeWidth={2.5} />
-        </button>
-
-        {/* Next Playlist */}
-        <button onClick={() => handlePlaylistNav('next')} onTouchStart={() => handlePlaylistNav('next')} className="absolute rounded-full flex items-center justify-center bg-white shadow-xl hover:scale-110 active:scale-95 group/btn z-50 border-2 border-[#052F4A] opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300" style={{
-          left: '98%',
-          top: '38%',
-          transform: 'translate(-50%, -50%)',
-          width: `28px`,
-          height: `28px`
-        }} title={getInspectTitle(activeNavigationMode === 'orb' ? "Next Orb Playlist" : "Next Banner Category")}>
-          <ChevronsRight size={14} className="text-[#052F4A]" strokeWidth={2.5} />
-        </button>
-
-        {/* Next Item */}
-        <button onClick={() => handleItemNav('next')} onTouchStart={() => handleItemNav('next')} className="absolute rounded-full flex items-center justify-center bg-white shadow-xl hover:scale-110 active:scale-95 group/btn z-50 border-2 border-[#052F4A] opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300" style={{
-          left: '98%',
-          top: '62%',
-          transform: 'translate(-50%, -50%)',
-          width: `28px`,
-          height: `28px`
-        }} title={getInspectTitle(activeNavigationMode === 'orb' ? "Next Orb" : "Next Banner Item")}>
-          <ChevronRight size={14} className="text-[#052F4A]" strokeWidth={2.5} />
-        </button>
+        }} title={getInspectTitle("Cat Icon")}>
+          <Cat size={14} className="text-[#052F4A]" strokeWidth={2.5} />
+        </div>
 
       </div>
     </div>

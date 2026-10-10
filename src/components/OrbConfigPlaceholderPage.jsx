@@ -2,6 +2,7 @@ import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { Settings, Plus, Trash2, ZoomIn, Move, Maximize, X, Check, ChevronDown, Save, MoreHorizontal, Eye } from 'lucide-react';
 import { useConfigStore } from '../store/configStore';
 import { usePlaylistStore } from '../store/playlistStore';
+import { usePlaylistGroupStore } from '../store/playlistGroupStore';
 import { getAllPlaylistMetadata } from '../api/playlistApi';
 import { getThumbnailUrl } from '../utils/youtubeUtils';
 import OrbCropModal from './OrbCropModal';
@@ -15,6 +16,7 @@ import BottomNavigation from './BottomNavigation';
 const OrbConfigPlaceholderPage = () => {
     const {
         customOrbImage, setCustomOrbImage,
+        customOrbImageName, setCustomOrbImageName,
         isSpillEnabled, setIsSpillEnabled,
         orbSpill, setOrbSpill,
         orbImageScale, setOrbImageScale,
@@ -44,8 +46,30 @@ const OrbConfigPlaceholderPage = () => {
     const bannerVertical = effectiveBanner?.verticalPosition ?? 0;
     const bannerHorizontal = effectiveBanner?.horizontalOffset ?? 0;
 
-    // Playlist Store
+    // Playlist Store & Explorer Page Isolation
     const { allPlaylists } = usePlaylistStore();
+    const { activePage, groups, getGroupIdsForPlaylist } = usePlaylistGroupStore();
+
+    // Filter playlists based on active explorer page (Hub Isolation)
+    const filteredPlaylists = useMemo(() => {
+        return allPlaylists.filter(p => {
+            const groupIds = getGroupIdsForPlaylist(p.id);
+            if (activePage === 1) {
+                // Page 1: Playlists in P1 groups + Unsorted (no group)
+                if (groupIds.length === 0) return true;
+                return groupIds.some(gid => {
+                    const group = groups.find(g => g.id === gid);
+                    return group && (group.page || 1) === 1;
+                });
+            } else {
+                // Page 2+: Only playlists assigned to carousels on this page
+                return groupIds.some(gid => {
+                    const group = groups.find(g => g.id === gid);
+                    return group && (group.page || 1) === activePage;
+                });
+            }
+        });
+    }, [allPlaylists, groups, activePage, getGroupIdsForPlaylist]);
 
     const [isCropModalOpen, setIsCropModalOpen] = useState(false);
 
@@ -127,9 +151,10 @@ const OrbConfigPlaceholderPage = () => {
     };
 
     const handleSaveOrb = () => {
+        const presetName = customOrbImageName || `Orb ${new Date().toLocaleDateString()}`;
         const newPreset = {
             id: Date.now().toString(),
-            name: `Orb ${new Date().toLocaleDateString()}`,
+            name: presetName,
             customOrbImage,
             isSpillEnabled,
             orbSpill,
@@ -143,7 +168,7 @@ const OrbConfigPlaceholderPage = () => {
 
         addOrbFavorite(newPreset);
         setSelectedPlaylistIds([]);
-        alert(`Orb Configuration Saved!`);
+        alert(`Orb Configuration "${presetName}" Saved!`);
     };
 
     const handleOrbImageUpload = (e) => {
@@ -153,6 +178,7 @@ const OrbConfigPlaceholderPage = () => {
             reader.onloadend = async () => {
                 const cachedUrl = await saveImageToCache(reader.result, 'orb');
                 setCustomOrbImage(cachedUrl);
+                setCustomOrbImageName(file.name);
             };
             reader.readAsDataURL(file);
         }
@@ -465,9 +491,9 @@ const OrbConfigPlaceholderPage = () => {
                                                 <ChevronDown size={16} className={`transform transition-transform ${isPlaylistDropdownOpen ? 'rotate-180' : ''}`} />
                                             </button>
 
-                                            {isPlaylistDropdownOpen && (
+                                             {isPlaylistDropdownOpen && (
                                                 <div className="absolute top-full left-0 right-0 mt-2 bg-slate-100 border-2 border-[#052F4A] rounded-xl shadow-2xl z-50 max-h-60 overflow-y-auto p-2 space-y-1.5">
-                                                    {allPlaylists.map(playlist => {
+                                                    {filteredPlaylists.map(playlist => {
                                                         const isSelected = selectedPlaylistIds.includes(playlist.id);
                                                         const { thumbnailUrl, itemCount } = getPlaylistThumbnailAndCount(playlist);
 
@@ -521,6 +547,11 @@ const OrbConfigPlaceholderPage = () => {
                                                             </button>
                                                         );
                                                     })}
+                                                    {filteredPlaylists.length === 0 && (
+                                                        <div className="px-3 py-4 text-center text-[#052F4A]/60 italic text-xs font-bold">
+                                                            No playlists found on Page {activePage}
+                                                        </div>
+                                                    )}
                                                 </div>
                                             )}
                                         </div>

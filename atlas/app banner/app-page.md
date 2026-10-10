@@ -41,7 +41,7 @@ AppPage is the primary configuration interface for the application header. It ha
 - **The Action Area (Bottom/Scrollable)**:
   - **Flow-Based Actions**: The "Target Playlists" dropdown and "Save" button are located at the very bottom of the scroll area. They only appear after you've scrolled past the configuration boxes.
   - **Target Playlists Dropdown**: A "Target Playlists" dropdown that shows playlists belonging to the current Explorer Hub, featuring 16:9 representative thumbnails (or fallback icons) and item count badges. The menu opens upwards to avoid screen clipping.
-  - **Compact Save Action**: A square icon button that captures both halves into a playlist-linked preset.
+  - **Compact Save Action**: A square icon button that captures both halves into a playlist-linked preset. Automatically names the preset using the uploaded image file's name (e.g. `dog.png`).
 
 - **Preset Management**:
   - **Unified Presets**: Saving a preset captures the configuration of **both** halves.

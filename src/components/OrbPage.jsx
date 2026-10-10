@@ -4,6 +4,7 @@ import OrbGroupColumn from './OrbGroupColumn';
 import OrbCropModal from './OrbCropModal';
 import { useConfigStore } from '../store/configStore';
 import { usePlaylistStore } from '../store/playlistStore';
+import { usePlaylistGroupStore } from '../store/playlistGroupStore';
 import { saveImageToCache } from '../api/platformBridge';
 
 import { FOLDER_COLORS } from '../utils/folderColors';
@@ -36,6 +37,28 @@ export default function OrbPage({ onBack, onNavigateToYou, onNavigateToPage, onN
     } = useConfigStore();
 
     const allPlaylists = usePlaylistStore(state => state.allPlaylists);
+    const { activePage, groups, getGroupIdsForPlaylist } = usePlaylistGroupStore();
+
+    // Filter playlists based on active explorer page (Hub Isolation)
+    const filteredPlaylists = React.useMemo(() => {
+        return allPlaylists.filter(p => {
+            const groupIds = getGroupIdsForPlaylist(p.id);
+            if (activePage === 1) {
+                // Page 1: Playlists in P1 groups + Unsorted (no group)
+                if (groupIds.length === 0) return true;
+                return groupIds.some(gid => {
+                    const group = groups.find(g => g.id === gid);
+                    return group && (group.page || 1) === 1;
+                });
+            } else {
+                // Page 2+: Only playlists assigned to carousels on this page
+                return groupIds.some(gid => {
+                    const group = groups.find(g => g.id === gid);
+                    return group && (group.page || 1) === activePage;
+                });
+            }
+        });
+    }, [allPlaylists, groups, activePage, getGroupIdsForPlaylist]);
 
     const [hoveredFavoriteId, setHoveredFavoriteId] = useState(null);
 
@@ -586,7 +609,7 @@ export default function OrbPage({ onBack, onNavigateToYou, onNavigateToPage, onN
                                                 <div className="playlist-assignment-menu absolute top-6 left-6 bg-white border-2 border-slate-200 rounded-lg p-2 shadow-xl z-[100] min-w-[180px] max-h-[200px] overflow-hidden flex flex-col">
                                                     <div className="text-[9px] font-bold uppercase text-slate-400 mb-2 px-1">Playlists</div>
                                                     <div className="overflow-y-auto flex-1 space-y-0.5 pr-1">
-                                                        {allPlaylists.map((playlist) => {
+                                                        {filteredPlaylists.map((playlist) => {
                                                             const isAssigned = favorite.playlistIds?.includes(playlist.id);
                                                             return (
                                                                 <button
@@ -605,6 +628,11 @@ export default function OrbPage({ onBack, onNavigateToYou, onNavigateToPage, onN
                                                                 </button>
                                                             );
                                                         })}
+                                                        {filteredPlaylists.length === 0 && (
+                                                            <div className="px-2 py-2 text-center text-slate-400 italic text-[9px]">
+                                                                No playlists found on Page {activePage}
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </div>
                                             )}

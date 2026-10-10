@@ -24,8 +24,8 @@ The Orb Configuration Page (`OrbConfigPlaceholderPage.jsx`) provides a streamlin
 2.  **Right Column: Configuration & Save**
     *   **Adjustments**: Sliders for **Scale**, **X Offset**, and **Y Offset**.
     *   **Save Preset**: A dedicated section to finalize the configuration.
-        *   **Playlist Assignment Dropdown**: Displays target playlists with 16:9 representative thumbnail previews (or fallback icons) and item count badges.
-        *   **Save Button**: Clicking "Save Configuration" instantly creates a new preset (auto-named by date), saves it to the store, and clears the selection.
+        *   **Playlist Assignment Dropdown**: Adheres to **Explorer Hub Isolation** (filters playlists to only display those belonging to the active Explorer Page). Displays target playlists with 16:9 representative thumbnail previews (or fallback icons) and item count badges.
+        *   **Save Button**: Clicking "Save Configuration" instantly creates a new preset auto-named by the uploaded image filename (e.g. `dog.png`), saves it to the store, and clears the selection.
 
 ### Workflow
 1.  **Upload**: User uploads an image.

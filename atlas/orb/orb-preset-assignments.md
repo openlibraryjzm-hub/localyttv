@@ -6,17 +6,11 @@ The Orb Preset Assignments system integrates **Orb Presets**, **Audio Visualizer
 
 ## 1. User Interface & Controls
 
-The configuration tools are integrated directly into the **Orb Card** component (`OrbCard.jsx`) displayed in the videos grid.
+The **Orb Card** component (`OrbCard.jsx`) displays the Orb thumbnail image framed by an aesthetic (non-functional) audio visualizer ring. 
 
-### Configuration Popover Menu
-Clicking the **Palette button** (or right-clicking the card) triggers a contextual configuration popover menu containing the following actions:
-1. **Assign Current Color**: Snapshots the currently selected Audio Visualizer color and saves it to the Orb preset.
-2. **Assign Current Banner**: Snapshots the active App Banner configuration (both Fullscreen and Splitscreen images, scaling, and vertical offsets) and saves it to the Orb preset.
-3. **Clear Assigned Color**: Removes the custom visualizer color assignment from the Orb preset.
-4. **Clear Assigned Banner**: Removes the custom App Banner assignment from the Orb preset.
-
-### Visual Indicators
-* **Palette Button Highlight**: If an Orb preset has a custom banner or visualizer color assigned, the palette button on its card lights up in green (`text-emerald-400` / `border-emerald-500/30`), indicating an active custom assignment profile.
+On hover, the card displays:
+1. **Orb Name**: The title of the orb preset.
+2. **Delete Option**: A single Trash icon button allowing instant deletion of the orb preset.
 
 ---
 

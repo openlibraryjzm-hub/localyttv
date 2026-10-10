@@ -18,9 +18,8 @@ The Central Orb is a circular element (154px diameter by default) positioned at 
   - **Orb Config Button**: (Top-Left) Opens the Orb Tab in Settings.
   - **App Banner Button**: (Top-Right) Simple rectangle icon. Opens the App Banner Customization & Configuration page.
   - **YouTube API Key Button**: (Bottom-Left) `Key` icon button. Left-clicking toggles the YouTube Data API v3 Key configuration popup modal.
-  - **Navigation Mode Toggle**: (Bottom-Right) Switches between Orb mode (`Circle` icon) and Banner mode (simple rectangle icon).
+  - **Cat Decorative Icon**: (Bottom-Right) Non-functional decorative button featuring a crisp `Cat` face icon.
   - **Home Hub Button**: (Bottom-Center) Returns to the Explorer page. The icon dynamically displays the **current Explorer page number** (e.g., "1", "2") for instant orientation within the Hub. On click, it locks the app and returns to the gamified dashboard.
-  - **Orb Navigation Chevrons**: 4 icons hugging the direct left/right curve of the 154px orb to cycle Orbs/Playlists or Banners/Categories depending on toggle state.
 - **Spill Toggle**: When enabled, the image extends beyond the circular boundary via configurable quadrants.
 
 ## 2. Configuration & Settings (Orb Tab)

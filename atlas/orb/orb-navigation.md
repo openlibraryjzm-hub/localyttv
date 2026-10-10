@@ -13,21 +13,11 @@ The system introduces a new navigation layer that operates in parallel to the ma
 
 ## User Interface
 
-The controls are located on the main **Player Controller** (the central orb area). They appear on hover for a clean look.
+The navigation chevrons previously hugging the central orb menu have been removed to streamline the player interface. Orb and Banner selection can still be performed directly via the grid cards or settings presets.
 
 ### Controls
 
-1.  **Playlist Navigation (Outer Arrows)**
-    *   **Icon**: Double Chevron (`ChevronsLeft`, `ChevronsRight`)
-    *   **Location**: Far left and far right of the orb.
-    *   **Action**: Cycles through *Assignments-only* playlists. When a new playlist is selected, it automatically selects the first Orb in that playlist to give immediate feedback.
-
-2.  **Orb Navigation (Inner Arrows)**
-    *   **Icon**: Single Chevron (`ChevronLeft`, `ChevronRight`)
-    *   **Location**: Closer to the orb, inside the playlist controls.
-    *   **Action**: Cycles through the Orbs within the *currently selected navigation playlist*.
-
-3.  **Direct Selection (Videos Page)**
+1.  **Direct Selection (Videos Page)**
     *   **Action**: Clicking any **Orb Card** in the main Videos grid will:
         1.  Apply that Orb's visual settings.
         2.  Update the **Orb Navigation State** to match that Orb's playlist and ID.

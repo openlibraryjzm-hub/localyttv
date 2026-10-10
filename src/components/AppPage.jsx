@@ -1,25 +1,78 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Image, Save, ChevronDown, Trash2, Upload, Repeat, ArrowLeft, Check } from 'lucide-react';
+import { Image, Save, ChevronDown, Trash2, Upload, Repeat, Check } from 'lucide-react';
 import { useConfigStore } from '../store/configStore';
 import { usePlaylistStore } from '../store/playlistStore';
 import { usePlaylistGroupStore } from '../store/playlistGroupStore';
+import { getAllPlaylistMetadata } from '../api/playlistApi';
+import { getThumbnailUrl } from '../utils/youtubeUtils';
 import { saveImageToCache } from '../api/platformBridge';
+import BottomNavigation from './BottomNavigation';
 
 /**
  * Radically Simplified AppPage
  * Two vertical bars side-by-side for Left and Right banner halves.
- * No themes, no borders, no layout settings.
+ * Styled with solid light card theme (#052F4A) and dynamic blurred banner backdrop.
  */
 export default function AppPage({ onBack }) {
     const {
         fullscreenBanner, updateFullscreenBanner,
         splitscreenBanner, updateSplitscreenBanner,
         addBannerPreset,
-        stashBanners, restoreBanners
+        stashBanners, restoreBanners,
+        bannerNavBannerId,
+        bannerPresets,
+        bannerPreviewMode
     } = useConfigStore();
+
+    // Resolve dynamic banner background
+    let effectiveBanner = fullscreenBanner;
+    if (bannerNavBannerId && !bannerPreviewMode && bannerPresets?.length) {
+        const preset = bannerPresets.find(p => p.id === bannerNavBannerId);
+        if (preset?.fullscreenBanner) effectiveBanner = preset.fullscreenBanner;
+    }
+
+    const bannerImage = effectiveBanner?.image || '/banner.PNG';
+    const bannerScale = effectiveBanner?.scale ?? 100;
+    const bannerVertical = effectiveBanner?.verticalPosition ?? 0;
+    const bannerHorizontal = effectiveBanner?.horizontalOffset ?? 0;
 
     const { allPlaylists } = usePlaylistStore();
     const { activePage, groups, getGroupIdsForPlaylist } = usePlaylistGroupStore();
+
+    // Playlist metadata for thumbnail previews
+    const [playlistMetadataMap, setPlaylistMetadataMap] = useState({});
+
+    useEffect(() => {
+        async function loadPlaylistMeta() {
+            try {
+                const metadataList = await getAllPlaylistMetadata().catch(() => []);
+                const map = {};
+                if (Array.isArray(metadataList)) {
+                    metadataList.forEach(m => {
+                        map[m.playlist_id] = m;
+                    });
+                }
+                setPlaylistMetadataMap(map);
+            } catch (err) {
+                console.error('Failed to load playlist metadata for dropdown:', err);
+            }
+        }
+        loadPlaylistMeta();
+    }, []);
+
+    const getPlaylistThumbnailAndCount = (playlist) => {
+        const meta = playlistMetadataMap[playlist.id];
+        let thumbnailUrl = null;
+        let itemCount = meta ? meta.count : 0;
+
+        if (playlist.custom_thumbnail_url) {
+            thumbnailUrl = playlist.custom_thumbnail_url;
+        } else if (meta && meta.first_video) {
+            const vid = meta.first_video;
+            thumbnailUrl = vid.thumbnail_url || (vid.video_id ? getThumbnailUrl(vid.video_id, 'medium') : null);
+        }
+        return { thumbnailUrl, itemCount };
+    };
 
     // Filter playlists based on active explorer page (Hub Isolation)
     const filteredPlaylists = React.useMemo(() => {
@@ -115,39 +168,39 @@ export default function AppPage({ onBack }) {
     };
 
     const BannerControlBar = ({ side, config, update }) => (
-        <div className="flex-1 min-w-[320px] bg-white dark:bg-slate-900 rounded-[2rem] md:rounded-[2.5rem] border border-slate-200 dark:border-white/10 shadow-2xl flex flex-col overflow-hidden">
+        <div className="flex-1 min-w-[320px] bg-slate-100 border-2 border-[#052F4A] rounded-2xl md:rounded-3xl shadow-2xl flex flex-col overflow-hidden">
             {/* Bar Header */}
-            <div className="px-6 py-5 md:px-10 md:py-8 border-b border-slate-100 dark:border-white/5 flex items-center justify-between bg-slate-50/50 dark:bg-white/5">
+            <div className="px-6 py-5 md:px-8 md:py-6 border-b-2 border-[#052F4A]/20 bg-slate-200/50 flex items-center justify-between">
                 <div>
-                    <h2 className="text-xl md:text-2xl font-black uppercase tracking-tighter text-slate-800 dark:text-white leading-none">
+                    <h2 className="text-xl md:text-2xl font-black uppercase tracking-tight text-[#052F4A] leading-none">
                         {side === 'left' ? 'Left Half' : 'Right Half'}
                     </h2>
-                    <p className="text-[10px] font-black text-sky-500 uppercase tracking-[0.3em] mt-2">Configuration</p>
+                    <p className="text-[10px] font-black text-[#052F4A]/70 uppercase tracking-[0.3em] mt-1.5">Banner Configuration</p>
                 </div>
                 <div className="flex items-center gap-2">
                     <button
                         onClick={() => handleCopy(side)}
-                        className="p-3 hover:bg-sky-50 dark:hover:bg-sky-500/10 text-sky-500 rounded-2xl transition-all active:scale-90 flex items-center gap-2"
+                        className="p-2.5 border border-[#052F4A]/30 hover:bg-[#052F4A]/10 text-[#052F4A] rounded-xl transition-all active:scale-95 flex items-center gap-1.5 text-xs font-bold uppercase"
                         title="Copy settings to other side"
                     >
-                        <Repeat size={18} />
-                        <span className="text-[10px] font-black uppercase hidden sm:inline">Copy to {side === 'left' ? 'Right' : 'Left'}</span>
+                        <Repeat size={16} />
+                        <span className="hidden sm:inline">Copy to {side === 'left' ? 'Right' : 'Left'}</span>
                     </button>
                     {config.image && (
                         <button 
                             onClick={() => update({ image: null })}
-                            className="p-3 hover:bg-red-50 dark:hover:bg-red-500/10 text-red-500 rounded-2xl transition-all active:scale-90"
+                            className="p-2.5 border border-red-500/30 hover:bg-red-500/10 text-red-600 rounded-xl transition-all active:scale-95"
                             title="Remove Image"
                         >
-                            <Trash2 size={18} className="md:w-5 md:h-5" />
+                            <Trash2 size={16} />
                         </button>
                     )}
                 </div>
             </div>
 
             {/* Preview Box */}
-            <div className="p-4 md:p-10">
-                <div className="aspect-video w-full bg-slate-50 dark:bg-black/40 rounded-[2rem] relative overflow-hidden group border-2 border-dashed border-slate-200 dark:border-white/10 transition-all hover:border-sky-500/30">
+            <div className="p-4 md:p-8">
+                <div className="aspect-video w-full bg-slate-200/60 rounded-2xl relative overflow-hidden group border-2 border-dashed border-[#052F4A]/30 transition-all hover:border-[#052F4A]">
                     {config.image ? (
                         <div 
                             className="w-full h-full transition-transform duration-700"
@@ -160,18 +213,18 @@ export default function AppPage({ onBack }) {
                             }}
                         />
                     ) : (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-300 dark:text-slate-700">
-                            <Image size={40} className="md:w-14 md:h-14 mb-4 opacity-10" />
-                            <span className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.4em] opacity-20">Blank Canvas</span>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center text-[#052F4A]/40">
+                            <Image size={40} className="md:w-12 md:h-12 mb-3 opacity-30" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em]">Blank Canvas</span>
                         </div>
                     )}
                     
                     {/* Interaction Overlay */}
-                    <label className="absolute inset-0 flex flex-col items-center justify-center bg-sky-600/80 opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer backdrop-blur-sm">
-                        <div className="bg-white text-sky-600 p-4 rounded-full shadow-2xl mb-3 transform translate-y-4 group-hover:translate-y-0 transition-transform">
-                            <Upload size={24} />
+                    <label className="absolute inset-0 flex flex-col items-center justify-center bg-[#052F4A]/80 opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer backdrop-blur-sm">
+                        <div className="bg-white text-[#052F4A] p-3.5 rounded-full shadow-2xl mb-2 transform translate-y-3 group-hover:translate-y-0 transition-transform">
+                            <Upload size={22} />
                         </div>
-                        <span className="text-white text-[10px] font-black uppercase tracking-widest transform translate-y-4 group-hover:translate-y-0 transition-transform delay-75">
+                        <span className="text-white text-[10px] font-black uppercase tracking-widest transform translate-y-3 group-hover:translate-y-0 transition-transform delay-75">
                             {config.image ? 'Change Art' : 'Upload Art'}
                         </span>
                         <input type="file" accept="image/*" onChange={(e) => handleBannerUpload(side, e)} className="hidden" />
@@ -180,87 +233,91 @@ export default function AppPage({ onBack }) {
             </div>
 
             {/* Controls */}
-            <div className="px-6 pb-8 md:px-10 md:pb-12 space-y-6 md:space-y-10 flex-1 flex flex-col justify-center">
+            <div className="px-6 pb-6 md:px-8 md:pb-8 space-y-6 flex-1 flex flex-col justify-center">
                 {/* Scale Slider */}
-                <div className="space-y-5">
-                    <div className="flex justify-between items-end">
-                        <label className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Scale Factor</label>
-                        <span className="text-sm md:text-lg font-black text-slate-900 dark:text-white tabular-nums">{config.scale ?? 100}%</span>
+                <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                        <label className="text-xs font-bold uppercase text-[#052F4A]">Scale Factor</label>
+                        <span className="text-xs font-mono font-bold text-[#052F4A] bg-slate-200 px-2 py-0.5 rounded border border-[#052F4A]/20 tabular-nums">{config.scale ?? 100}%</span>
                     </div>
-                    <input
-                        type="range" min="10" max="300"
-                        value={config.scale ?? 100}
-                        onChange={(e) => update({ scale: parseInt(e.target.value) })}
-                        className="w-full h-2 bg-slate-100 dark:bg-white/5 rounded-full appearance-none accent-sky-500 cursor-pointer"
-                    />
+                    <div className="flex items-center gap-3">
+                        <span className="text-[10px] font-bold text-[#052F4A]/70">10%</span>
+                        <input
+                            type="range" min="10" max="300"
+                            value={config.scale ?? 100}
+                            onChange={(e) => update({ scale: parseInt(e.target.value) })}
+                            className="flex-1 h-2 bg-slate-200 rounded-full appearance-none accent-[#052F4A] cursor-pointer"
+                        />
+                        <span className="text-[10px] font-bold text-[#052F4A]/70">300%</span>
+                    </div>
                 </div>
 
                 {/* XY Offsets */}
-                <div className="grid grid-cols-2 gap-6 md:gap-10">
-                    <div className="space-y-5">
-                        <label className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Vertical</label>
+                <div className="grid grid-cols-2 gap-6">
+                    <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                            <label className="text-xs font-bold uppercase text-[#052F4A]">Vertical</label>
+                            <span className="text-xs font-mono font-bold text-[#052F4A] bg-slate-200 px-1.5 py-0.5 rounded border border-[#052F4A]/20 tabular-nums">{config.verticalPosition ?? 0}%</span>
+                        </div>
                         <input
                             type="range" min="-100" max="100"
                             value={config.verticalPosition ?? 0}
                             onChange={(e) => update({ verticalPosition: parseInt(e.target.value) })}
-                            className="w-full h-2 bg-slate-100 dark:bg-white/5 rounded-full appearance-none accent-sky-500 cursor-pointer"
+                            className="w-full h-2 bg-slate-200 rounded-full appearance-none accent-[#052F4A] cursor-pointer"
                         />
                     </div>
-                    <div className="space-y-5">
-                        <label className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Horizontal</label>
+                    <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                            <label className="text-xs font-bold uppercase text-[#052F4A]">Horizontal</label>
+                            <span className="text-xs font-mono font-bold text-[#052F4A] bg-slate-200 px-1.5 py-0.5 rounded border border-[#052F4A]/20 tabular-nums">{config.horizontalOffset ?? 0}%</span>
+                        </div>
                         <input
                             type="range" min="-200" max="200"
                             value={config.horizontalOffset ?? 0}
                             onChange={(e) => update({ horizontalOffset: parseInt(e.target.value) })}
-                            className="w-full h-2 bg-slate-100 dark:bg-white/5 rounded-full appearance-none accent-sky-500 cursor-pointer"
+                            className="w-full h-2 bg-slate-200 rounded-full appearance-none accent-[#052F4A] cursor-pointer"
                         />
                     </div>
                 </div>
 
                 {/* Animation & Flip Toggles */}
-                <div className="pt-6 md:pt-10 border-t border-slate-100 dark:border-white/5 space-y-4 md:space-y-6">
+                <div className="pt-6 border-t-2 border-[#052F4A]/20 space-y-4">
                     {/* Motion Scroll */}
                     <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <div className={`p-3 rounded-2xl transition-all ${config.scrollEnabled ? 'bg-sky-500 text-white shadow-lg shadow-sky-500/20' : 'bg-slate-100 dark:bg-white/5 text-slate-400'}`}>
-                                <Repeat size={18} />
+                        <div className="flex items-center gap-3">
+                            <div className={`p-2.5 rounded-xl border border-[#052F4A]/20 transition-all ${config.scrollEnabled ? 'bg-[#052F4A] text-white shadow-md' : 'bg-slate-200 text-[#052F4A]/60'}`}>
+                                <Repeat size={16} />
                             </div>
                             <div>
-                                <span className="text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-200 block">Motion Scroll</span>
-                                <span className="text-[10px] font-bold text-slate-400 uppercase">Infinite Panning</span>
+                                <span className="text-xs font-bold uppercase text-[#052F4A] block">Motion Scroll</span>
+                                <span className="text-[10px] font-semibold text-[#052F4A]/60 uppercase">Infinite Panning</span>
                             </div>
                         </div>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                            <input
-                                type="checkbox"
-                                checked={config.scrollEnabled}
-                                onChange={(e) => update({ scrollEnabled: e.target.checked })}
-                                className="sr-only peer"
-                            />
-                            <div className="w-12 h-6 bg-slate-200 dark:bg-white/10 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-sky-500"></div>
-                        </label>
+                        <button
+                            onClick={() => update({ scrollEnabled: !config.scrollEnabled })}
+                            className={`w-12 h-6 rounded-full p-1 transition-colors border border-[#052F4A]/20 ${config.scrollEnabled ? 'bg-[#052F4A]' : 'bg-slate-300'}`}
+                        >
+                            <div className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${config.scrollEnabled ? 'translate-x-6' : 'translate-x-0'}`} />
+                        </button>
                     </div>
 
                     {/* Flip Image */}
                     <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <div className={`p-3 rounded-2xl transition-all ${config.flipped ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/20' : 'bg-slate-100 dark:bg-white/5 text-slate-400'}`}>
-                                <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M15 10l5 5-5 5"/><path d="M4 15h16"/></svg>
+                        <div className="flex items-center gap-3">
+                            <div className={`p-2.5 rounded-xl border border-[#052F4A]/20 transition-all ${config.flipped ? 'bg-[#052F4A] text-white shadow-md' : 'bg-slate-200 text-[#052F4A]/60'}`}>
+                                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M15 10l5 5-5 5"/><path d="M4 15h16"/></svg>
                             </div>
                             <div>
-                                <span className="text-xs font-black uppercase tracking-widest text-slate-700 dark:text-slate-200 block">Flip Image</span>
-                                <span className="text-[10px] font-bold text-slate-400 uppercase">Horizontal Mirror</span>
+                                <span className="text-xs font-bold uppercase text-[#052F4A] block">Flip Image</span>
+                                <span className="text-[10px] font-semibold text-[#052F4A]/60 uppercase">Horizontal Mirror</span>
                             </div>
                         </div>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                            <input
-                                type="checkbox"
-                                checked={config.flipped}
-                                onChange={(e) => update({ flipped: e.target.checked })}
-                                className="sr-only peer"
-                            />
-                            <div className="w-12 h-6 bg-slate-200 dark:bg-white/10 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-amber-500"></div>
-                        </label>
+                        <button
+                            onClick={() => update({ flipped: !config.flipped })}
+                            className={`w-12 h-6 rounded-full p-1 transition-colors border border-[#052F4A]/20 ${config.flipped ? 'bg-[#052F4A]' : 'bg-slate-300'}`}
+                        >
+                            <div className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${config.flipped ? 'translate-x-6' : 'translate-x-0'}`} />
+                        </button>
                     </div>
                 </div>
             </div>
@@ -268,86 +325,155 @@ export default function AppPage({ onBack }) {
     );
 
     return (
-        <div className="w-full h-full flex flex-col bg-slate-50 dark:bg-[#020617] overflow-hidden">
-
-            {/* Side Switcher (Always show top padding if header is gone) */}
-            <div className="px-6 py-6 shrink-0">
-                <div className="lg:hidden bg-white dark:bg-white/5 p-1.5 rounded-[1.5rem] flex items-center border border-slate-200 dark:border-white/10 shadow-sm">
-                    <button 
-                        onClick={() => setActiveSide('left')}
-                        className={`flex-1 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all ${activeSide === 'left' ? 'bg-sky-500 text-white shadow-lg' : 'text-slate-400'}`}
-                    >
-                        Left Half
-                    </button>
-                    <button 
-                        onClick={() => setActiveSide('right')}
-                        className={`flex-1 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all ${activeSide === 'right' ? 'bg-sky-500 text-white shadow-lg' : 'text-slate-400'}`}
-                    >
-                        Right Half
-                    </button>
-                </div>
+        <div className="w-full h-full flex flex-col relative overflow-hidden bg-slate-950">
+            {/* Blurred App Banner Background Layer */}
+            <div
+                aria-hidden="true"
+                className="absolute inset-0 pointer-events-none z-0 overflow-hidden"
+            >
+                <div
+                    style={{
+                        position: 'absolute',
+                        inset: 0,
+                        backgroundImage: `url(${bannerImage})`,
+                        backgroundPosition: `${bannerHorizontal}% ${bannerVertical}%`,
+                        backgroundRepeat: 'repeat-x',
+                        backgroundSize: `${bannerScale}vw auto`,
+                        filter: 'blur(36px)',
+                        transform: 'scale(1.25)',
+                        opacity: 0.85,
+                    }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40" />
             </div>
 
-            {/* Content: Two Bars */}
-            <div className="flex-1 overflow-y-auto px-4 pb-12 md:px-12">
-                <div className="flex flex-col lg:flex-row gap-6 md:gap-10 max-w-[1600px] mx-auto items-stretch">
-                    <div className={`${activeSide === 'left' ? 'flex' : 'hidden'} lg:flex flex-1`}>
-                        <BannerControlBar 
-                            side="left" 
-                            config={fullscreenBanner} 
-                            update={updateFullscreenBanner} 
-                        />
-                    </div>
-                    <div className={`${activeSide === 'right' ? 'flex' : 'hidden'} lg:flex flex-1`}>
-                        <BannerControlBar 
-                            side="right" 
-                            config={splitscreenBanner} 
-                            update={updateSplitscreenBanner} 
-                        />
-                    </div>
-                </div>
-
-                {/* Bottom Action Bar (Now scrollable) */}
-                <div className="max-w-[1600px] mx-auto mt-10 p-8 bg-white dark:bg-slate-900/50 rounded-[2rem] border border-slate-200 dark:border-white/10 flex items-center justify-between gap-4">
-                    {/* Playlist Picker */}
-                    <div className="relative flex-1" ref={dropdownRef}>
-                        <button
-                            onClick={() => setIsPlaylistDropdownOpen(!isPlaylistDropdownOpen)}
-                            className="w-full flex items-center justify-between gap-4 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-700 dark:text-slate-300 shadow-sm transition-all"
-                        >
-                            <span className="truncate">
-                                {selectedPlaylistIds.length === 0 ? "Target Playlists" : `${selectedPlaylistIds.length} Selected`}
-                            </span>
-                            <ChevronDown size={16} className={`shrink-0 transition-transform duration-500 ${isPlaylistDropdownOpen ? 'rotate-180' : ''}`} />
-                        </button>
-                        {isPlaylistDropdownOpen && (
-                            <div className="absolute bottom-full mb-3 left-0 w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl z-50 p-2 max-h-[40vh] overflow-y-auto animate-in fade-in slide-in-from-bottom-2 duration-200">
-                                {filteredPlaylists.map(p => (
-                                    <button
-                                        key={p.id}
-                                        onClick={() => setSelectedPlaylistIds(prev => prev.includes(p.id) ? prev.filter(id => id !== p.id) : [...prev, p.id])}
-                                        className={`w-full text-left px-5 py-4 rounded-xl flex items-center justify-between transition-all mb-1 last:mb-0 ${
-                                            selectedPlaylistIds.includes(p.id) 
-                                            ? 'bg-sky-50 dark:bg-sky-500/10 text-sky-600 dark:text-sky-400' 
-                                            : 'hover:bg-slate-50 dark:hover:bg-white/5 text-slate-600 dark:text-slate-400'
-                                        }`}
-                                    >
-                                        <span className="text-xs font-black truncate uppercase tracking-tight">{p.name}</span>
-                                        {selectedPlaylistIds.includes(p.id) && <div className="bg-sky-500 p-1 rounded-full text-white"><Check size={12} /></div>}
-                                    </button>
-                                ))}
-                            </div>
-                        )}
+            {/* Content Layer */}
+            <div className="relative z-10 flex-1 flex flex-col min-h-0 overflow-y-auto">
+                <BottomNavigation title="App Banner Configuration" />
+                
+                <div className="flex-1 p-6 flex flex-col items-center">
+                    {/* Side Switcher (Mobile) */}
+                    <div className="lg:hidden mb-6 w-full max-w-5xl">
+                        <div className="bg-slate-100 p-1.5 rounded-2xl flex items-center border-2 border-[#052F4A] shadow-md">
+                            <button 
+                                onClick={() => setActiveSide('left')}
+                                className={`flex-1 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all ${activeSide === 'left' ? 'bg-[#052F4A] text-white shadow-md' : 'text-[#052F4A]/70'}`}
+                            >
+                                Left Half
+                            </button>
+                            <button 
+                                onClick={() => setActiveSide('right')}
+                                className={`flex-1 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all ${activeSide === 'right' ? 'bg-[#052F4A] text-white shadow-md' : 'text-[#052F4A]/70'}`}
+                            >
+                                Right Half
+                            </button>
+                        </div>
                     </div>
 
-                    {/* Save Action */}
-                    <button
-                        onClick={handleSavePreset}
-                        className="p-5 bg-sky-500 hover:bg-sky-600 text-white rounded-2xl shadow-2xl shadow-sky-500/30 active:scale-95 transition-all flex items-center justify-center shrink-0"
-                        title="Save Preset"
-                    >
-                        <Save size={24} />
-                    </button>
+                    {/* Content: Two Bars */}
+                    <div className="flex flex-col lg:flex-row gap-6 md:gap-8 max-w-5xl w-full items-stretch justify-center mx-auto">
+                        <div className={`${activeSide === 'left' ? 'flex' : 'hidden'} lg:flex flex-1`}>
+                            <BannerControlBar 
+                                side="left" 
+                                config={fullscreenBanner} 
+                                update={updateFullscreenBanner} 
+                            />
+                        </div>
+                        <div className={`${activeSide === 'right' ? 'flex' : 'hidden'} lg:flex flex-1`}>
+                            <BannerControlBar 
+                                side="right" 
+                                config={splitscreenBanner} 
+                                update={updateSplitscreenBanner} 
+                            />
+                        </div>
+                    </div>
+
+                    {/* Bottom Action Bar */}
+                    <div className="w-full max-w-5xl mx-auto mt-8 p-6 bg-slate-100 rounded-2xl border-2 border-[#052F4A] shadow-2xl flex items-center justify-between gap-4">
+                        {/* Playlist Picker */}
+                        <div className="relative flex-1" ref={dropdownRef}>
+                            <label className="text-[10px] font-bold text-[#052F4A] uppercase mb-1 block">Target Playlists</label>
+                            <button
+                                onClick={() => setIsPlaylistDropdownOpen(!isPlaylistDropdownOpen)}
+                                className="w-full bg-white border-2 border-[#052F4A]/30 rounded-xl px-4 py-2.5 text-xs font-bold uppercase text-[#052F4A] flex items-center justify-between hover:bg-slate-50 transition-colors shadow-sm"
+                            >
+                                <span className="truncate">
+                                    {selectedPlaylistIds.length === 0 ? "Select Target Playlists..." : `${selectedPlaylistIds.length} Selected`}
+                                </span>
+                                <ChevronDown size={16} className={`shrink-0 transition-transform duration-300 ${isPlaylistDropdownOpen ? 'rotate-180' : ''}`} />
+                            </button>
+                            {isPlaylistDropdownOpen && (
+                                <div className="absolute bottom-full mb-2 left-0 w-full bg-slate-100 border-2 border-[#052F4A] rounded-xl shadow-2xl z-50 p-2 max-h-60 overflow-y-auto space-y-1.5">
+                                    {filteredPlaylists.map(p => {
+                                        const isSelected = selectedPlaylistIds.includes(p.id);
+                                        const { thumbnailUrl, itemCount } = getPlaylistThumbnailAndCount(p);
+
+                                        return (
+                                            <button
+                                                key={p.id}
+                                                onClick={() => setSelectedPlaylistIds(prev => prev.includes(p.id) ? prev.filter(id => id !== p.id) : [...prev, p.id])}
+                                                className={`w-full text-left p-2 rounded-xl flex items-center gap-3 transition-colors ${
+                                                    isSelected 
+                                                    ? 'bg-[#052F4A] text-white font-bold' 
+                                                    : 'hover:bg-slate-200 text-[#052F4A] font-bold'
+                                                }`}
+                                            >
+                                                {thumbnailUrl ? (
+                                                    <img
+                                                        src={thumbnailUrl}
+                                                        alt={p.name}
+                                                        className="w-14 h-10 rounded-lg object-cover shrink-0 border border-[#052F4A]/20 shadow-sm"
+                                                        onError={(e) => {
+                                                            e.target.onerror = null;
+                                                            e.target.style.display = 'none';
+                                                            if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
+                                                        }}
+                                                    />
+                                                ) : null}
+                                                <div
+                                                    className={`w-14 h-10 rounded-lg flex items-center justify-center shrink-0 border ${
+                                                        isSelected ? 'bg-white/20 text-white border-white/30' : 'bg-slate-200 text-[#052F4A] border-[#052F4A]/20'
+                                                    }`}
+                                                    style={{ display: thumbnailUrl ? 'none' : 'flex' }}
+                                                >
+                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                                                    </svg>
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center justify-between gap-2">
+                                                        <span className="text-xs font-bold truncate uppercase">{p.name}</span>
+                                                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded border shrink-0 ${
+                                                            isSelected ? 'bg-white/20 text-white border-white/30' : 'bg-slate-200/80 text-[#052F4A]/80 border-[#052F4A]/10'
+                                                        }`}>
+                                                            {itemCount} {itemCount === 1 ? 'item' : 'items'}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                {isSelected && (
+                                                    <div className="p-1 bg-white rounded-full text-[#052F4A] shrink-0">
+                                                        <Check size={12} strokeWidth={3} />
+                                                    </div>
+                                                )}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Save Action */}
+                        <div className="flex flex-col justify-end">
+                            <button
+                                onClick={handleSavePreset}
+                                className="py-3 px-6 bg-[#052F4A] hover:bg-[#084267] text-white font-bold uppercase tracking-wide rounded-xl shadow-lg border-2 border-[#052F4A] transition-all flex items-center justify-center gap-2 mt-5"
+                                title="Save Preset"
+                            >
+                                <Save size={16} />
+                                <span className="hidden sm:inline text-xs">Save Preset</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

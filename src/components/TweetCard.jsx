@@ -57,7 +57,6 @@ const TweetCard = ({
         state.pinnedVideos.some(v => v.id === video.id) && !state.priorityPinIds.includes(video.id)
     );
     const isPriority = usePinStore(state => state.priorityPinIds.includes(video.id));
-    const isFollower = usePinStore(state => state.followerPinIds.includes(video.id));
     const { togglePin, togglePriorityPin, removePin } = usePinStore();
 
     // Drumstick rating state
@@ -90,7 +89,6 @@ const TweetCard = ({
         { label: isStickied ? 'Unsticky Video' : 'Sticky Video', action: 'toggleSticky', icon: <svg className="w-4 h-4 text-amber-500" viewBox="0 0 100 100" fill="currentColor"><path d={splatterPath} /></svg> },
         { label: 'Delete', danger: true, action: 'delete', icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg> },
         { label: 'Move to Playlist', action: 'moveToPlaylist', icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg> },
-        { label: 'Set as Playlist Cover', action: 'setPlaylistCover', icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg> },
         { label: 'Copy to Playlist', action: 'copyToPlaylist', icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg> },
     ];
 
@@ -169,7 +167,6 @@ const TweetCard = ({
                                     playlistId={playlistId}
                                     isPinned={isPinnedVideo}
                                     isPriority={isPriority}
-                                    isFollower={isFollower}
                                     onTogglePin={(v) => { togglePin(v); if (onPinClick) onPinClick(v); }}
                                     onTogglePriorityPin={togglePriorityPin}
                                     onRemovePin={(id) => { removePin(id); if (onPinClick) onPinClick(video); }}

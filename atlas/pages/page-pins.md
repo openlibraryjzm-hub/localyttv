@@ -5,7 +5,6 @@ The Pins Page provides a dedicated interface for reviewing temporally saved vide
 **Related Documentation:**
 - **Navigation Flows**: See `navigation-routing.md`.
 - **Backdrop System**: See `blurred-banner-backdrop-system.md` for background styling.
-- **Tasks Integration**: See `tasks-page.md` for task checklists.
 - **Card UI**: See `card-video.md` for pin icon cyclic behaviors.
 
 ---
@@ -20,9 +19,6 @@ The Pins Page provides a dedicated interface for reviewing temporally saved vide
   - **Left Side**: Page title ("Pinned Videos") in bold dark navy text (`text-[#052F4A] font-black`).
   - **Right Side**: Action pills for **Back** (`ChevronLeft` chevron arrow) and **Close** (`X` button, toggles `setViewMode('full')`).
 
-- **Tasks Link Button**:
-  - Direct navigation button (List icon + "Tasks" label + chevron) positioned at the top of content to jump instantly to the `Tasks Page`.
-
 - **Priority Pins Carousel (Top)**:
   - Consistently ranks videos pinned directly through the long-press (Priority Pin) mechanic.
   - Housed inside a **collapsible wrapper** labeled "Priority Pins - History" that initializes expanded by default.
@@ -31,7 +27,6 @@ The Pins Page provides a dedicated interface for reviewing temporally saved vide
 
 - **Regular Pins Grid (Main)**:
   - Standard pinned videos output directly below the priority section.
-  - Contains all dynamically modified pins, including Followers (`FollowerPinIds`).
   - **Date Groupings**: Videos are segregated dynamically based on their `pinnedAt` timestamps (e.g., "30th January, 2026").
   - Each grouping provides a date header showing the exact day and internal video count below it.
   - Video Cards within each block render identical to the main grid output parameters.

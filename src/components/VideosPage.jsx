@@ -796,28 +796,6 @@ const VideosPage = ({ onVideoSelect, onSecondPlayerSelect }) => {
           setShowPlaylistSelector(true);
           break;
 
-        case 'setPlaylistCover':
-          if (!activePlaylistId) return;
-          try {
-            const isLocal = video.is_local || (!video.video_url?.includes('youtube.com') && !video.video_url?.includes('youtu.be'));
-            if (isLocal) {
-              alert("Cannot set a YouTube thumbnail cover for local videos.");
-              return;
-            }
-            // Use max resolution for cover
-            const coverUrl = `https://img.youtube.com/vi/${video.video_id}/maxresdefault.jpg`;
-            await updatePlaylist(activePlaylistId, null, null, null, coverUrl);
-            alert(`Playlist cover updated using thumbnail from "${video.title}"`);
-
-            // Refresh playlists to reflect change in UI immediately if possible
-            const playlists = await getAllPlaylists();
-            setAllPlaylists(playlists);
-          } catch (error) {
-            console.error('Failed to set playlist cover:', error);
-            alert('Failed to set playlist cover');
-          }
-          break;
-
         case 'copyToPlaylist':
           setSelectedVideoForAction(video);
           setActionType('copy');
@@ -1631,9 +1609,9 @@ const VideosPage = ({ onVideoSelect, onSecondPlayerSelect }) => {
   }, [videosToDisplay, videoProgress]);
 
   // Get pinned videos from store
-  const { pinnedVideos, priorityPinIds, followerPinIds } = usePinStore();
+  const { pinnedVideos, priorityPinIds } = usePinStore();
 
-  // Find ALL pinned videos that are in the current playlist (with folder colors, priority, and follower flags)
+  // Find ALL pinned videos that are in the current playlist (with folder colors and priority flags)
   const pinnedVideosInPlaylist = useMemo(() => {
     if (!videosToDisplay || videosToDisplay.length === 0 || !pinnedVideos || pinnedVideos.length === 0) {
       return [];
@@ -1644,7 +1622,7 @@ const VideosPage = ({ onVideoSelect, onSecondPlayerSelect }) => {
       videosToDisplay.map(v => v.video_id || extractVideoId(v.video_url))
     );
 
-    // Find all pinned videos that are in this playlist and attach folder color + priority/follower flags
+    // Find all pinned videos that are in this playlist and attach folder color + priority flags
     const pinsInPlaylist = pinnedVideos
       .filter(pin => {
         const pinVideoId = pin.video_id || extractVideoId(pin.video_url);
@@ -1654,12 +1632,10 @@ const VideosPage = ({ onVideoSelect, onSecondPlayerSelect }) => {
         // Get folder color for this pinned video (use first assigned folder)
         const folders = videoFolderAssignments[pin.id] || [];
         const isPriority = priorityPinIds?.includes(pin.id) || false;
-        const isFollower = followerPinIds?.includes(pin.id) || false;
         return {
           ...pin,
           folder_color: folders.length > 0 ? folders[0] : null,
-          isPriority,
-          isFollower
+          isPriority
         };
       });
 
@@ -1669,7 +1645,7 @@ const VideosPage = ({ onVideoSelect, onSecondPlayerSelect }) => {
       if (!a.isPriority && b.isPriority) return 1;
       return 0;
     });
-  }, [videosToDisplay, pinnedVideos, videoFolderAssignments, priorityPinIds, followerPinIds]);
+  }, [videosToDisplay, pinnedVideos, videoFolderAssignments, priorityPinIds]);
 
   // Sticky header state detection
   const [isStuck, setIsStuck] = useState(false);
@@ -1717,7 +1693,7 @@ const VideosPage = ({ onVideoSelect, onSecondPlayerSelect }) => {
       <div className="relative z-10 flex-1 flex flex-col min-h-0">
         {/* Video Grid - 3 per row */}
       {showUploader ? (
-        <div className="flex-1 overflow-y-auto p-4 bg-transparent">
+        <div className="flex-1 w-full h-full overflow-hidden p-2 bg-transparent">
           <PlaylistUploader
             onUploadComplete={handleUploadComplete}
             onCancel={() => setShowUploader(false)}

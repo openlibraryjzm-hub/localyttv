@@ -1259,11 +1259,7 @@ const PageBanner = ({ title, description, folderColor, onEdit, videoCount, count
                                             {currentOption === 'pinned' && activePinnedVideo && (
                                                 <div
                                                     className="absolute top-1 left-1 flex items-center gap-0.5 px-1 py-0.5 rounded bg-black/60 backdrop-blur-sm border border-white/10"
-                                                    title={
-                                                        activePinnedVideo.isPriority && activePinnedVideo.isFollower ? 'Priority Follower Pin' :
-                                                            activePinnedVideo.isPriority ? 'Priority Pin' :
-                                                                activePinnedVideo.isFollower ? 'Follower Pin' : 'Pin'
-                                                    }
+                                                    title={activePinnedVideo.isPriority ? 'Priority Pin' : 'Pin'}
                                                 >
                                                     <span className="text-[10px] font-bold text-white/90 uppercase mr-1">PINNED</span>
                                                     {/* Crown for priority */}
@@ -1276,10 +1272,6 @@ const PageBanner = ({ title, description, folderColor, onEdit, videoCount, count
                                                         className={activePinnedVideo.isPriority ? 'text-yellow-400' : 'text-white'}
                                                         fill={activePinnedVideo.isPriority ? '#FFD700' : 'white'}
                                                     />
-                                                    {/* Arrow for follower */}
-                                                    {activePinnedVideo.isFollower && (
-                                                        <span className="text-[10px] text-sky-400">→</span>
-                                                    )}
                                                 </div>
                                             )}
                                         </div>

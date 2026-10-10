@@ -1,6 +1,6 @@
 # Video & Tweet Card 3-Dot Menu
 
-The **Video Card / Tweet Card 3-Dot Menu** is a single, vertical “all-in-one” popover used by both **VideoCard** and **TweetCard** on the Videos page. It consolidates pins, drumstick rating, standard actions (delete, move, copy, set cover) and a colored folder assignment pop-out into one decluttered menu opened from a 3-dot trigger.
+The **Video Card / Tweet Card 3-Dot Menu** is a single, vertical “all-in-one” popover used by both **VideoCard** and **TweetCard** on the Videos page. It consolidates pins, drumstick rating, standard actions (delete, move, copy) and a colored folder assignment pop-out into one decluttered menu opened from a 3-dot trigger.
 
 ---
 
@@ -18,14 +18,13 @@ The **Video Card / Tweet Card 3-Dot Menu** is a single, vertical “all-in-one�
 
 The menu is a **vertical standard popup** with these sections from top to bottom:
 
-1. **Pins**: Pin / Unpin, Priority, Follower (Follower only when already pinned).  
+1. **Pins**: Pin / Unpin, Priority.  
 2. **Rating**: Drumstick 1–5 (same as drumstick-rating-system).  
 3. **Sticky Video**: Toggle sticky for the current playlist/folder context.
 4. **Actions**: 
    - Delete  
    - Move to Playlist  
    - Copy to Playlist  
-   - Set as Playlist Cover  
 5. **Colored Folders**: A list item at the very bottom that, when clicked, expands a side pop-out (intelligently placed on the left or right) revealing a 16-color **BulkTagColorGrid**. Click a color in the grid to assign/unassign the video.
 
 ### 1.3 Behavior
@@ -60,13 +59,13 @@ The menu is a **vertical standard popup** with these sections from top to bottom
 The menu receives:
 
 - **video**, **playlistId** – Context for the item.
-- **Pin**: `isPinned`, `isPriority`, `isFollower`, `onTogglePin`, `onTogglePriorityPin`, `onRemovePin`.
+- **Pin**: `isPinned`, `isPriority`, `onTogglePin`, `onTogglePriorityPin`, `onRemovePin`.
 - **Folder**: `videoFolders`, `folderMetadata`, `onStarColorLeftClick`, `onRenameFolder` (no longer `quickAssignFolder` or `onStarColorRightClick`; folder grid is assign/unassign + rename only).
 - **Rating**: `drumstickRating`, `onDrumstickRate`.
 - **Actions**: `menuOptions` (array of `{ label, action, icon, danger? }`), `onMenuOptionClick`.
 - **Trigger**: `triggerClassName` for the 3-dot button.
 
-`menuOptions` are built by the card and include: Sticky Video (toggleSticky), Delete, Move to Playlist, Set as Playlist Cover, Copy to Playlist. The menu splits out the `toggleSticky` option into the “Pins, Rating, Sticky” column and passes the rest as “other” actions.
+`menuOptions` are built by the card and include: Sticky Video (toggleSticky), Delete, Move to Playlist, Copy to Playlist. The menu splits out the `toggleSticky` option into the “Pins, Rating, Sticky” column and passes the rest as “other” actions.
 
 ---
 

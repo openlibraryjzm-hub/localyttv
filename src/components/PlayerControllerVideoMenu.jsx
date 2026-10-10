@@ -158,7 +158,6 @@ export default function PlayerControllerVideoMenu(props) {
     currentVideo,
     isPriorityPin,
     isPinned,
-    isFollowerPin,
     handleLikeClick,
     likeButtonX,
     isVideoLiked,
@@ -475,13 +474,12 @@ export default function PlayerControllerVideoMenu(props) {
                 style={{
                   transform: `translate(calc(-50% + ${pinFirstButtonX}px), -50%)`
                 }}
-                title={getInspectTitle('Pin Systems (Click: Normal/Follower Pin, Hold >600ms: Priority Pin, Right-click: Pins Page)')}
+                title={getInspectTitle('Pin Systems (Click: Normal Pin, Hold >600ms: Priority Pin, Right-click: Pins Page)')}
               >
                 {(() => {
                   const targetVideo = activeVideoItem || currentVideo;
                   const isPriority = targetVideo && isPriorityPin(targetVideo.id);
                   const isNormalPinned = targetVideo && isPinned(targetVideo.id) && !isPriority;
-                  const isFollower = targetVideo && isFollowerPin(targetVideo.id);
                   
                   let iconColor = '#052F4A';
                   let iconFill = 'transparent';
@@ -497,17 +495,7 @@ export default function PlayerControllerVideoMenu(props) {
                   }
                   const iconSize = Math.round(bottomIconSize * 0.5);
                   return <span style={ICON_WHITE_OUTLINE}>
-                    {isFollower ? (
-                      <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none" stroke={iconColor} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round">
-                        <g transform="translate(-3, -3) scale(0.75)">
-                          <path d="M12 17v5" fill={iconFill} />
-                          <path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6a3 3 0 0 0-6 0v4.76Z" fill={iconFill} />
-                        </g>
-                        <g transform="translate(3, 3) scale(0.75)">
-                          <path d="M12 17v5" fill={iconFill} />
-                          <path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6a3 3 0 0 0-6 0v4.76Z" fill={iconFill} />
-                        </g>
-                      </svg>) : <Pin size={iconSize} color={iconColor} fill={iconFill} strokeWidth={strokeWidth} />}
+                    <Pin size={iconSize} color={iconColor} fill={iconFill} strokeWidth={strokeWidth} />
                   </span>;
                 })()}
               </MenuButton>

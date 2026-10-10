@@ -11,6 +11,12 @@ AppPage is the primary configuration interface for the application header. It ha
 
 ## 1: User-Perspective Description
 
+- **Aesthetic & Backdrop**:
+  - **Atmospheric Blurred Backdrop**: Root container (`bg-slate-950`) renders a dynamic, blurred (`blur(36px)`) backdrop of the current active app banner.
+  - **Solid Light Cards**: Banner control bars, control sliders, toggles, target playlist picker, and save button use the signature solid light theme (`bg-slate-100 border-2 border-[#052F4A] rounded-2xl shadow-2xl`) with dark navy (`#052F4A`) accents, borders, and headings.
+  - **Header Navigation**: Integrates `<BottomNavigation title="App Banner Configuration" />` for sticky top navigation containing page title, back, and close controls.
+  - **Centered Layout**: All main control cards and bottom action bars are centered horizontally (`max-w-5xl mx-auto`).
+
 - **Mobile-Optimized Structure**:
   - **Headerless Layout**: The bulky top header has been removed to maximize vertical space for configuration controls.
   - **Side-Switcher (Mobile)**: On small screens, a segmented toggle allows users to switch between the **Left Half** and **Right Half** configurations. Only one bar is shown at a time to save space.
@@ -34,7 +40,7 @@ AppPage is the primary configuration interface for the application header. It ha
 
 - **The Action Area (Bottom/Scrollable)**:
   - **Flow-Based Actions**: The "Target Playlists" dropdown and "Save" button are located at the very bottom of the scroll area. They only appear after you've scrolled past the configuration boxes.
-  - **Target Playlists Dropdown**: A "Target Playlists" dropdown that only shows playlists belonging to the current Explorer Hub. The menu opens upwards to avoid screen clipping.
+  - **Target Playlists Dropdown**: A "Target Playlists" dropdown that shows playlists belonging to the current Explorer Hub, featuring 16:9 representative thumbnails (or fallback icons) and item count badges. The menu opens upwards to avoid screen clipping.
   - **Compact Save Action**: A square icon button that captures both halves into a playlist-linked preset.
 
 - **Preset Management**:

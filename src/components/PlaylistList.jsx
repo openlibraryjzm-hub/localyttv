@@ -383,7 +383,7 @@ const PlaylistList = ({ onPlaylistSelect, onVideoSelect }) => {
     return (
       <div className="w-full h-full flex flex-col overflow-hidden">
         {renderHeader()}
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 w-full h-full overflow-hidden p-2">
           <PlaylistUploader
             onUploadComplete={handleUploadComplete}
             onCancel={() => setShowUploader(false)}

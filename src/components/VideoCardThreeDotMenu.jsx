@@ -15,7 +15,6 @@ const VideoCardThreeDotMenu = forwardRef(({
   // Pin
   isPinned,
   isPriority,
-  isFollower,
   onTogglePin,
   onTogglePriorityPin,
   onRemovePin,
@@ -233,20 +232,6 @@ const VideoCardThreeDotMenu = forwardRef(({
                   <Star size={12} fill={isPriority ? 'currentColor' : 'none'} strokeWidth={2} />
                   Priority
                 </button>
-                {(isPinned || isPriority) && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onTogglePin?.(video);
-                    }}
-                    className={`px-2 py-1 rounded-md text-xs font-medium transition-colors
-                      ${isFollower ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200' : 'bg-black/5 text-slate-700 hover:bg-black/10'}`}
-                    title="Follower pin"
-                  >
-                    Follower
-                  </button>
-                )}
               </div>
             </div>
 

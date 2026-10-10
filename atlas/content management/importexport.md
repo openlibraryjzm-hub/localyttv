@@ -23,7 +23,7 @@ Users see a unified "Config Playlist" modal when clicking the "Config Playlist" 
 **"Add" Tab Features:**
 
 - **Target Playlist Bar**:
-  - **Selection Dropdown**: Select the destination playlist. Defaults to the current active playlist (if opened from Videos page) or "Unsorted".
+  - **Selection Dropdown**: Select the destination playlist using the `ThumbnailPlaylistDropdown` component. Renders a 16:9 representative playlist thumbnail (or fallback icon), playlist title, and item count badge. Defaults to the current active playlist (if opened from Videos page) or "Unsorted".
   - **Create New (+) Button**: Toggles input mode to create a new playlist (enters Name/Description).
   
 - **"All" Links Input**:

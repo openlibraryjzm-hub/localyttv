@@ -31,17 +31,16 @@ const extractVideoId = (url) => {
 };
 
 
-// Save video progress to database and handle pin completion (follower pin transfer or unpin)
-const saveVideoProgress = async (videoId, videoUrl, duration, currentTime, handlePinCompletion, playlistItems) => {
+// Save video progress to database and handle pin completion (auto-unpin)
+const saveVideoProgress = async (videoId, videoUrl, duration, currentTime, removePinByVideoId) => {
   try {
     await updateVideoProgress(videoId, videoUrl, duration, currentTime);
 
-    // Handle pin completion if video reached >=85%
+    // Auto-unpin if video reached >=85%
     if (duration && duration > 0 && currentTime >= 0) {
       const progressPercentage = (currentTime / duration) * 100;
-      if (progressPercentage >= 85 && handlePinCompletion) {
-        // handlePinCompletion will either transfer follower pin or unpin normally
-        handlePinCompletion(videoId, playlistItems);
+      if (progressPercentage >= 85 && removePinByVideoId) {
+        removePinByVideoId(videoId);
       }
     }
   } catch (error) {
@@ -59,7 +58,7 @@ const YouTubePlayer = ({ videoUrl, videoId, playerId = 'default', onEnded, playl
   const durationRef = useRef(null); // Store video duration
   const [apiReady, setApiReady] = useState(false);
   const { viewMode, screenProtectorActive } = useLayoutStore();
-  const { handleFollowerPinCompletion } = usePinStore();
+  const { removePinByVideoId } = usePinStore();
 
   // Pseudo-Controls State
   const [currentTime, setCurrentTime] = useState(0);
@@ -327,8 +326,8 @@ const YouTubePlayer = ({ videoUrl, videoId, playerId = 'default', onEnded, playl
                   // Save to localStorage for quick access
                   savePlaybackTime(id, currentTime);
 
-                  // Save to database with progress percentage (may trigger follower pin at 85%)
-                  saveVideoProgress(id, videoUrl || `https://www.youtube.com/watch?v=${id}`, duration, currentTime, handleFollowerPinCompletion, playlistItemsRef.current);
+                  // Save to database with progress percentage (auto-unpins at 85%)
+                  saveVideoProgress(id, videoUrl || `https://www.youtube.com/watch?v=${id}`, duration, currentTime, removePinByVideoId);
                 } catch (e) {}
               }
             }, 5000); // Save every 5 seconds
@@ -345,7 +344,7 @@ const YouTubePlayer = ({ videoUrl, videoId, playerId = 'default', onEnded, playl
                 const currentTime = playerRef.current.getCurrentTime();
                 const duration = durationRef.current || playerRef.current.getDuration?.() || null;
                 savePlaybackTime(id, currentTime);
-                saveVideoProgress(id, videoUrl || `https://www.youtube.com/watch?v=${id}`, duration, currentTime, null, null);
+                saveVideoProgress(id, videoUrl || `https://www.youtube.com/watch?v=${id}`, duration, currentTime, null);
               } catch (e) {}
             }
           }
@@ -354,7 +353,7 @@ const YouTubePlayer = ({ videoUrl, videoId, playerId = 'default', onEnded, playl
           if (event.data === window.YT.PlayerState.ENDED) {
             savePlaybackTime(id, 0);
             const duration = durationRef.current || playerRef.current?.getDuration?.() || 0;
-            saveVideoProgress(id, videoUrl || `https://www.youtube.com/watch?v=${id}`, duration, duration, handleFollowerPinCompletion, playlistItemsRef.current);
+            saveVideoProgress(id, videoUrl || `https://www.youtube.com/watch?v=${id}`, duration, duration, removePinByVideoId);
 
             if (onEnded) {
               onEnded();
@@ -403,7 +402,7 @@ const YouTubePlayer = ({ videoUrl, videoId, playerId = 'default', onEnded, playl
         clearTimeout(idleTimerRef.current);
       }
     };
-  }, [apiReady, id, videoUrl, handleFollowerPinCompletion, uniquePlayerId, screenProtectorActive]);
+  }, [apiReady, id, videoUrl, removePinByVideoId, uniquePlayerId, screenProtectorActive]);
 
   if (!id) {
     return (

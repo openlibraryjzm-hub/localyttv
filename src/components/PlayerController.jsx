@@ -115,7 +115,6 @@ export default function PlayerController({
     removePin,
     isPriorityPin,
     isPinned,
-    isFollowerPin,
     togglePin
   } = usePinStore();
   const {
@@ -1524,21 +1523,8 @@ export default function PlayerController({
       clearTimeout(pinLongPressTimerRef.current);
       pinLongPressTimerRef.current = null;
 
-      // Check for double-click (within 300ms)
-      const now = Date.now();
-      const timeSinceLastClick = now - lastPinClickTimeRef.current;
-      lastPinClickTimeRef.current = now;
-      const isCurrentlyPinned = isPinned(targetVideo.id) || isPriorityPin(targetVideo.id);
-      if (timeSinceLastClick < 300 && isCurrentlyPinned) {
-        // Double-click on pinned video → Unpin completely
-        removePin(targetVideo.id);
-      } else {
-        // Single click → Toggle pin/follower status
-        // - If unpinned → Normal pin
-        // - If pinned (not follower) → Add follower modifier
-        // - If follower → Remove follower modifier (keep pin)
-        togglePin(targetVideo);
-      }
+      // Single click → Toggle pin status (pins as normal pin or unpins if already pinned)
+      togglePin(targetVideo);
     }
   };
   const handlePinMouseLeave = () => {
@@ -2438,7 +2424,6 @@ export default function PlayerController({
     activeVideoItem,
     currentVideo,
     isPinned,
-    isFollowerPin,
     handleLikeClick,
     likeButtonX,
     isVideoLiked,

@@ -209,7 +209,7 @@ export default function ControlTutorialModal() {
       icon: Pin,
       renderDescription: () => (
         <span>
-          Pins video to quick slots. <LClickBadge /> for Normal Pin, hold (&gt;600ms) for Priority Pin, <RClickBadge text="R-Click" /> to view Pins page. Click active pin for Follower Pin auto-advance.
+          Pins video to quick slots. <LClickBadge /> for Normal Pin, hold (&gt;600ms) for Priority Pin, <RClickBadge text="R-Click" /> to view Pins page.
         </span>
       )
     },
@@ -453,7 +453,6 @@ export default function ControlTutorialModal() {
     currentVideo: { id: 'sample', title: "4K Cyberpunk City Walk - Rainy Night" },
     isPriorityPin: () => false,
     isPinned: () => false,
-    isFollowerPin: () => false,
     handleLikeClick: () => {},
     likeButtonX: 70,
     isVideoLiked: false,

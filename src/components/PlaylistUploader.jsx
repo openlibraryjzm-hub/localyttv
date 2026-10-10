@@ -1,16 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { invoke } from '../api/platformBridge';
-import { createPlaylist, addVideoToPlaylist, assignVideoToFolder, getAllPlaylists, getPlaylistItems, getVideosInFolder, addPlaylistSource, getVideoFolderAssignments, getAllFolderAssignments, removeVideoFromPlaylist } from '../api/playlistApi';
-import { extractPlaylistId, extractVideoId, parseYouTubeDuration, extractChannelInfo, fetchChannelMetadata } from '../utils/youtubeUtils';
+import { createPlaylist, addVideoToPlaylist, assignVideoToFolder, getAllPlaylists, getPlaylistItems, getVideosInFolder, addPlaylistSource, getVideoFolderAssignments, getAllFolderAssignments, removeVideoFromPlaylist, getAllPlaylistMetadata } from '../api/playlistApi';
+import { extractPlaylistId, extractVideoId, parseYouTubeDuration, extractChannelInfo, fetchChannelMetadata, getThumbnailUrl } from '../utils/youtubeUtils';
 import { FOLDER_COLORS } from '../utils/folderColors';
 import PlaylistFolderSelector from './PlaylistFolderSelector';
 import { usePlaylistGroupStore } from '../store/playlistGroupStore';
-import LocalVideoUploader from './LocalVideoUploader';
 import SubscriptionManagerModal from './SubscriptionManagerModal';
-import { useLayoutStore } from '../store/layoutStore';
 import { usePlaylistStore } from '../store/playlistStore';
 import { useConfigStore } from '../store/configStore';
-import { Video, Image, ListVideo, User, MessageSquare, Radio, Layout } from 'lucide-react';
 
 import { extractVideoMetadata, extractImageMetadata } from '../utils/localFileUtils';
 
@@ -82,12 +79,12 @@ const LinkBubbleInput = ({ value, onChange, placeholder, disabled, colorHex, min
     onChange(updated.join('\n'));
   };
 
-  const focusStyle = isFocused ? 'border-sky-500 ring-1 ring-sky-500' : 'border-slate-200';
+  const focusStyle = isFocused ? 'border-[#052F4A] ring-1 ring-[#052F4A]' : 'border-[#052F4A]/30';
   const customBorderStyle = colorHex ? { borderLeft: `3px solid ${colorHex}` } : {};
 
   return (
     <div
-      className={`w-full overflow-y-auto bg-slate-50 border rounded-lg p-2 flex flex-wrap gap-2 items-start transition-colors cursor-text ${focusStyle}`}
+      className={`w-full overflow-y-auto bg-white border-2 rounded-xl p-3 flex flex-wrap gap-2 items-start transition-colors cursor-text ${focusStyle}`}
       style={{ minHeight, maxHeight: "16rem", ...customBorderStyle }}
       onClick={() => document.getElementById(inputId)?.focus()}
     >
@@ -130,19 +127,161 @@ const LinkBubbleInput = ({ value, onChange, placeholder, disabled, colorHex, min
   );
 };
 
+const ThumbnailPlaylistDropdown = ({
+  value,
+  onChange,
+  playlists = [],
+  placeholder = 'Select a playlist',
+  disabled = false,
+  allowDefaultUnsorted = false,
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const selectedPlaylist = playlists.find(p => String(p.id) === String(value));
+  const isDefaultUnsorted = allowDefaultUnsorted && (value === '' || value === null || value === undefined);
+
+  return (
+    <div ref={dropdownRef} className="relative flex-1 min-w-[260px]">
+      <button
+        type="button"
+        onClick={() => !disabled && setIsOpen(!isOpen)}
+        disabled={disabled}
+        className="w-full bg-slate-50 border-2 border-[#052F4A]/30 text-[#052F4A] rounded-xl p-2.5 flex items-center justify-between transition-colors focus:border-[#052F4A] outline-none shadow-sm disabled:opacity-50 hover:bg-slate-100/80"
+      >
+        <div className="flex items-center gap-3 min-w-0">
+          {isDefaultUnsorted ? (
+            <div className="w-16 h-11 rounded-lg bg-slate-200 flex items-center justify-center text-[#052F4A] shrink-0 border border-[#052F4A]/20">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </div>
+          ) : selectedPlaylist?.thumbnailUrl ? (
+            <img
+              src={selectedPlaylist.thumbnailUrl}
+              alt={selectedPlaylist.name}
+              className="w-16 h-11 rounded-lg object-cover shrink-0 border border-[#052F4A]/20 shadow-sm"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.style.display = 'none';
+                if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
+              }}
+            />
+          ) : null}
+          {!isDefaultUnsorted && (
+            <div
+              className="w-16 h-11 rounded-lg bg-slate-200 flex items-center justify-center text-[#052F4A] shrink-0 border border-[#052F4A]/20"
+              style={{ display: selectedPlaylist?.thumbnailUrl ? 'none' : 'flex' }}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </div>
+          )}
+          <span className="font-bold text-sm truncate">
+            {isDefaultUnsorted
+              ? 'Default (Unsorted)'
+              : selectedPlaylist
+              ? selectedPlaylist.name
+              : placeholder}
+          </span>
+        </div>
+        <svg className={`w-4 h-4 text-[#052F4A] transition-transform duration-200 shrink-0 ml-2 ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {isOpen && (
+        <div className="absolute top-full left-0 right-0 mt-1 z-50 bg-slate-100 border-2 border-[#052F4A] rounded-xl shadow-2xl max-h-72 overflow-y-auto p-2 space-y-1.5">
+          {allowDefaultUnsorted && (
+            <button
+              type="button"
+              onClick={() => {
+                onChange('');
+                setIsOpen(false);
+              }}
+              className={`w-full text-left p-2 rounded-lg flex items-center gap-3.5 transition-colors ${
+                value === '' ? 'bg-[#052F4A] text-white' : 'hover:bg-slate-200 text-[#052F4A]'
+              }`}
+            >
+              <div className="w-16 h-11 rounded-lg bg-slate-200 text-[#052F4A] flex items-center justify-center shrink-0 border border-[#052F4A]/20">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="font-bold text-sm truncate">Default (Unsorted)</div>
+              </div>
+            </button>
+          )}
+
+          {playlists.map((playlist) => {
+            const isSelected = String(playlist.id) === String(value);
+            return (
+              <button
+                key={playlist.id}
+                type="button"
+                onClick={() => {
+                  onChange(String(playlist.id));
+                  setIsOpen(false);
+                }}
+                className={`w-full text-left p-2 rounded-xl flex items-center gap-3.5 transition-colors ${
+                  isSelected ? 'bg-[#052F4A] text-white' : 'hover:bg-slate-200 text-[#052F4A]'
+                }`}
+              >
+                {playlist.thumbnailUrl ? (
+                  <img
+                    src={playlist.thumbnailUrl}
+                    alt={playlist.name}
+                    className="w-16 h-11 rounded-lg object-cover shrink-0 border border-[#052F4A]/20 shadow-sm"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.style.display = 'none';
+                      if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
+                    }}
+                  />
+                ) : null}
+                <div
+                  className="w-16 h-11 rounded-lg bg-slate-200 text-[#052F4A] flex items-center justify-center shrink-0 border border-[#052F4A]/20"
+                  style={{ display: playlist.thumbnailUrl ? 'none' : 'flex' }}
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-bold text-sm truncate">{playlist.name}</div>
+                  {playlist.itemCount !== undefined && (
+                    <div className={`text-xs ${isSelected ? 'text-slate-200' : 'text-[#052F4A]/70'}`}>
+                      {playlist.itemCount} {playlist.itemCount === 1 ? 'item' : 'items'}
+                    </div>
+                  )}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const PlaylistUploader = ({ onUploadComplete, onCancel, initialPlaylistId, prismPage = 1 }) => {
   // Store access for page-aware uploading
   const { groups, getGroupIdsForPlaylist, addGroup, addPlaylistToGroup, getNextAvailableColorId } = usePlaylistGroupStore();
   
-  // Zustand Stores for Card Source Toggling
-  const { visibleSourceTypes, setVisibleSourceTypes, toggleSourceTypeVisibility } = useLayoutStore();
-  const activePlaylistItems = usePlaylistStore(s => s.previewPlaylistItems || s.currentPlaylistItems) || [];
-  const activePlaylistId = usePlaylistStore(s => s.previewPlaylistId || s.currentPlaylistId);
-  const orbFavorites = useConfigStore(s => s.orbFavorites) || [];
-  const bannerPresets = useConfigStore(s => s.bannerPresets) || [];
-
   // Main Tab State
-  const [activeTab, setActiveTab] = useState(initialPlaylistId ? 'export' : 'add'); // 'add', 'export', 'json', 'subscriptions', 'source'
+  const [activeTab, setActiveTab] = useState(initialPlaylistId ? 'export' : 'add'); // 'add', 'export', 'json', 'subscriptions'
 
   const getEffectivePlaylistId = () => {
     if (initialPlaylistId) return initialPlaylistId;
@@ -160,13 +299,8 @@ const PlaylistUploader = ({ onUploadComplete, onCancel, initialPlaylistId, prism
   const [error, setError] = useState(null);
   const [progress, setProgress] = useState({ current: 0, total: 0, message: '' });
 
-  // === NEW: SUBSCRIPTION STATE ===
-  const [subscribeToChannels, setSubscribeToChannels] = useState(false);
-  const [maxVideosPerSource, setMaxVideosPerSource] = useState(50); // 10, 20, 50
-
   // === ADD TAB STATE ===
   const [targetMode, setTargetMode] = useState('existing'); // 'existing' or 'new'
-  // If initialPlaylistId is provided, use it. Otherwise empty string (for Unsorted/Default).
   const [selectedPlaylistId, setSelectedPlaylistId] = useState(initialPlaylistId ? String(initialPlaylistId) : '');
   const [newPlaylistName, setNewPlaylistName] = useState('');
   const [newPlaylistDescription, setNewPlaylistDescription] = useState('');
@@ -179,101 +313,6 @@ const PlaylistUploader = ({ onUploadComplete, onCancel, initialPlaylistId, prism
     }, {}),
   });
   const [activeSegment, setActiveSegment] = useState('all');
-
-  // Compute counts of each source type for the current playlist context
-  const getSourceCounts = () => {
-    const playlistId = initialPlaylistId || (selectedPlaylistId ? parseInt(selectedPlaylistId) : activePlaylistId);
-    if (!playlistId) return { orb: 0, banner: 0, video: 0, image: 0, tracker: 0, channel: 0, tweet: 0 };
-
-    const assignedOrbsCount = orbFavorites.filter(orb => orb.playlistIds?.includes(playlistId)).length;
-    const assignedBannersCount = bannerPresets.filter(preset => preset.playlistIds && preset.playlistIds.map(String).includes(String(playlistId))).length;
-
-    let videoCount = 0;
-    let imageCount = 0;
-    let trackerCount = 0;
-    let channelCount = 0;
-    let tweetCount = 0;
-
-    activePlaylistItems.forEach(video => {
-      const isTweet = !video.is_local && (video.video_url?.includes('twitter.com') || video.video_url?.includes('x.com') || video.thumbnail_url?.includes('twimg.com'));
-      if (isTweet) {
-        tweetCount++;
-        return;
-      }
-
-      const isChannel = video.video_url?.includes('youtube.com/channel/') ||
-        video.video_url?.includes('youtube.com/@') ||
-        video.video_url?.startsWith('@') ||
-        video.isChannel;
-      if (isChannel) {
-        channelCount++;
-        return;
-      }
-
-      const isPlaylistTracker = video.isPlaylist || video.video_url?.includes('youtube.com/playlist?list=');
-      if (isPlaylistTracker) {
-        trackerCount++;
-        return;
-      }
-
-      const isImage = video.video_url && /\.(png|jpg|jpeg|gif|webp|bmp|svg)$/i.test(video.video_url);
-      if (isImage) {
-        imageCount++;
-        return;
-      }
-
-      videoCount++;
-    });
-
-    return {
-      orb: assignedOrbsCount,
-      banner: assignedBannersCount,
-      video: videoCount,
-      image: imageCount,
-      tracker: trackerCount,
-      channel: channelCount,
-      tweet: tweetCount
-    };
-  };
-
-  const counts = getSourceCounts();
-
-  const handleSelectLocalVideosForAdd = async () => {
-    try {
-      const result = await invoke('select_video_files');
-      if (result && Array.isArray(result) && result.length > 0) {
-        // Append selected file paths to the active segment's link list
-        const currentLinks = playlistLinks[activeSegment] ? playlistLinks[activeSegment].split('\n').filter(Boolean) : [];
-        const updated = [...currentLinks];
-        result.forEach(filePath => {
-          if (!updated.includes(filePath)) {
-            updated.push(filePath);
-          }
-        });
-        handleLinkChange(activeSegment, updated.join('\n'));
-      }
-    } catch (err) {
-      console.error('Failed to select local files:', err);
-    }
-  };
-
-  const handleSelectLocalFolderForAdd = async () => {
-    try {
-      const result = await invoke('select_video_folder');
-      if (result) {
-        // Append selected folder path with prefix to the active segment's link list
-        const currentLinks = playlistLinks[activeSegment] ? playlistLinks[activeSegment].split('\n').filter(Boolean) : [];
-        const updated = [...currentLinks];
-        const folderToken = `local:device_folder:${result}`;
-        if (!updated.includes(folderToken)) {
-          updated.push(folderToken);
-        }
-        handleLinkChange(activeSegment, updated.join('\n'));
-      }
-    } catch (err) {
-      console.error('Failed to select local folder:', err);
-    }
-  };
 
   // Selector Modal State (for adding existing playlists/folders to inputs)
   const [showSelector, setShowSelector] = useState(false);
@@ -338,8 +377,17 @@ const PlaylistUploader = ({ onUploadComplete, onCancel, initialPlaylistId, prism
 
   const loadPlaylists = async () => {
     try {
-      const allPlaylistsFromDb = await getAllPlaylists();
-      const filtered = allPlaylistsFromDb.filter(p => {
+      const [allPlaylistsFromDb, metadataList] = await Promise.all([
+        getAllPlaylists(),
+        getAllPlaylistMetadata().catch(() => [])
+      ]);
+
+      const metadataMap = new Map();
+      if (Array.isArray(metadataList)) {
+        metadataList.forEach(m => metadataMap.set(m.playlist_id, m));
+      }
+
+      const filtered = (allPlaylistsFromDb || []).filter(p => {
         const groupIds = getGroupIdsForPlaylist(p.id);
         if (prismPage === 1) {
           // Page 1: Playlists in P1 groups + Unsorted
@@ -355,7 +403,25 @@ const PlaylistUploader = ({ onUploadComplete, onCancel, initialPlaylistId, prism
             return group && (group.page || 1) === prismPage;
           });
         }
+      }).map(playlist => {
+        const meta = metadataMap.get(playlist.id);
+        let thumbnailUrl = null;
+        let itemCount = meta ? meta.count : 0;
+
+        if (playlist.custom_thumbnail_url) {
+          thumbnailUrl = playlist.custom_thumbnail_url;
+        } else if (meta && meta.first_video) {
+          const vid = meta.first_video;
+          thumbnailUrl = vid.thumbnail_url || (vid.video_id ? getThumbnailUrl(vid.video_id, 'medium') : null);
+        }
+
+        return {
+          ...playlist,
+          itemCount,
+          thumbnailUrl
+        };
       });
+
       setAvailablePlaylists(filtered);
     } catch (err) {
       console.error('Failed to load playlists:', err);
@@ -465,7 +531,7 @@ const PlaylistUploader = ({ onUploadComplete, onCancel, initialPlaylistId, prism
       // API maxResults is 50.
 
       let fetchCount = 0;
-      const effectiveLimit = subscribeToChannels ? maxVideosPerSource : 1000; // Default limit for massive playlists?
+      const effectiveLimit = 1000; // Default limit for massive playlists
 
       do {
         const remaining = effectiveLimit - allVideos.length;
@@ -1013,75 +1079,6 @@ const PlaylistUploader = ({ onUploadComplete, onCancel, initialPlaylistId, prism
         throw new Error('Could not fetch any videos from provided links.');
       }
 
-      // --- NEW: Add Sources for Subscription ---
-      if (subscribeToChannels && dbPlaylistId) {
-        setProgress({ current: 0, total: 1, message: 'Saving subscription sources...' });
-        // We need to identify the "source intent" from the provided links.
-        // Since we flattened everything, we might need to look at the original tasks.
-
-        for (const task of tasks) {
-          const url = task.url;
-          // Identify source type and value
-          let sourceType = null;
-          let sourceValue = null;
-
-          const pid = extractPlaylistId(url);
-          if (pid) {
-            if (pid.startsWith('UU')) {
-              // It's an uploads playlist, treat as channel source (convert back to UC?)
-              // Or just store as channel source with UC ID?
-              // The user pastes a channel link usually.
-              // If they pasted a channel link, we want to store the CHANNEL ID.
-              // If they pasted a playlist link, we want to store the PLAYLIST ID.
-
-              // Our parser converts channel URL to ... we haven't converted it yet in "tasks", only in "fetch".
-              // "parseLinks" returns the raw URL.
-
-              // If raw URL has "channel/", extract ID.
-              if (url.includes('channel/')) {
-                const m = url.match(/channel\/(UC[\w\-]+)/);
-                if (m) { sourceType = 'channel'; sourceValue = m[1]; }
-              } else if (url.includes('@')) {
-                // We resolved this during fetch, but we don't have the result here easily.
-                // For now, let's just store the HANDLE if possible? 
-                // No, backend expects ID.
-                // We might need to re-resolve or cache the resolution.
-                // Let's assume we re-resolve quickly or skip handles for V1 of subscription.
-                // Actually, let's look at the fetch result.
-                // 'fetchPlaylistVideos' returns 'sourcePlaylistName' but not the ID.
-
-                // Optimization: Just add the resolved ID during the fetch phase to a "sourcesToAdd" list.
-              } else {
-                // Standard playlist
-                const listId = extractPlaylistId(url);
-                if (listId) { sourceType = 'playlist'; sourceValue = listId; }
-              }
-            } else {
-              sourceType = 'playlist';
-              sourceValue = pid;
-            }
-          }
-
-          // Handle @handles specifically if we can
-          if (!sourceType && url.includes('@')) {
-            // We have to resolve it again? That's wasteful. 
-            // Let's rely on the fact that we can call extractVideoId which returns null for channels.
-          }
-
-          if (sourceType && sourceValue) {
-            console.log(`[PlaylistUploader] Adding subscription source: Type=${sourceType}, Value=${sourceValue}, Limit=${maxVideosPerSource}`);
-            try {
-              await addPlaylistSource(dbPlaylistId, sourceType, sourceValue, maxVideosPerSource);
-            } catch (err) {
-              console.error('[PlaylistUploader] Failed to add subscription source:', err);
-              // Don't block video import, but log it
-            }
-          } else {
-            console.warn(`[PlaylistUploader] Could not determine source type/value for URL: ${url}`);
-          }
-        }
-      }
-
       // 4. Insert into DB
       setProgress({ current: 0, total: 1, message: 'Checking for duplicates...' });
 
@@ -1370,80 +1367,90 @@ const PlaylistUploader = ({ onUploadComplete, onCancel, initialPlaylistId, prism
         />
       )}
 
-      <div className="w-full max-w-4xl mx-auto p-0 bg-white rounded-lg border border-slate-200 flex flex-col h-[80vh] max-h-[800px]">
+      <div className="w-full h-full bg-slate-100 border-2 border-[#052F4A] rounded-2xl shadow-2xl flex flex-col overflow-hidden">
 
         {/* HEADER & TABS */}
-        <div className="flex items-center justify-between p-4 border-b border-slate-200 bg-slate-100/80 rounded-t-lg">
-          <div className="flex space-x-4">
+        <div className="flex items-center justify-between p-4 border-b-2 border-[#052F4A] bg-slate-200/80">
+          <div className="flex space-x-2">
             <button
               onClick={() => setActiveTab('add')}
-              className={`px-4 py-2 font-bold rounded-lg transition-colors ${activeTab === 'add' ? 'bg-sky-500 text-white' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200'}`}
+              className={`px-5 py-2 font-bold rounded-xl transition-all border-2 ${
+                activeTab === 'add'
+                  ? 'bg-[#052F4A] text-white border-[#052F4A] shadow-md'
+                  : 'text-[#052F4A] border-transparent hover:bg-[#052F4A]/10'
+              }`}
             >
               Add
             </button>
             <button
               onClick={() => setActiveTab('export')}
-              className={`px-4 py-2 font-bold rounded-lg transition-colors ${activeTab === 'export' ? 'bg-sky-500 text-white' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200'}`}
+              className={`px-5 py-2 font-bold rounded-xl transition-all border-2 ${
+                activeTab === 'export'
+                  ? 'bg-[#052F4A] text-white border-[#052F4A] shadow-md'
+                  : 'text-[#052F4A] border-transparent hover:bg-[#052F4A]/10'
+              }`}
             >
               Export
             </button>
             <button
               onClick={() => setActiveTab('json')}
-              className={`px-4 py-2 font-bold rounded-lg transition-colors ${activeTab === 'json' ? 'bg-sky-500 text-white' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200'}`}
+              className={`px-5 py-2 font-bold rounded-xl transition-all border-2 ${
+                activeTab === 'json'
+                  ? 'bg-[#052F4A] text-white border-[#052F4A] shadow-md'
+                  : 'text-[#052F4A] border-transparent hover:bg-[#052F4A]/10'
+              }`}
             >
               JSON
             </button>
             <button
               onClick={() => setActiveTab('subscriptions')}
-              className={`px-4 py-2 font-bold rounded-lg transition-colors ${activeTab === 'subscriptions' ? 'bg-sky-500 text-white' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200'}`}
+              className={`px-5 py-2 font-bold rounded-xl transition-all border-2 ${
+                activeTab === 'subscriptions'
+                  ? 'bg-[#052F4A] text-white border-[#052F4A] shadow-md'
+                  : 'text-[#052F4A] border-transparent hover:bg-[#052F4A]/10'
+              }`}
             >
               Subscriptions
             </button>
-            <button
-              onClick={() => setActiveTab('source')}
-              className={`px-4 py-2 font-bold rounded-lg transition-colors ${activeTab === 'source' ? 'bg-sky-500 text-white' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-200'}`}
-            >
-              Source
-            </button>
           </div>
 
-          <button onClick={onCancel} className="text-slate-500 hover:text-slate-900">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+          <button
+            onClick={onCancel}
+            className="p-2 rounded-xl text-[#052F4A] hover:bg-[#052F4A]/10 transition-colors border-2 border-[#052F4A]/20 hover:border-[#052F4A]"
+            title="Close"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
         </div>
 
         {/* CONTENT AREA */}
-        <div className="flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-slate-600">
-
-
+        <div className="flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-slate-400">
 
           {/* === ADD TAB === */}
           {activeTab === 'add' && (
             <div className="space-y-6">
               {/* 1. Target Playlist Bar */}
-              <div className="bg-slate-50/80 p-4 rounded-xl border border-slate-200 flex flex-wrap gap-4 items-center">
-                <div className="flex-shrink-0 text-slate-700 font-medium">Add to:</div>
+              <div className="bg-white p-4 rounded-xl border-2 border-[#052F4A]/20 shadow-sm flex flex-wrap gap-4 items-center">
+                <div className="flex-shrink-0 text-[#052F4A] font-bold text-sm">Add to:</div>
 
                 {targetMode === 'existing' ? (
                   <div className="flex-1 flex gap-2">
-                    <select
+                    <ThumbnailPlaylistDropdown
                       value={selectedPlaylistId}
-                      onChange={(e) => setSelectedPlaylistId(e.target.value)}
-                      className="flex-1 bg-white border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-sky-500 focus:border-sky-500 block p-2.5"
+                      onChange={(val) => setSelectedPlaylistId(val)}
+                      playlists={availablePlaylists}
                       disabled={loading}
-                    >
-                      <option value="">Default (Unsorted)</option>
-                      {availablePlaylists.map(p => (
-                        <option key={p.id} value={p.id}>{p.name}</option>
-                      ))}
-                    </select>
+                      allowDefaultUnsorted={true}
+                    />
                     <button
                       onClick={() => setTargetMode('new')}
-                      className="bg-green-600 hover:bg-green-700 text-white p-2.5 rounded-lg transition-colors"
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold p-2.5 rounded-xl border-2 border-emerald-700 shadow-sm transition-colors flex items-center justify-center shrink-0"
                       title="Create New Playlist"
                       disabled={loading}
                     >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
                     </button>
                   </div>
                 ) : (
@@ -1453,7 +1460,7 @@ const PlaylistUploader = ({ onUploadComplete, onCancel, initialPlaylistId, prism
                       placeholder="New Playlist Name"
                       value={newPlaylistName}
                       onChange={(e) => setNewPlaylistName(e.target.value)}
-                      className="w-full bg-white border border-slate-300 text-slate-900 text-sm rounded-lg p-2.5 focus:border-green-500 focus:outline-none"
+                      className="w-full bg-slate-50 border-2 border-[#052F4A]/30 text-[#052F4A] font-semibold text-sm rounded-lg p-2.5 focus:border-emerald-600 outline-none"
                       autoFocus
                       disabled={loading}
                     />
@@ -1463,12 +1470,12 @@ const PlaylistUploader = ({ onUploadComplete, onCancel, initialPlaylistId, prism
                         placeholder="Description (Optional)"
                         value={newPlaylistDescription}
                         onChange={(e) => setNewPlaylistDescription(e.target.value)}
-                        className="flex-1 bg-white border border-slate-300 text-slate-900 text-sm rounded-lg p-2.5 focus:border-green-500 focus:outline-none"
+                        className="flex-1 bg-slate-50 border-2 border-[#052F4A]/30 text-[#052F4A] text-sm rounded-lg p-2.5 focus:border-emerald-600 outline-none"
                         disabled={loading}
                       />
                       <button
                         onClick={() => setTargetMode('existing')}
-                        className="bg-slate-200 hover:bg-slate-300 text-white px-4 py-2 rounded-lg text-sm"
+                        className="bg-slate-200 hover:bg-slate-300 text-[#052F4A] font-bold px-4 py-2 rounded-lg text-sm border-2 border-[#052F4A]/20 transition-colors"
                         disabled={loading}
                       >
                         Cancel
@@ -1478,14 +1485,13 @@ const PlaylistUploader = ({ onUploadComplete, onCancel, initialPlaylistId, prism
                 )}
               </div>
 
-              {/* 2. All Links Input */}
               {/* 2. Links Input with Folder Prism */}
               <div className="space-y-2">
                 <div className="flex justify-between items-center mb-1">
-                  <label className="text-sm font-medium text-slate-700">Assign Links to Folder</label>
+                  <label className="text-sm font-bold text-[#052F4A]">Assign Links to Folder</label>
                   <button
                     onClick={() => handleAddSelectorClick(activeSegment)}
-                    className="text-xs text-sky-500 hover:text-sky-600 flex items-center gap-1 font-medium"
+                    className="text-xs text-[#052F4A] hover:text-[#084267] font-bold flex items-center gap-1 bg-slate-200/70 hover:bg-slate-300/70 px-2.5 py-1 rounded-lg border border-[#052F4A]/20 transition-colors"
                     disabled={loading}
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
@@ -1493,17 +1499,18 @@ const PlaylistUploader = ({ onUploadComplete, onCancel, initialPlaylistId, prism
                   </button>
                 </div>
 
-                <div className="flex items-center h-8 mb-2 border border-slate-300 rounded-lg overflow-hidden bg-slate-100/50">
+                <div className="flex items-center h-8 mb-2 border-2 border-[#052F4A]/30 rounded-xl overflow-hidden bg-slate-100/50">
                   <button
                     onClick={() => setActiveSegment('all')}
-                    className={`h-full min-w-[3.5rem] flex-1 flex items-center justify-center transition-all tabular-nums text-[10px] font-bold leading-none ${activeSegment === 'all'
-                      ? 'opacity-100 z-10 relative after:content-[""] after:absolute after:inset-0 after:ring-2 after:ring-inset after:ring-black/10 bg-white text-black'
-                      : 'opacity-60 hover:opacity-100 bg-white text-black'
-                      }`}
+                    className={`h-full min-w-[3.5rem] flex-1 flex items-center justify-center transition-all tabular-nums text-[10px] font-bold leading-none ${
+                      activeSegment === 'all'
+                        ? 'opacity-100 z-10 relative after:content-[""] after:absolute after:inset-0 after:ring-2 after:ring-inset after:ring-black/10 bg-white text-[#052F4A]'
+                        : 'opacity-60 hover:opacity-100 bg-white text-[#052F4A]'
+                    }`}
                     title="No Folder Assignment"
                   >
                     {playlistLinks['all'] ? (
-                      <span className="text-black drop-shadow-sm">
+                      <span className="text-[#052F4A] drop-shadow-sm font-bold">
                         {playlistLinks['all'].split('\n').filter(Boolean).length} All
                       </span>
                     ) : 'All'}
@@ -1515,10 +1522,11 @@ const PlaylistUploader = ({ onUploadComplete, onCancel, initialPlaylistId, prism
                       <button
                         key={color.id}
                         onClick={() => setActiveSegment(color.id)}
-                        className={`h-full flex-1 min-w-0 flex items-center justify-center transition-all tabular-nums ${isSelected
-                          ? 'opacity-100 z-10 relative after:content-[""] after:absolute after:inset-0 after:ring-2 after:ring-inset after:ring-white/50'
-                          : 'opacity-60 hover:opacity-100'
-                          }`}
+                        className={`h-full flex-1 min-w-0 flex items-center justify-center transition-all tabular-nums ${
+                          isSelected
+                            ? 'opacity-100 z-10 relative after:content-[""] after:absolute after:inset-0 after:ring-2 after:ring-inset after:ring-white/50'
+                            : 'opacity-60 hover:opacity-100'
+                        }`}
                         style={{ backgroundColor: color.hex }}
                         title={`${color.name} Folder`}
                       >
@@ -1538,80 +1546,22 @@ const PlaylistUploader = ({ onUploadComplete, onCancel, initialPlaylistId, prism
                   placeholder={activeSegment === 'all' ? "Paste links here (No folder assignment)... (Space or Enter to add)" : `Paste links to assign to ${FOLDER_COLORS.find(c => c.id === activeSegment)?.name} folder... (Space or Enter to add)`}
                   colorHex={activeSegment === 'all' ? null : FOLDER_COLORS.find(c => c.id === activeSegment)?.hex}
                   disabled={loading}
-                  minHeight="10rem"
+                  minHeight="12rem"
                 />
-                
-                <div className="flex justify-start gap-2">
-                  <button
-                    type="button"
-                    onClick={handleSelectLocalVideosForAdd}
-                    disabled={loading}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 border border-slate-300 text-slate-700 rounded-lg text-xs font-semibold transition-colors disabled:opacity-50"
-                  >
-                    <svg className="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                    </svg>
-                    Upload from Device
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleSelectLocalFolderForAdd}
-                    disabled={loading}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 hover:bg-teal-100 border border-teal-300 text-teal-700 rounded-lg text-xs font-semibold transition-colors disabled:opacity-50"
-                  >
-                    <svg className="w-3.5 h-3.5 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7a2 2 0 012-2h4l2 2h6a2 2 0 012 2v7a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" />
-                    </svg>
-                    Upload Folder
-                  </button>
-                </div>
               </div>
-
-              {/* Subscription Options */}
-              <div className="flex items-center gap-4 bg-slate-100/80 p-3 rounded-lg border border-slate-200">
-                <label className="flex items-center space-x-2 text-sm text-slate-700 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={subscribeToChannels}
-                    onChange={(e) => setSubscribeToChannels(e.target.checked)}
-                    className="w-4 h-4 text-sky-500 rounded border-slate-300 focus:ring-sky-500 bg-slate-200"
-                  />
-                  <span>Subscribe (Auto-update)</span>
-                </label>
-
-                {subscribeToChannels && (
-                  <div className="flex items-center gap-2 animate-in fade-in slide-in-from-left-2">
-                    <span className="text-xs text-slate-500">Limit:</span>
-                    <select
-                      value={maxVideosPerSource}
-                      onChange={(e) => setMaxVideosPerSource(Number(e.target.value))}
-                      className="bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded p-1"
-                    >
-                      <option value={10}>10 videos</option>
-                      <option value={20}>20 videos</option>
-                      <option value={50}>50 videos</option>
-                    </select>
-                  </div>
-                )}
-              </div>
-
-
-
             </div>
           )}
-
-
 
           {/* === JSON TAB === */}
           {activeTab === 'json' && (
             <div className="space-y-4 h-full flex flex-col">
               <div className="flex justify-between items-center">
-                <label className="text-sm font-medium text-slate-700">Paste Configuration or Upload File</label>
+                <label className="text-sm font-bold text-[#052F4A]">Paste Configuration or Upload File</label>
                 <div>
                   <input type="file" ref={fileInputRef} accept=".json" onChange={handleFileSelect} className="hidden" />
                   <button
                     onClick={() => fileInputRef.current?.click()}
-                    className="text-xs bg-slate-200 hover:bg-slate-300 text-white px-3 py-1.5 rounded-md transition-colors"
+                    className="text-xs bg-slate-200 hover:bg-slate-300 text-[#052F4A] font-bold px-3 py-1.5 rounded-lg border border-[#052F4A]/20 transition-colors"
                     disabled={loading}
                   >
                     Upload File
@@ -1621,93 +1571,89 @@ const PlaylistUploader = ({ onUploadComplete, onCancel, initialPlaylistId, prism
               <textarea
                 value={jsonInput}
                 onChange={(e) => setJsonInput(e.target.value)}
-                className="flex-1 w-full bg-slate-50 border border-slate-200 rounded-lg p-4 font-mono text-sm text-slate-700 focus:border-sky-500 focus:outline-none resize-none"
+                className="flex-1 w-full bg-white border-2 border-[#052F4A]/30 rounded-xl p-4 font-mono text-sm text-[#052F4A] focus:border-[#052F4A] outline-none resize-none"
                 placeholder="{ 'playlist': ... }"
                 disabled={loading}
               />
             </div>
           )}
 
-
           {/* === EXPORT TAB === */}
           {activeTab === 'export' && (
             <div className="space-y-6">
-              <div className="bg-slate-50/80 p-4 rounded-xl border border-slate-200">
-                <label className="text-sm font-medium text-slate-700 block mb-2">Playlist to Export:</label>
-                <select
+              <div className="bg-white p-4 rounded-xl border-2 border-[#052F4A]/20 shadow-sm space-y-2">
+                <label className="text-sm font-bold text-[#052F4A] block">Playlist to Export:</label>
+                <ThumbnailPlaylistDropdown
                   value={exportPlaylistId}
-                  onChange={(e) => setExportPlaylistId(e.target.value)}
-                  className="w-full bg-white border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-sky-500 focus:border-sky-500 block p-2.5"
+                  onChange={(val) => setExportPlaylistId(val)}
+                  playlists={availablePlaylists}
+                  placeholder="Select a playlist to export..."
                   disabled={loading}
-                >
-                  <option value="" disabled>Select a playlist</option>
-                  {availablePlaylists.map(p => (
-                    <option key={p.id} value={p.id}>{p.name}</option>
-                  ))}
-                </select>
+                  allowDefaultUnsorted={false}
+                />
               </div>
 
-              <div className="bg-slate-50/80 p-4 rounded-xl border border-slate-200 space-y-4">
-                <h3 className="text-sm font-bold text-slate-800">Export Options</h3>
+              <div className="bg-white p-4 rounded-xl border-2 border-[#052F4A]/20 shadow-sm space-y-4">
+                <h3 className="text-sm font-bold text-[#052F4A]">Export Options</h3>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <label className="flex items-center space-x-3 p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-50 transition-colors">
+                  <label className="flex items-center space-x-3 p-3.5 bg-slate-50 rounded-xl border-2 border-[#052F4A]/20 cursor-pointer hover:border-[#052F4A]/40 transition-colors">
                     <input
                       type="checkbox"
                       checked={exportOptions.videos}
                       onChange={(e) => setExportOptions({ ...exportOptions, videos: e.target.checked })}
-                      className="w-4 h-4 text-sky-500 rounded border-slate-300 focus:ring-sky-500"
+                      className="w-4 h-4 text-[#052F4A] rounded border-[#052F4A]/40 focus:ring-[#052F4A]"
                     />
                     <div className="flex flex-col">
-                      <span className="text-sm font-medium text-slate-700">Playlist Videos</span>
-                      <span className="text-xs text-slate-500">Include all standard YouTube/Local videos</span>
+                      <span className="text-sm font-bold text-[#052F4A]">Playlist Videos</span>
+                      <span className="text-xs text-[#052F4A]/70">Include all standard YouTube/Local videos</span>
                     </div>
                   </label>
 
-                  <label className="flex items-center space-x-3 p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-50 transition-colors">
+                  <label className="flex items-center space-x-3 p-3.5 bg-slate-50 rounded-xl border-2 border-[#052F4A]/20 cursor-pointer hover:border-[#052F4A]/40 transition-colors">
                     <input
                       type="checkbox"
                       checked={exportOptions.folders}
                       onChange={(e) => setExportOptions({ ...exportOptions, folders: e.target.checked })}
-                      className="w-4 h-4 text-sky-500 rounded border-slate-300 focus:ring-sky-500"
+                      className="w-4 h-4 text-[#052F4A] rounded border-[#052F4A]/40 focus:ring-[#052F4A]"
                     />
                     <div className="flex flex-col">
-                      <span className="text-sm font-medium text-slate-700">Folder Configurations</span>
-                      <span className="text-xs text-slate-500">Include colored folder assignments</span>
+                      <span className="text-sm font-bold text-[#052F4A]">Folder Configurations</span>
+                      <span className="text-xs text-[#052F4A]/70">Include colored folder assignments</span>
                     </div>
                   </label>
 
-                  <label className="flex items-center space-x-3 p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-50 transition-colors">
+                  <label className="flex items-center space-x-3 p-3.5 bg-slate-50 rounded-xl border-2 border-[#052F4A]/20 cursor-pointer hover:border-[#052F4A]/40 transition-colors">
                     <input
                       type="checkbox"
                       checked={exportOptions.idCards}
                       onChange={(e) => setExportOptions({ ...exportOptions, idCards: e.target.checked })}
-                      className="w-4 h-4 text-sky-500 rounded border-slate-300 focus:ring-sky-500"
+                      className="w-4 h-4 text-[#052F4A] rounded border-[#052F4A]/40 focus:ring-[#052F4A]"
                     />
                     <div className="flex flex-col">
-                      <span className="text-sm font-medium text-slate-700">Playlist ID Cards</span>
-                      <span className="text-xs text-slate-500">Include linked playlist tracker cards</span>
+                      <span className="text-sm font-bold text-[#052F4A]">Playlist ID Cards</span>
+                      <span className="text-xs text-[#052F4A]/70">Include linked playlist tracker cards</span>
                     </div>
                   </label>
 
-                  <label className="flex items-center space-x-3 p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-50 transition-colors">
+                  <label className="flex items-center space-x-3 p-3.5 bg-slate-50 rounded-xl border-2 border-[#052F4A]/20 cursor-pointer hover:border-[#052F4A]/40 transition-colors">
                     <input
                       type="checkbox"
                       checked={exportOptions.channelCards}
                       onChange={(e) => setExportOptions({ ...exportOptions, channelCards: e.target.checked })}
-                      className="w-4 h-4 text-sky-500 rounded border-slate-300 focus:ring-sky-500"
+                      className="w-4 h-4 text-[#052F4A] rounded border-[#052F4A]/40 focus:ring-[#052F4A]"
                     />
                     <div className="flex flex-col">
-                      <span className="text-sm font-medium text-slate-700">Channel Link Cards</span>
-                      <span className="text-xs text-slate-500">Include linked channel cards</span>
+                      <span className="text-sm font-bold text-[#052F4A]">Channel Link Cards</span>
+                      <span className="text-xs text-[#052F4A]/70">Include linked channel cards</span>
                     </div>
                   </label>
                 </div>
               </div>
 
-              <div className="p-4 bg-sky-50 rounded-lg border border-sky-100 flex items-start gap-3">
-                <svg className="w-5 h-5 text-sky-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                <div className="text-xs text-sky-700 space-y-1">
+              <div className="p-4 bg-slate-200/80 rounded-xl border-2 border-[#052F4A]/30 flex items-start gap-3">
+                <svg className="w-5 h-5 text-[#052F4A] mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <div className="text-xs text-[#052F4A] space-y-1">
                   <p className="font-bold">JSON Export Information</p>
                   <p>Exports are typically in the KB range, making them lightweight and easy to share.</p>
                   <p>Local file references (orb/banner presets) are currently excluded to keep transfers simple.</p>
@@ -1726,112 +1672,13 @@ const PlaylistUploader = ({ onUploadComplete, onCancel, initialPlaylistId, prism
             />
           )}
 
-          {/* === SOURCE TAB === */}
-          {activeTab === 'source' && (
-            <div className="space-y-6 animate-in fade-in duration-200">
-              <div className="flex justify-between items-center bg-slate-50/80 p-4 rounded-xl border border-slate-200 shadow-sm">
-                <div>
-                  <h3 className="text-sm font-bold text-slate-800">Source Visibility Control</h3>
-                  <p className="text-xs text-slate-500">Select which card types appear on the Videos page active grid.</p>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => {
-                      setVisibleSourceTypes({
-                        orb: true,
-                        banner: true,
-                        video: true,
-                        image: true,
-                        tracker: true,
-                        channel: true,
-                        tweet: true,
-                      });
-                    }}
-                    className="px-3 py-1.5 bg-sky-50 hover:bg-sky-100 text-sky-600 rounded-lg text-xs font-semibold transition-colors border border-sky-200"
-                  >
-                    Reset (Show All)
-                  </button>
-                  <button
-                    onClick={() => {
-                      setVisibleSourceTypes({
-                        orb: false,
-                        banner: false,
-                        video: false,
-                        image: false,
-                        tracker: false,
-                        channel: false,
-                        tweet: false,
-                      });
-                    }}
-                    className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg text-xs font-semibold transition-colors border border-slate-200"
-                  >
-                    Clear (Hide All)
-                  </button>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[
-                  { key: 'video', label: 'Video Cards', desc: 'Standard YouTube & local video players', icon: <Video className="w-5 h-5 text-sky-500" /> },
-                  { key: 'image', label: 'Local Image Cards', desc: 'Ingested local image files', icon: <Image className="w-5 h-5 text-emerald-500" /> },
-                  { key: 'tracker', label: 'Playlist Trackers', desc: 'YouTube Playlist subscription cards', icon: <ListVideo className="w-5 h-5 text-indigo-500" /> },
-                  { key: 'channel', label: 'Channel Trackers', desc: 'YouTube Channel creator avatars', icon: <User className="w-5 h-5 text-purple-500" /> },
-                  { key: 'tweet', label: 'Tweet Cards', desc: 'Social feeds and tweet bookmarks', icon: <MessageSquare className="w-5 h-5 text-blue-400" /> },
-                  { key: 'orb', label: 'Orb Cards', desc: 'Central visualizer preset selectors', icon: <Radio className="w-5 h-5 text-rose-500" /> },
-                  { key: 'banner', label: 'Banner Cards', desc: 'Page-level banner theme configs', icon: <Layout className="w-5 h-5 text-amber-500" /> },
-                ].map(({ key, label, desc, icon }) => {
-                  const isVisible = visibleSourceTypes[key] !== false;
-                  return (
-                    <div
-                      key={key}
-                      onClick={() => toggleSourceTypeVisibility(key)}
-                      className={`flex items-center justify-between p-4 rounded-xl border transition-all duration-200 cursor-pointer select-none ${
-                        isVisible
-                          ? 'bg-white border-slate-200 shadow-sm hover:border-slate-300'
-                          : 'bg-slate-50/50 border-slate-100 opacity-60 hover:opacity-85'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className={`p-2 rounded-lg ${isVisible ? 'bg-slate-100' : 'bg-slate-200/50'}`}>
-                          {icon}
-                        </div>
-                        <div className="text-left">
-                          <div className="flex items-center gap-2">
-                            <span className="font-bold text-sm text-slate-800">{label}</span>
-                            <span className="px-2 py-0.5 text-[10px] font-bold bg-slate-100 text-slate-600 rounded-full border border-slate-200">
-                              {counts[key] || 0}
-                            </span>
-                          </div>
-                          <span className="text-[11px] text-slate-500 block leading-tight mt-0.5">{desc}</span>
-                        </div>
-                      </div>
-
-                      <button
-                        type="button"
-                        className={`w-10 h-5 flex items-center rounded-full p-0.5 transition-colors duration-300 focus:outline-none ${
-                          isVisible ? 'bg-sky-500' : 'bg-slate-300'
-                        }`}
-                      >
-                        <div
-                          className={`bg-white w-4 h-4 rounded-full shadow-sm transform transition-transform duration-300 ${
-                            isVisible ? 'translate-x-5' : 'translate-x-0'
-                          }`}
-                        />
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
         </div>
 
         {/* FOOTER & STATUS */}
-        <div className="p-4 border-t border-slate-200 bg-slate-100/80 rounded-b-lg space-y-4">
+        <div className="p-4 border-t-2 border-[#052F4A] bg-slate-200/80 space-y-4">
           {/* Error Display */}
           {error && (
-            <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-400 rounded-lg text-sm">
+            <div className="p-3 bg-red-500/10 border border-red-500/30 text-red-600 font-medium rounded-xl text-sm">
               {error}
             </div>
           )}
@@ -1839,12 +1686,12 @@ const PlaylistUploader = ({ onUploadComplete, onCancel, initialPlaylistId, prism
           {/* Progress Bar */}
           {loading && (
             <div className="space-y-2">
-              <div className="flex justify-between text-xs text-slate-500">
+              <div className="flex justify-between text-xs font-bold text-[#052F4A]">
                 <span>{progress.message}</span>
                 <span>{progress.current} / {progress.total}</span>
               </div>
-              <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                <div className="h-full bg-sky-500 transition-all duration-300" style={{ width: `${(progress.total ? (progress.current / progress.total * 100) : 0)}%` }}></div>
+              <div className="w-full h-2 bg-slate-300 rounded-full overflow-hidden border border-[#052F4A]/20">
+                <div className="h-full bg-[#052F4A] transition-all duration-300" style={{ width: `${(progress.total ? (progress.current / progress.total * 100) : 0)}%` }}></div>
               </div>
             </div>
           )}
@@ -1853,12 +1700,12 @@ const PlaylistUploader = ({ onUploadComplete, onCancel, initialPlaylistId, prism
           <div className="flex items-center justify-end gap-3">
             <button
               onClick={onCancel}
-              className="px-4 py-2 text-slate-500 hover:text-slate-900 transition-colors"
+              className="px-5 py-2.5 rounded-xl font-bold text-[#052F4A] hover:bg-[#052F4A]/10 border-2 border-[#052F4A]/30 transition-colors"
               disabled={loading}
             >
-              {(activeTab === 'subscriptions' || activeTab === 'source') ? 'Done' : 'Cancel'}
+              {activeTab === 'subscriptions' ? 'Done' : 'Cancel'}
             </button>
-            {activeTab !== 'subscriptions' && activeTab !== 'source' && (
+            {activeTab !== 'subscriptions' && (
               <button
                 onClick={
                   activeTab === 'add' ? handleAddSubmit :
@@ -1867,7 +1714,9 @@ const PlaylistUploader = ({ onUploadComplete, onCancel, initialPlaylistId, prism
                         () => { }
                 }
                 disabled={loading}
-                className={`px-6 py-2 rounded-lg font-medium text-white transition-colors ${loading ? 'bg-slate-300 cursor-not-allowed opacity-50' : 'bg-sky-500 hover:bg-sky-600'}`}
+                className={`px-6 py-2.5 rounded-xl font-bold text-white shadow-lg transition-all border-2 border-[#052F4A] ${
+                  loading ? 'bg-slate-400 cursor-not-allowed opacity-50 border-slate-400' : 'bg-[#052F4A] hover:bg-[#084267]'
+                }`}
               >
                 {loading ? 'Processing...' : (
                   activeTab === 'add' ? 'Import to Playlist' :

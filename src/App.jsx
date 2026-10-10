@@ -10,7 +10,6 @@ import VideosPage from './components/VideosPage';
 import HistoryPage from './components/HistoryPage';
 import LikesPage from './components/LikesPage';
 import PinsPage from './components/PinsPage';
-import TasksPage from './components/TasksPage';
 import OrbPage from './components/OrbPage';
 import YouPage from './components/YouPage';
 import AppPage from './components/AppPage';
@@ -609,8 +608,6 @@ function App() {
               <LikesPage onVideoSelect={handleVideoSelect} />
             ) : !showPlaylists && currentPage === 'pins' ? (
               <PinsPage onVideoSelect={handleVideoSelect} />
-            ) : !showPlaylists && currentPage === 'tasks' ? (
-              <TasksPage />
             ) : !showPlaylists && currentPage === 'orbs' ? (
               <OrbPage onVideoSelect={handleVideoSelect} />
             ) : !showPlaylists && currentPage === 'you' ? (

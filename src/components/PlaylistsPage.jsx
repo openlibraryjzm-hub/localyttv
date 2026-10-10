@@ -824,7 +824,7 @@ const PlaylistsPage = ({ onVideoSelect }) => {
           prismPage={prismPage}
         />
       ) : showUploader ? (
-        <div className="flex-1 overflow-y-auto p-4 bg-transparent">
+        <div className="flex-1 w-full h-full overflow-hidden p-2 bg-transparent">
           <PlaylistUploader
             onUploadComplete={handleUploadComplete}
             onCancel={() => {

@@ -7,16 +7,15 @@ import { useSubtitleStore } from '../store/subtitleStore';
 import { getStoredPlaybackTime, savePlaybackTime } from '../utils/storageUtils';
 
 // Save video progress to database and handle pin completion (follower pin transfer or unpin)
-const saveVideoProgress = async (videoId, videoUrl, duration, currentTime, handlePinCompletion, playlistItems) => {
+const saveVideoProgress = async (videoId, videoUrl, duration, currentTime, removePinByVideoId) => {
   try {
     await updateVideoProgress(videoId, videoUrl, duration, currentTime);
 
-    // Handle pin completion if video reached >=85%
+    // Auto-unpin if video reached >=85%
     if (duration && duration > 0 && currentTime >= 0) {
       const progressPercentage = (currentTime / duration) * 100;
-      if (progressPercentage >= 85 && handlePinCompletion) {
-        // handlePinCompletion will either transfer follower pin or unpin normally
-        handlePinCompletion(videoId, playlistItems);
+      if (progressPercentage >= 85 && removePinByVideoId) {
+        removePinByVideoId(videoId);
       }
     }
   } catch (error) {
@@ -30,7 +29,7 @@ const LocalVideoPlayer = ({ videoUrl, videoId, playerId = 'default', onEnded, pl
   const saveIntervalRef = useRef(null);
   const [videoSrc, setVideoSrc] = useState(null);
   const [error, setError] = useState(null);
-  const { handleFollowerPinCompletion } = usePinStore();
+  const { removePinByVideoId } = usePinStore();
   const { screenProtectorActive } = useLayoutStore();
 
   // Custom Controls State (matching YouTubePlayer)
@@ -279,7 +278,7 @@ const LocalVideoPlayer = ({ videoUrl, videoId, playerId = 'default', onEnded, pl
       if (!saveIntervalRef.current) {
         saveIntervalRef.current = setInterval(() => {
           if (video && !video.paused) {
-            saveVideoProgress(id, videoUrl, video.duration, video.currentTime, handleFollowerPinCompletion, playlistItemsRef.current);
+            saveVideoProgress(id, videoUrl, video.duration, video.currentTime, removePinByVideoId);
           }
         }, 5000);
       }
@@ -300,7 +299,7 @@ const LocalVideoPlayer = ({ videoUrl, videoId, playerId = 'default', onEnded, pl
           const time = video.currentTime;
           const dur = video.duration;
           savePlaybackTime(id, time);
-          saveVideoProgress(id, videoUrl, dur, time, handleFollowerPinCompletion, playlistItemsRef.current);
+          saveVideoProgress(id, videoUrl, dur, time, removePinByVideoId);
         }
       }, 5000);
     };
@@ -315,7 +314,7 @@ const LocalVideoPlayer = ({ videoUrl, videoId, playerId = 'default', onEnded, pl
         const time = video.currentTime;
         const dur = video.duration;
         savePlaybackTime(id, time);
-        saveVideoProgress(id, videoUrl, dur, time, null, null);
+        saveVideoProgress(id, videoUrl, dur, time, null);
       }
       if (saveIntervalRef.current) {
         clearInterval(saveIntervalRef.current);
@@ -349,7 +348,7 @@ const LocalVideoPlayer = ({ videoUrl, videoId, playerId = 'default', onEnded, pl
 
     const handleEnded = () => {
       savePlaybackTime(id, 0);
-      saveVideoProgress(id, videoUrl, video.duration, video.duration, handleFollowerPinCompletion, playlistItemsRef.current);
+      saveVideoProgress(id, videoUrl, video.duration, video.duration, removePinByVideoId);
 
       if (onEnded) {
         onEnded();
@@ -374,7 +373,7 @@ const LocalVideoPlayer = ({ videoUrl, videoId, playerId = 'default', onEnded, pl
           const time = video.currentTime;
           const dur = video.duration;
           savePlaybackTime(id, time);
-          saveVideoProgress(id, videoUrl, dur, time, null, null);
+          saveVideoProgress(id, videoUrl, dur, time, null);
         } catch (e) {
           // Ignore errors during cleanup
         }
@@ -390,7 +389,7 @@ const LocalVideoPlayer = ({ videoUrl, videoId, playerId = 'default', onEnded, pl
       video.removeEventListener('durationchange', handleLoadedMetadata);
       video.removeEventListener('ended', handleEnded);
     };
-  }, [videoSrc, videoId, videoUrl, handleFollowerPinCompletion]);
+  }, [videoSrc, videoId, videoUrl, removePinByVideoId]);
 
   // Add error handler for video element
   const handleVideoError = (e) => {

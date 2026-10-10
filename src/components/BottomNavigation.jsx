@@ -8,7 +8,6 @@ const PAGE_TITLES = {
   history: 'Watch History',
   pins: 'Pinned Videos',
   likes: 'Liked Videos',
-  tasks: 'Tasks',
 };
 
 const BottomNavigation = ({ title }) => {

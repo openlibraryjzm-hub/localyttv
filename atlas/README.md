@@ -62,7 +62,6 @@ yttv2/
 │   │   ├── HistoryPage.jsx       # Watch history display
 │   │   ├── LikesPage.jsx         # Liked videos grid view
 │   │   ├── PinsPage.jsx          # Pinned videos grid view
-│   │   ├── TasksPage.jsx         # Dedicated tasks/checklist page
 │   │   ├── Card.jsx              # Base card component
 │   │   ├── VideoCard.jsx         # Video card (uses VideoCardThreeDotMenu)
 │   │   ├── TweetCard.jsx         # Tweet card (uses VideoCardThreeDotMenu)
@@ -137,7 +136,6 @@ yttv2/
 │   │   ├── page-history.md       # Watch History page
 │   │   ├── page-likes.md         # Likes page
 │   │   ├── page-pins.md          # Pins page
-│   │   ├── tasks-page.md         # Checklist/Tasks page
 │   │   ├── asset-manager-page.md # Unified Asset Manager
 │   │   ├── page-banner.md        # Shared Page Banner system
 │   │   └── you-page.md           # Signature & Profile page

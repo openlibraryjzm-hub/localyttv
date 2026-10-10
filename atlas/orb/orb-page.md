@@ -10,11 +10,13 @@ The Orb Configuration Page (`OrbConfigPlaceholderPage.jsx`) provides a streamlin
 
 ## 1. User-Perspective Description
 
-### Layout
-The page is divided into two main columns:
+### Layout & Aesthetic
+- **Atmospheric Blurred Backdrop**: The root page is styled with `bg-slate-950` overlaying a dynamic, blurred (`blur(36px)`) preview of the current active App Banner.
+- **Header Navigation**: Integrates `<BottomNavigation title="Orb Configuration" />` for sticky top navigation, containing the page title alongside back and close controls.
+- **Centered Equal-Height Cards**: The main interface is centered (`max-w-5xl mx-auto`) and split into two equal-height stretched cards (`items-stretch h-full`):
 
 1.  **Left Column: Visualizer & Import**
-    *   **Visualizer**: A central preview area showing the current Orb image with all masks, spills, and scaling applied.
+    *   **Visualizer**: A central preview area (`border-2 border-[#052F4A]`) showing the current Orb image with all masks, spills, and scaling applied, centered vertically within the card.
     *   **Interactive Toggles**: Clicking the quadrants (TL, TR, BL, BR) toggles the "Spill" effect for that section.
     *   **Advanced Editor Button**: A "Settings" icon overlays the visualizer to open the **Advanced Orb Crop** modal (fullscreen editor with zoom/scroll).
     *   **Upload/Remove**: Controls to upload a new source image or remove the current one.
@@ -22,7 +24,7 @@ The page is divided into two main columns:
 2.  **Right Column: Configuration & Save**
     *   **Adjustments**: Sliders for **Scale**, **X Offset**, and **Y Offset**.
     *   **Save Preset**: A dedicated section to finalize the configuration.
-        *   **Playlist Assignment**: A dropdown menu allows selecting multiple playlists to assign this Orb to *before* saving.
+        *   **Playlist Assignment Dropdown**: Displays target playlists with 16:9 representative thumbnail previews (or fallback icons) and item count badges.
         *   **Save Button**: Clicking "Save Configuration" instantly creates a new preset (auto-named by date), saves it to the store, and clears the selection.
 
 ### Workflow

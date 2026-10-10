@@ -1,5 +1,14 @@
 import { create } from 'zustand';
 
+export const isTrackerOrChannelItem = (item) => {
+  if (!item) return false;
+  const url = item.video_url || item.videoUrl || '';
+  const isChannel = item.isChannel || url.includes('youtube.com/channel/') || url.includes('youtube.com/@') || url.startsWith('@');
+  const isFolderTracker = item.isFolderTracker || url.startsWith('local:device_folder:');
+  const isPlaylistTracker = item.isPlaylist || url.includes('youtube.com/playlist?list=') || url.startsWith('local:playlist:') || url.startsWith('local:folder:');
+  return isChannel || isFolderTracker || isPlaylistTracker;
+};
+
 export const usePlaylistStore = create((set, get) => ({
   showPlaylists: false,
   currentPlaylistItems: [],
@@ -22,7 +31,8 @@ export const usePlaylistStore = create((set, get) => ({
 
   setShowPlaylists: (show) => set({ showPlaylists: show }),
 
-  setPlaylistItems: (items, playlistId = null, folderInfo = null, playlistTitle = null) => {
+  setPlaylistItems: (rawItems, playlistId = null, folderInfo = null, playlistTitle = null) => {
+    const items = (Array.isArray(rawItems) ? rawItems : []).filter(item => !isTrackerOrChannelItem(item));
     // folderInfo is { playlist_id, folder_color } or null
     const state = get();
     let newIndex = state.currentPlaylistIndex;
@@ -450,7 +460,8 @@ export const usePlaylistStore = create((set, get) => ({
   previewPlaylistId: null,
   previewFolderInfo: null,
 
-  setPreviewPlaylist: (items, playlistId, folderInfo = null) => {
+  setPreviewPlaylist: (rawItems, playlistId, folderInfo = null) => {
+    const items = rawItems ? rawItems.filter(item => !isTrackerOrChannelItem(item)) : null;
     set({
       previewPlaylistItems: items,
       previewPlaylistId: playlistId,

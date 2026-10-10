@@ -58,6 +58,7 @@ Integrated into both the top sticky bar (`VideoSortFilters`) and the bottom grid
 ## 3. Data Flow & Logic
 
 ### Folder & Filter Processing
+- **Tracker Card Filtering**: Tracker Cards (Channel Cards `isChannel`, Playlist Trackers `isPlaylist`, Folder Trackers `isFolderTracker`) are stored in SQLite for subscription management, but are filtered out of both the video grid display and toolbar prism count metrics (`allCount`, `unsortedCount`, `folderCounts`).
 - **Folder Filtering**: Driven by `FolderSelector` / `FolderPrism` clicks. `setSelectedFolder(folderColor)` triggers `filterVideos()`. Clearing `displayedVideos` at the start of fetching ensures stale video arrays do not linger during async SQLite calls.
 - **Combined Filtering & Sorting**: Folder filtering, drumstick rating filters (1–5), progress filters, and sort options (chronological, added to app, progress, last viewed, watch count, shuffle) compose deterministically into `regularVideos`.
 - **Pagination State Integration**: Filter or folder changes invoke `resetPagination()`, resetting `currentPage` to 1 while preserving computed `totalPages` so pagination remains functional across all filter combinations.

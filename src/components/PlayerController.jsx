@@ -332,6 +332,20 @@ export default function PlayerController({
         setAllPlaylists(updatedPlaylists || []);
       }
 
+      // Ensure Explorer page isolation for Page 2+
+      if (activePage > 1 && targetPlaylistId) {
+        const { groups, addGroup, addPlaylistToGroup } = usePlaylistGroupStore.getState();
+        const inboxName = `Page ${activePage} Inbox`;
+        let inboxGroup = (groups || []).find(g => g.name === inboxName && (g.page || 1) === activePage);
+        let groupId;
+        if (inboxGroup) {
+          groupId = inboxGroup.id;
+        } else {
+          groupId = addGroup(inboxName, null, activePage);
+        }
+        addPlaylistToGroup(groupId, targetPlaylistId);
+      }
+
       // Fetch metadata
       const tempTitle = `Quick Video ${videoId}`;
       const fallbackThumbnailUrl = getThumbnailUrl(videoId, 'hqdefault');

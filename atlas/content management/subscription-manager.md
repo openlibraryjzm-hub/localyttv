@@ -26,7 +26,7 @@ The Subscription Manager allows users to automatically fetch and sync videos fro
 ## Tracker Cards (Source of Truth)
 
 Because the system infers sources from actual cards embedded inside your playlist, subscriptions are stored in the SQLite database (`playlist_items`) and managed like standard items:
-- **Visual Card Filtering**: Channel Cards (`isChannel`) and Playlist/Folder Link Trackers (`isPlaylist`, `isFolderTracker`) remain persisted in the backend DB and fully functional within management/subscription modals, but are visually suppressed from display card grids (`VideosPage`, `PlaylistCard`, `LongPlaylistCard`).
+- **Visual Card Filtering**: Channel Cards (`isChannel`) and Playlist/Folder Link Trackers (`isPlaylist`, `isFolderTracker`) remain persisted in the backend DB and fully functional within management/subscription modals, but are visually suppressed from display card grids (`VideosPage`, `PlaylistCard`, `LongPlaylistCard`), video count indicators, and video playback queues (`playlistStore`).
 - **Deletion:** Removing a Channel Card, Playlist Tracker Card, or Folder Tracker Card successfully deletes your "subscription" to it from the database.
 - **Categorization:** You can move a Tracker Card into a colored folder. When you open the Subscription Manager while looking inside that colored folder, only the Tracker Cards assigned to that folder will display for syncing.
 

@@ -72,7 +72,7 @@ Users see the main YouTube player as the primary video playback area:
 
 **State Management:**
 - `src/store/playlistStore.js`:
-  - `currentPlaylistItems`: Array of videos in current playlist
+  - `currentPlaylistItems`: Array of playable videos in current playlist (automatically sanitized to exclude non-playable tracker cards such as `isPlaylist`, `isChannel`, `isFolderTracker`)
   - `currentVideoIndex`: Index of currently playing video
   - `currentPlaylistId`: ID of current playlist
 - `src/App.jsx` (local state):

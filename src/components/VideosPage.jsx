@@ -28,6 +28,15 @@ import { usePaginationStore } from '../store/paginationStore';
 import TweetCard from './TweetCard';
 import OrbCard from './OrbCard';
 import BannerPresetCard from './BannerPresetCard';
+
+const isTrackerOrChannel = (video) => {
+  if (!video) return false;
+  const url = video.video_url || video.videoUrl || '';
+  const isChannel = video.isChannel || url.includes('youtube.com/channel/') || url.includes('youtube.com/@') || url.startsWith('@');
+  const isFolderTracker = video.isFolderTracker || url.startsWith('local:device_folder:');
+  const isPlaylistTracker = video.isPlaylist || url.includes('youtube.com/playlist?list=') || url.startsWith('local:playlist:') || url.startsWith('local:folder:');
+  return isChannel || isFolderTracker || isPlaylistTracker;
+};
 import ChannelCard from './ChannelCard';
 import PlaylistLinkCard from './PlaylistLinkCard';
 import AutoTagModal from './AutoTagModal';
@@ -634,15 +643,6 @@ const VideosPage = ({ onVideoSelect, onSecondPlayerSelect }) => {
       return;
     }
 
-    const isTrackerOrChannel = (video) => {
-      if (!video) return false;
-      const url = video.video_url || video.videoUrl || '';
-      const isChannel = video.isChannel || url.includes('youtube.com/channel/') || url.includes('youtube.com/@') || url.startsWith('@');
-      const isFolderTracker = video.isFolderTracker || url.startsWith('local:device_folder:');
-      const isPlaylistTracker = video.isPlaylist || url.includes('youtube.com/playlist?list=') || url.startsWith('local:playlist:') || url.startsWith('local:folder:');
-      return isChannel || isFolderTracker || isPlaylistTracker;
-    };
-
     const filterVideos = async () => {
       const cleanPlaylistItems = activePlaylistItems.filter(v => !isTrackerOrChannel(v));
 
@@ -1033,12 +1033,14 @@ const VideosPage = ({ onVideoSelect, onSecondPlayerSelect }) => {
     }
   };
 
-  // Calculate folder counts (16 colors only)
+  // Calculate folder counts (16 colors only, clean videos only)
   const folderCounts = useMemo(() => {
     const counts = {};
-    if (videoFolderAssignments) {
-      Object.values(videoFolderAssignments).forEach(folders => {
-        if (Array.isArray(folders)) {
+    if (videoFolderAssignments && activePlaylistItems) {
+      const cleanItems = activePlaylistItems.filter(v => !isTrackerOrChannel(v));
+      const cleanIds = new Set(cleanItems.map(v => v.id));
+      Object.entries(videoFolderAssignments).forEach(([itemId, folders]) => {
+        if (cleanIds.has(Number(itemId)) && Array.isArray(folders)) {
           folders.forEach(folderId => {
             counts[folderId] = (counts[folderId] || 0) + 1;
           });
@@ -1046,18 +1048,20 @@ const VideosPage = ({ onVideoSelect, onSecondPlayerSelect }) => {
       });
     }
     return counts;
-  }, [videoFolderAssignments]);
+  }, [videoFolderAssignments, activePlaylistItems]);
 
   // Count for "All" (total items) and "Unsorted" (videos with no folder) for prism labels
   const allCount = useMemo(() => {
     const orbs = orbFavorites?.filter(orb => orb.playlistIds?.includes(activePlaylistId))?.length ?? 0;
     const banners = bannerPresets?.filter(p => p.playlistIds?.map(String).includes(String(activePlaylistId)))?.length ?? 0;
-    return orbs + banners + (activePlaylistItems?.length ?? 0);
+    const cleanVideosCount = activePlaylistItems ? activePlaylistItems.filter(v => !isTrackerOrChannel(v)).length : 0;
+    return orbs + banners + cleanVideosCount;
   }, [activePlaylistId, activePlaylistItems, orbFavorites, bannerPresets]);
 
   const unsortedCount = useMemo(() => {
     if (!activePlaylistItems?.length) return 0;
-    return activePlaylistItems.filter(v => {
+    const cleanItems = activePlaylistItems.filter(v => !isTrackerOrChannel(v));
+    return cleanItems.filter(v => {
       const folders = videoFolderAssignments?.[v.id];
       return !folders || folders.length === 0;
     }).length;

@@ -32,11 +32,12 @@ To prevent new content from "leaking" back to Page 1, secondary pages (Page 2+) 
 
 ## 4. Default Feature Scoping
 
-### Quick Videos
-The "Quick Videos" feature (adding clipboard links) is unique to each page:
+### Quick Videos & Default Upload Destination
+The "Quick Videos" feature (adding clipboard links or uploading content with the default target selected) is unique to each page:
 - Page 1 uses the standard `Quick Videos` playlist.
 - Page 2 uses `Quick Videos 2`, Page 3 uses `Quick Videos 3`, and so on.
-- This ensures that temporary additions do not clutter your main library.
+- Uploading with the default target selected in `PlaylistUploader` targets the active page's Quick Videos playlist. On secondary pages (Page 2+), the playlist is automatically assigned to `Page X Inbox` to prevent content from leaking back to Page 1.
+- This ensures that temporary additions and default uploads do not clutter your main library or cross page boundaries.
 
 ### Unsorted State
 - **Page 1 Unsorted**: Contains all playlists that belong to **zero** groups globally.

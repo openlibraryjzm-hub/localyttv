@@ -134,6 +134,7 @@ const ThumbnailPlaylistDropdown = ({
   placeholder = 'Select a playlist',
   disabled = false,
   allowDefaultUnsorted = false,
+  prismPage = 1,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -150,6 +151,7 @@ const ThumbnailPlaylistDropdown = ({
 
   const selectedPlaylist = playlists.find(p => String(p.id) === String(value));
   const isDefaultUnsorted = allowDefaultUnsorted && (value === '' || value === null || value === undefined);
+  const defaultTargetLabel = prismPage > 1 ? `Quick Videos ${prismPage}` : 'Quick Videos';
 
   return (
     <div ref={dropdownRef} className="relative flex-1 min-w-[260px]">
@@ -190,7 +192,7 @@ const ThumbnailPlaylistDropdown = ({
           )}
           <span className="font-bold text-sm truncate">
             {isDefaultUnsorted
-              ? 'Default (Unsorted)'
+              ? defaultTargetLabel
               : selectedPlaylist
               ? selectedPlaylist.name
               : placeholder}
@@ -220,7 +222,7 @@ const ThumbnailPlaylistDropdown = ({
                 </svg>
               </div>
               <div className="flex-1 min-w-0">
-                <div className="font-bold text-sm truncate">Default (Unsorted)</div>
+                <div className="font-bold text-sm truncate">{defaultTargetLabel}</div>
               </div>
             </button>
           )}
@@ -287,8 +289,10 @@ const PlaylistUploader = ({ onUploadComplete, onCancel, initialPlaylistId, prism
     if (initialPlaylistId) return initialPlaylistId;
     if (selectedPlaylistId) return selectedPlaylistId;
     if (availablePlaylists.length > 0) {
-      const unsorted = availablePlaylists.find(p => p.name === 'Unsorted');
-      return unsorted ? unsorted.id : availablePlaylists[0].id;
+      const quickVideosName = prismPage === 1 ? 'Quick Videos' : `Quick Videos ${prismPage}`;
+      const quickVideos = availablePlaylists.find(p => p.name === quickVideosName);
+      if (quickVideos) return quickVideos.id;
+      return availablePlaylists[0].id;
     }
     return null;
   };
@@ -345,9 +349,10 @@ const PlaylistUploader = ({ onUploadComplete, onCancel, initialPlaylistId, prism
     }
 
     if (!effectivePlaylistId && availablePlaylists.length > 0) {
-      const unsorted = availablePlaylists.find(p => p.name === 'Unsorted');
-      if (unsorted) {
-        effectivePlaylistId = String(unsorted.id);
+      const quickVideosName = prismPage === 1 ? 'Quick Videos' : `Quick Videos ${prismPage}`;
+      const quickVideos = availablePlaylists.find(p => p.name === quickVideosName);
+      if (quickVideos) {
+        effectivePlaylistId = String(quickVideos.id);
       }
     }
 
@@ -806,16 +811,28 @@ const PlaylistUploader = ({ onUploadComplete, onCancel, initialPlaylistId, prism
           addPlaylistToGroup(groupId, dbPlaylistId);
         }
       } else {
-        // Existing or Unsorted
+        // Existing or Default Quick Videos
         if (selectedPlaylistId === '') {
-          // Check if Unsorted exists
-          const unsorted = availablePlaylists.find(p => p.name === 'Unsorted');
-          if (unsorted) {
-            dbPlaylistId = unsorted.id;
-            targetName = 'Unsorted';
+          const quickVideosName = prismPage === 1 ? 'Quick Videos' : `Quick Videos ${prismPage}`;
+          let quickVideos = availablePlaylists.find(p => p.name === quickVideosName);
+          if (quickVideos) {
+            dbPlaylistId = quickVideos.id;
+            targetName = quickVideos.name;
           } else {
-            targetName = 'Unsorted';
-            dbPlaylistId = await createPlaylist('Unsorted', 'Automatically created');
+            targetName = quickVideosName;
+            dbPlaylistId = await createPlaylist(quickVideosName, `Quickly added videos for Page ${prismPage}`);
+          }
+
+          if (prismPage > 1 && dbPlaylistId) {
+            const inboxName = `Page ${prismPage} Inbox`;
+            let inboxGroup = groups.find(g => g.name === inboxName && (g.page || 1) === prismPage);
+            let groupId;
+            if (inboxGroup) {
+              groupId = inboxGroup.id;
+            } else {
+              groupId = addGroup(inboxName, null, prismPage);
+            }
+            addPlaylistToGroup(groupId, dbPlaylistId);
           }
         } else {
           dbPlaylistId = parseInt(selectedPlaylistId);
@@ -1443,6 +1460,7 @@ const PlaylistUploader = ({ onUploadComplete, onCancel, initialPlaylistId, prism
                       playlists={availablePlaylists}
                       disabled={loading}
                       allowDefaultUnsorted={true}
+                      prismPage={prismPage}
                     />
                     <button
                       onClick={() => setTargetMode('new')}

@@ -929,9 +929,13 @@ const VideosPage = ({ onVideoSelect, onSecondPlayerSelect }) => {
   };
 
   const handleToggleRating = (rating) => {
-    setSelectedRatings(prev =>
-      prev.includes(rating) ? prev.filter(r => r !== rating) : [...prev, rating].sort((a, b) => a - b)
-    );
+    if (rating === null || rating === undefined) {
+      setSelectedRatings([]);
+    } else {
+      setSelectedRatings(prev =>
+        prev.includes(rating) && prev.length === 1 ? [] : [rating]
+      );
+    }
   };
 
   const [showAutoTagModal, setShowAutoTagModal] = useState(false);
@@ -1313,13 +1317,13 @@ const VideosPage = ({ onVideoSelect, onSecondPlayerSelect }) => {
     // Determine which videos to display (folder filtered or all)
     let baseVideos = visibleItems;
 
-    // Rating filter: when any drumstick rating is selected, filter to those ratings
+    // Rating filter: when a heart rating filter is selected (Option A: exact rating match)
     if (selectedRatings && selectedRatings.length > 0) {
-      const ratingSet = new Set(selectedRatings);
+      const targetRating = selectedRatings[0];
       baseVideos = baseVideos.filter(v => {
         if (v.isOrb || v.isBannerPreset) return true; // Keep non-video items
         const r = v.drumstick_rating ?? 0;
-        return ratingSet.has(r);
+        return r === targetRating;
       });
     }
 

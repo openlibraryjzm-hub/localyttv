@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Home, Filter, CalendarDays, BarChart2, Clock, ArrowUp, ArrowDown, Plus, RotateCcw, Tag, ChevronLeft, ChevronRight, ListPlus, Eye } from 'lucide-react';
+import { Home, Filter, CalendarDays, BarChart2, Clock, ArrowUp, ArrowDown, Plus, RotateCcw, Tag, ChevronLeft, ChevronRight, ListPlus, Eye, Heart } from 'lucide-react';
 import useLongPress from '../hooks/useLongPress';
 
 // Sub-component for filter buttons to handle long-press correctly
@@ -30,8 +30,6 @@ import { useFolderStore } from '../store/folderStore';
 import { usePlaylistGroupStore } from '../store/playlistGroupStore';
 import { FOLDER_COLORS } from '../utils/folderColors';
 
-const DRUMSTICK = '🍗';
-
 const SORT_OPTIONS = [
   { mode: 'shuffle', label: 'Default / Shuffle', Icon: Home },
   { mode: 'chronological', label: 'Sort by date', Icon: CalendarDays },
@@ -44,7 +42,7 @@ const SORT_OPTIONS = [
 /**
  * Icon-based sort and rating filter bar for the Videos page sticky toolbar.
  * - Home = default (shuffle)
- * - Funnel = dropdown with Date, Progress, Last viewed + horizontal drumstick rating filter (1–5)
+ * - Funnel = dropdown with Date, Progress, Last viewed + horizontal rating filter (1–5)
  * - Plus = dropdown with Add, Refresh, Bulk Tag actions
  */
 const VideoSortFilters = ({
@@ -69,6 +67,7 @@ const VideoSortFilters = ({
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [actionDropdownOpen, setActionDropdownOpen] = useState(false);
+  const [hoverRatingFilter, setHoverRatingFilter] = useState(0);
   const dropdownRef = useRef(null);
   const actionDropdownRef = useRef(null);
 
@@ -220,27 +219,74 @@ const VideoSortFilters = ({
 
 
 
-                {/* Rating filter: horizontal row of 1–5 drumsticks */}
+                {/* Rating filter: horizontal row of 0 (None/Unrated) + 1–5 hearts */}
                 <div className={`px-3 py-2 border-t ${isLight ? 'border-black/10' : 'border-white/10'}`}>
-                  <div className="text-xs font-medium mb-1.5 opacity-70">Rating filter</div>
-                  <div className="flex items-center justify-between gap-0.5">
-                    {[1, 2, 3, 4, 5].map((rating) => {
-                      const selected = selectedRatings.includes(rating);
+                  <div className="flex items-center justify-between text-xs font-medium mb-1.5 opacity-70">
+                    <span>Rating filter</span>
+                    {selectedRatings.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => onToggleRating(null)}
+                        className="text-[10px] text-rose-500 hover:underline cursor-pointer font-bold"
+                      >
+                        Clear Filter
+                      </button>
+                    )}
+                  </div>
+                  <div
+                    className="flex items-center justify-between gap-1"
+                    onMouseLeave={() => setHoverRatingFilter(null)}
+                  >
+                    {[0, 1, 2, 3, 4, 5].map((rating) => {
+                      const activeRating = selectedRatings.length > 0 ? selectedRatings[0] : null;
+
+                      if (rating === 0) {
+                        const isHovered = hoverRatingFilter === 0;
+                        const isActive = activeRating === 0;
+                        return (
+                          <button
+                            key={0}
+                            type="button"
+                            onClick={() => onToggleRating(0)}
+                            onMouseEnter={() => setHoverRatingFilter(0)}
+                            className={`px-1.5 py-0.5 rounded text-[10px] font-black uppercase tracking-wider border transition-all hover:scale-105 cursor-pointer shrink-0 ${
+                              isActive
+                                ? 'bg-rose-500 text-white border-rose-600 shadow-sm opacity-100 scale-105'
+                                : isHovered
+                                  ? 'bg-rose-500/20 text-rose-500 border-rose-500/40 opacity-90'
+                                  : isLight
+                                    ? 'bg-black/5 text-slate-700 border-black/15 opacity-70 hover:opacity-100'
+                                    : 'bg-white/10 text-slate-200 border-white/20 opacity-70 hover:opacity-100'
+                            }`}
+                            title={isActive ? 'Clear unrated filter' : 'Filter for videos with No Rating (0 hearts)'}
+                          >
+                            None
+                          </button>
+                        );
+                      }
+
+                      const displayFilterRating = hoverRatingFilter !== null && hoverRatingFilter !== undefined && hoverRatingFilter > 0 ? hoverRatingFilter : (activeRating || 0);
+                      const isFilled = activeRating !== 0 && rating <= displayFilterRating;
+
                       return (
                         <button
                           key={rating}
                           type="button"
                           onClick={() => onToggleRating(rating)}
-                          className={`w-8 h-8 rounded flex items-center justify-center text-lg leading-none transition-all
-                        ${selected
-                              ? 'opacity-100 scale-110'
-                              : isLight
-                                ? 'opacity-40 hover:opacity-70 text-gray-600'
-                                : 'opacity-40 hover:opacity-70 text-white/80'
-                            }`}
-                          title={`Rating ${rating} (toggle)`}
+                          onMouseEnter={() => setHoverRatingFilter(rating)}
+                          className="w-6 h-6 rounded flex items-center justify-center transition-all hover:scale-110 cursor-pointer shrink-0"
+                          title={activeRating === rating ? `Clear ${rating}-heart filter` : `Filter for ${rating} heart${rating > 1 ? 's' : ''}`}
                         >
-                          {DRUMSTICK}
+                          <Heart
+                            size={16}
+                            className={`transition-colors duration-150 ${
+                              isFilled
+                                ? 'text-rose-500 fill-rose-500 opacity-100'
+                                : isLight
+                                  ? 'text-gray-400 fill-transparent opacity-40 hover:opacity-70'
+                                  : 'text-white/40 fill-transparent opacity-40 hover:opacity-70'
+                            }`}
+                          />
                         </button>
                       );
                     })}

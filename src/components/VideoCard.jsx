@@ -8,6 +8,7 @@ import { getThumbnailUrl } from '../utils/youtubeUtils';
 import { FOLDER_COLORS, getFolderColorById } from '../utils/folderColors';
 import { usePinStore } from '../store/pinStore';
 import { useFolderStore } from '../store/folderStore';
+import { usePlaylistStore } from '../store/playlistStore';
 import { getDrumstickRating, setDrumstickRating } from '../api/playlistApi';
 import VideoCardThreeDotMenu from './VideoCardThreeDotMenu';
 import useLongPress from '../hooks/useLongPress';
@@ -90,6 +91,8 @@ const VideoCardInner = ({
     try {
       await setDrumstickRating(playlistId, video.id, newRating);
       setDrumstickRatingState(newRating);
+      if (video) video.drumstick_rating = newRating;
+      usePlaylistStore.getState().updateItemRating(video.id, newRating);
     } catch (error) {
       console.error('Failed to set drumstick rating:', error);
     }

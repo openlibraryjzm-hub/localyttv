@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useMemo } from 'react';
 import { FOLDER_COLORS } from '../utils/folderColors';
-import { Pencil } from 'lucide-react';
+import { useFolderStore } from '../store/folderStore';
+import { usePlaylistStore } from '../store/playlistStore';
 import useLongPress from '../hooks/useLongPress';
 
 // Sub-component for color segment to handle long-press
@@ -25,8 +26,7 @@ const ColorButton = ({
 };
 
 /**
- * BulkTagColorGrid - Shows a grid of 16 colors on hover for bulk tagging
- * Appears when hovering over a video thumbnail in bulk tag mode
+ * BulkTagColorGrid - Shows a grid of 16 colors for folder tagging
  */
 const BulkTagColorGrid = ({
   videoId,
@@ -35,27 +35,47 @@ const BulkTagColorGrid = ({
   onColorClick,
   playlistId = null,
   folderMetadata = {},
-  onRenameFolder
+  onRenameFolder,
+  folderCounts: folderCountsProp
 }) => {
+  const videoFolderAssignments = useFolderStore(state => state.videoFolderAssignments);
+  const currentPlaylistItems = usePlaylistStore(state => state.currentPlaylistItems);
+  const previewPlaylistItems = usePlaylistStore(state => state.previewPlaylistItems);
+
+  const activeItems = previewPlaylistItems || currentPlaylistItems || [];
+
+  const folderCounts = useMemo(() => {
+    if (folderCountsProp) return folderCountsProp;
+    const counts = {};
+    if (videoFolderAssignments && activeItems.length > 0) {
+      const cleanIds = new Set(activeItems.map(v => v.id));
+      Object.entries(videoFolderAssignments).forEach(([itemId, folders]) => {
+        if (cleanIds.has(Number(itemId)) && Array.isArray(folders)) {
+          folders.forEach(folderId => {
+            counts[folderId] = (counts[folderId] || 0) + 1;
+          });
+        }
+      });
+    }
+    return counts;
+  }, [folderCountsProp, videoFolderAssignments, activeItems]);
+
   // Helper to get display name for a folder color
   const getDisplayName = (color) => {
     const metadata = folderMetadata[color.id];
     if (metadata && metadata.name) {
-      // Check if custom name differs from default
       const defaultName = color.name;
       const customName = metadata.name.trim();
 
-      // Normalize both names for comparison (remove " Folder" suffix, case-insensitive)
       const normalize = (name) => name.replace(/\s+Folder$/i, '').trim().toLowerCase();
       const defaultBase = normalize(defaultName);
       const customBase = normalize(customName);
 
-      // Return custom name if it's different from default
       if (customBase !== defaultBase && customBase.length > 0) {
         return customName;
       }
     }
-    return null; // Return null if no custom name or it matches default
+    return null;
   };
 
   return (
@@ -70,7 +90,7 @@ const BulkTagColorGrid = ({
           const isSelected = selectedFolders.has(color.id);
           const isCurrentlyAssigned = currentFolders.includes(color.id);
           const customName = getDisplayName(color);
-          const displayName = customName || color.name;
+          const count = folderCounts[color.id] || 0;
 
           return (
             <div key={color.id} className="relative w-full h-full group" style={{ overflow: 'visible' }}>
@@ -90,7 +110,7 @@ const BulkTagColorGrid = ({
                   }
                 }}
                 className={`
-                  w-full h-full transition-all relative
+                  w-full h-full transition-all relative cursor-pointer
                   ${isSelected
                     ? 'ring-2 ring-white ring-inset'
                     : 'hover:opacity-90'
@@ -99,9 +119,19 @@ const BulkTagColorGrid = ({
                 `}
                 style={{ backgroundColor: color.hex }}
               >
+                {/* Item Count Display (Top-Right) */}
+                <div 
+                  className="absolute top-0.5 right-1 text-[11px] font-black text-white leading-none pointer-events-none select-none z-20"
+                  style={{ textShadow: '0 1px 3px rgba(0, 0, 0, 0.9), 0 0 2px rgba(0, 0, 0, 1)' }}
+                  title={`${count} video${count === 1 ? '' : 's'} in ${customName || color.name}`}
+                >
+                  {count}
+                </div>
+
+                {/* Assigned Tick Mark (Bottom-Left to avoid count collision) */}
                 {isSelected && (
                   <svg
-                    className="w-6 h-6 text-white absolute inset-0 m-auto z-10"
+                    className="w-5 h-5 text-white absolute bottom-0.5 left-0.5 z-10 filter drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
@@ -112,6 +142,7 @@ const BulkTagColorGrid = ({
                     />
                   </svg>
                 )}
+
                 {/* Custom name overlay */}
                 {customName && (
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ zIndex: 15 }}>
@@ -129,21 +160,6 @@ const BulkTagColorGrid = ({
                   </div>
                 )}
               </ColorButton>
-              {/* Edit button - only show on desktop hover */}
-              <button
-                className="absolute top-0.5 right-0.5 p-0.5 text-white/50 hover:text-white bg-black/20 hover:bg-black/50 rounded-bl md:opacity-0 md:group-hover:opacity-100 transition-opacity z-20"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  const current = getDisplayName(color) || color.name;
-                  const newName = window.prompt(`Rename "${current}" folder:`, current);
-                  if (newName !== null && newName.trim() !== "" && onRenameFolder) {
-                    onRenameFolder(color.id, newName.trim());
-                  }
-                }}
-                title="Rename Folder"
-              >
-                <Pencil size={10} />
-              </button>
             </div>
           );
         })}
@@ -153,4 +169,3 @@ const BulkTagColorGrid = ({
 };
 
 export default BulkTagColorGrid;
-

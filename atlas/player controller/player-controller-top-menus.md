@@ -53,11 +53,11 @@ Displays video information (Title) and core playback controls.
 - **Previous/Next Video** (Chevron Left/Right).
 - **Grid Button**: Left-click to navigate to the Videos grid page.
 - **Play Button (Folder Cycle)**: Cycles through colored folders within the playlist. 
-  - Left-Click cycles forward, Right-Click backward. Double Right-Click resets to "All Videos".
+  - Left-Click cycles forward to the next colored folder, Right-Click cycles backward to the previous colored folder.
   - Auto-plays the first video of a new folder if current is hidden.
 
 ### Action Controls (Center-Right Spread)
-- **Star Button**: Folder assignment control. Left-click assigns/unassigns to quick folder. Right-click aligns the Play button's filter to the Star's current assigned color.
+- **Star Button**: Folder assignment and filter control. Left-click resets the Play button's folder filter back to "ALL" (default white play button). Right-click aligns the Play button's folder filter to match the Star's current assigned color.
 - **Shuffle Button**: Left-click to shuffle from current folder/all videos. Right-click opens the 16-color picker modal to set the default shuffle pool.
 - **Like Button**: Left-click to toggle like. Right-click to navigate to Likes Page.
 - **`?` Help / Control Guide Button**: Bold `?` button. Left-click opens the video-gamey, hyper-minimalist **Control Guide & Tutorial Modal** (`ControlTutorialModal.jsx`).

@@ -249,7 +249,7 @@ yttv2/
 **Key Topics**: Last 100 videos, deduplication, **list layout**, history cards.
 
 #### `page features/drumstick-rating-system.md`
-**Covers**: 5-drumstick rating system, persistence, UI integration.
+**Covers**: Heart rating system (legacy: drumstick rating), persistence, UI integration.
 
 #### `page features/video-sort-filters.md`
 **Covers**: Videos page sticky toolbar—VideoSortFilters component, watch count sorting/filtering, and colored folder prism.

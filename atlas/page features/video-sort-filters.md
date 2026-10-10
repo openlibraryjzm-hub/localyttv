@@ -24,14 +24,14 @@ This document describes the **Videos page sticky toolbar**: the icon-based sort/
 
 **File**: `src/components/VideoSortFilters.jsx`
 
-Icon-based sort and rating filter bar. **Home** and **Funnel** use Lucide icons; the rating filter in the dropdown uses the drumstick emoji (🍗). Styling switches between **light** (All selected: white/light bar) and **dark** (Unsorted or a folder selected: colored bar) via the `isLight` prop.
+Icon-based sort and rating filter bar. **Home** and **Funnel** use Lucide icons; the rating filter in the dropdown uses Heart icons. Styling switches between **light** (All selected: white/light bar) and **dark** (Unsorted or a folder selected: colored bar) via the `isLight` prop.
 
 ### 2.1 The two toolbar buttons + dropdown contents
 
 | Control   | Icon        | Behavior |
 |----------|-------------|----------|
 | **Home** | `Home`      | **Default order.** Sets sort to `shuffle`. No direction. Restores the default video order (shuffle-state driven). |
-| **Funnel** | `Filter`  | **Sort & rating dropdown.** Click opens a dropdown with: (1) **Sort by date** (Calendar), **Added to app** (ListPlus), **Sort by progress** (BarChart), **Sort by last viewed** (Clock), and **Watch Count** (Eye)—select an option or click again to cycle asc/desc; (2) **Rating filter**—a horizontal row of five drumstick icons (1–5) for multi-select. The funnel button appears active when any of the sorts is active or any rating is selected. Dropdown closes on outside click. |
+| **Funnel** | `Filter`  | **Sort & rating dropdown.** Click opens a dropdown with: (1) **Sort by date** (Calendar), **Added to app** (ListPlus), **Sort by progress** (BarChart), **Sort by last viewed** (Clock), and **Watch Count** (Eye)—select an option or click again to cycle asc/desc; (2) **Rating filter**—a horizontal row of five Heart icons (1–5). Clicking Heart N filters the grid for videos with exact rating N and highlights hearts 1–N; clicking N again or "Clear" resets the filter. The funnel button appears active when any of the sorts is active or a rating is selected. Dropdown closes on outside click. |
 
 **Direction cycling**: For Date, Progress, and Last viewed (inside the funnel dropdown), when that mode is already active, clicking it again only toggles `sortDirection` between `'asc'` and `'desc'`.
 

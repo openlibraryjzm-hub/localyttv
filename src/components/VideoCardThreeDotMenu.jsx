@@ -238,7 +238,22 @@ const VideoCardThreeDotMenu = forwardRef(({
             {/* 2. Rating */}
             {playlistId && video?.id && (
               <div className="px-3 py-2.5 border-b border-black/10">
-                <div className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-2">Rating</div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">Rating</span>
+                  {drumstickRating > 0 && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (onDrumstickRate) onDrumstickRate(0);
+                      }}
+                      className="text-[10px] font-bold text-rose-500 hover:text-rose-700 hover:underline cursor-pointer"
+                      title="Clear rating (set to 0 hearts)"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
                 <div onClick={(e) => e.stopPropagation()} className="pointer-events-auto">
                   <DrumstickRating rating={drumstickRating} onRate={onDrumstickRate} disabled={false} />
                 </div>

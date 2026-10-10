@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
+import { Heart } from 'lucide-react';
 
 /**
- * DrumstickRating Component
+ * DrumstickRating Component (Heart Rating UI)
  * 
- * A hoverable rating component that displays 1-5 drumstick icons.
+ * A hoverable rating component that displays 1-5 heart icons.
  * Users can click to rate, and the rating persists.
  * 
  * @param {number} rating - Current rating (0-5, where 0 is unrated)
@@ -24,38 +25,34 @@ const DrumstickRating = ({ rating = 0, onRate, disabled = false }) => {
 
     return (
         <div
-            className="flex items-center gap-0.5 cursor-default"
+            className="flex items-center gap-0.5 cursor-default select-none"
             onMouseLeave={() => setHoverRating(0)}
             onClick={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()}
             onMouseUp={(e) => e.stopPropagation()}
         >
-            {[1, 2, 3, 4, 5].map((drumstick) => (
+            {[1, 2, 3, 4, 5].map((heart) => (
                 <button
-                    key={drumstick}
-                    onClick={() => handleClick(drumstick)}
-                    onMouseEnter={() => !disabled && setHoverRating(drumstick)}
+                    key={heart}
+                    type="button"
+                    onClick={() => handleClick(heart)}
+                    onMouseEnter={() => !disabled && setHoverRating(heart)}
                     disabled={disabled}
                     className={`
-            transition-all duration-150
-            ${disabled ? 'cursor-default' : 'cursor-pointer hover:scale-110'}
-            ${drumstick <= displayRating ? 'opacity-100' : 'opacity-30'}
-          `}
-                    title={`Rate ${drumstick} drumstick${drumstick > 1 ? 's' : ''}`}
+                        transition-all duration-150 p-0.5
+                        ${disabled ? 'cursor-default' : 'cursor-pointer hover:scale-110'}
+                    `}
+                    title={heart === rating ? 'Click to set No Rating (clear rating)' : `Rate ${heart} heart${heart > 1 ? 's' : ''}`}
                 >
-                    <svg
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
+                    <Heart
+                        size={16}
                         className={`
-              ${drumstick <= displayRating ? 'text-amber-500' : 'text-gray-400'}
-              transition-colors duration-150
-            `}
-                    >
-                        {/* Drumstick icon - simplified chicken leg shape */}
-                        <path d="M18 8c0-2.21-1.79-4-4-4s-4 1.79-4 4c0 1.2.54 2.27 1.38 3L9 15c-.55 1.65-.9 3.35-.9 5.1 0 .5.4.9.9.9h6c.5 0 .9-.4.9-.9 0-1.75-.35-3.45-.9-5.1l-2.38-4c.84-.73 1.38-1.8 1.38-3zm-4-2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2z" />
-                    </svg>
+                            ${heart <= displayRating 
+                                ? 'text-rose-500 fill-rose-500 opacity-100' 
+                                : 'text-gray-400 fill-transparent opacity-40 hover:opacity-70'}
+                            transition-colors duration-150
+                        `}
+                    />
                 </button>
             ))}
         </div>

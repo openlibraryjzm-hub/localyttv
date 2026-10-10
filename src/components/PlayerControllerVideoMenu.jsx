@@ -370,21 +370,13 @@ export default function PlayerControllerVideoMenu(props) {
                 onClick={() => handlePlayButtonToggle('forward')}
                 onLongPress={(e) => {
                   if (e && e.preventDefault) e.preventDefault();
-                  const now = Date.now();
-                  if (now - playButtonRightClickRef.current < 300) {
-                    // Double right click (or quick double tap) detected -> Reset to all
-                    handlePlayButtonToggle('reset');
-                  } else {
-                    // Single right click (or long press) -> Reverse cycle
-                    handlePlayButtonToggle('reverse');
-                  }
-                  playButtonRightClickRef.current = now;
+                  handlePlayButtonToggle('reverse');
                 }}
                 className="absolute left-1/2 top-1/2 flex items-center justify-center group/tool"
                 style={{
                   transform: `translate(calc(-50% - 60px), -50%)`
                 }}
-                title={getInspectTitle('Cycle Folder Filter (Click: Forward, Right-click: Reverse, Double Right-click: Reset to ALL)')}
+                title={getInspectTitle('Cycle Folder Filter (Click: Next Folder, Right-click: Previous Folder)')}
               >
                 {(() => {
                   const activeColorData = currentFolder ? FOLDER_COLORS.find(c => c.id === currentFolder.folder_color) : null;
@@ -429,7 +421,7 @@ export default function PlayerControllerVideoMenu(props) {
               </MenuButton>
 
               <MenuButton
-                onClick={() => handleStarClick()}
+                onClick={() => handlePlayButtonToggle('reset')}
                 onLongPress={(e) => {
                   if (e && e.preventDefault) e.preventDefault();
                   handleStarAlignToPlay();
@@ -438,7 +430,7 @@ export default function PlayerControllerVideoMenu(props) {
                 style={{
                   transform: `translate(calc(-50% + ${starButtonX}px), -50%)`
                 }}
-                title={getInspectTitle('Star Folder Assignment (Click: Assign to Quick Folder, Right-click: Filter to Assigned Color)')}
+                title={getInspectTitle('Star Button (Click: Reset Folder Filter to ALL, Right-click: Align Filter to Star Color)')}
               >
                 {(() => {
                   const firstFolder = currentVideoFolders.length > 0 ? currentVideoFolders[0] : null;

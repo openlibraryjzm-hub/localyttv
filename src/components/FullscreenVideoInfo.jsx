@@ -144,6 +144,8 @@ const FullscreenVideoInfo = () => {
     try {
       await setDrumstickRating(currentPlaylistId, video.id, newRating);
       setMainDrumstickRating(newRating);
+      if (video) video.drumstick_rating = newRating;
+      usePlaylistStore.getState().updateItemRating(video.id, newRating);
     } catch (err) {
       console.error('Failed to set drumstick rating:', err);
     }

@@ -19,13 +19,13 @@ The **Video Card / Tweet Card 3-Dot Menu** is a single, vertical “all-in-one�
 The menu is a **vertical standard popup** with these sections from top to bottom:
 
 1. **Pins**: Pin / Unpin, Priority.  
-2. **Rating**: Drumstick 1–5 (same as drumstick-rating-system).  
+2. **Rating**: Heart 1–5 (sequential heart rating system).  
 3. **Sticky Video**: Toggle sticky for the current playlist/folder context.
 4. **Actions**: 
    - Delete  
    - Move to Playlist  
    - Copy to Playlist  
-5. **Colored Folders**: A list item at the very bottom that, when clicked, expands a side pop-out (intelligently placed on the left or right) revealing a 16-color **BulkTagColorGrid**. Click a color in the grid to assign/unassign the video.
+5. **Colored Folders**: A list item at the very bottom that, when clicked, expands a side pop-out (intelligently placed on the left or right) revealing a 16-color **BulkTagColorGrid**. Click a color in the grid to assign/unassign the video. Each square displays a live count of items in that colored folder in the top-right corner, with the assigned checkmark tick placed in the bottom-left to prevent overlap. Long-pressing a square allows renaming the folder.
 
 ### 1.3 Behavior
 

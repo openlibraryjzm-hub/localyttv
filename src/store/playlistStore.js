@@ -158,6 +158,17 @@ export const usePlaylistStore = create((set, get) => ({
     });
   },
 
+  updateItemRating: (videoId, rating) => set(state => ({
+    currentPlaylistItems: state.currentPlaylistItems.map(item =>
+      item.id === videoId ? { ...item, drumstick_rating: rating } : item
+    ),
+    previewPlaylistItems: state.previewPlaylistItems
+      ? state.previewPlaylistItems.map(item =>
+          item.id === videoId ? { ...item, drumstick_rating: rating } : item
+        )
+      : null
+  })),
+
   setAllPlaylists: (playlists) => {
     // Ensure uniqueness by ID to prevent navigation "jumps"
     const uniquePlaylists = [];

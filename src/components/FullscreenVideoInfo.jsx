@@ -1,13 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Play, Pause, Volume1, Volume2, VolumeX, Shield, ShieldOff, ExternalLink, User, ChevronDown, Info, ListMusic, Check } from 'lucide-react';
 import { usePlaylistStore } from '../store/playlistStore';
 import { useLayoutStore } from '../store/layoutStore';
 import { useConfigStore } from '../store/configStore';
+import { usePinStore } from '../store/pinStore';
 import { invoke } from '../api/platformBridge';
-import { getPlaylistItemsPreview, getFoldersForPlaylist, getAllPlaylistMetadata, getAllPlaylists, getAllFolderAssignments } from '../api/playlistApi';
+import {
+  getPlaylistItemsPreview,
+  getFoldersForPlaylist,
+  getAllPlaylistMetadata,
+  getAllPlaylists,
+  getAllFolderAssignments,
+  getDrumstickRating,
+  setDrumstickRating,
+  getVideoFolderAssignments,
+  assignVideoToFolder,
+  unassignVideoFromFolder,
+  removeVideoFromPlaylist
+} from '../api/playlistApi';
 import { getThumbnailUrl, fetchVideoMetadata, extractVideoId } from '../utils/youtubeUtils';
 import { FOLDER_COLORS } from '../utils/folderColors';
 import PlaylistCard from './PlaylistCard';
+import VideoCardThreeDotMenu from './VideoCardThreeDotMenu';
 
 const TEXT_PRIMARY = {
   color: 'white',
@@ -76,6 +90,11 @@ const FullscreenVideoInfo = () => {
   const [isLoadingPlaylistData, setIsLoadingPlaylistData] = useState(false);
   const [enrichedMetadata, setEnrichedMetadata] = useState({});
 
+  // Context Menu & Metadata integration for active video
+  const mainMenuRef = useRef(null);
+  const [mainVideoFolders, setMainVideoFolders] = useState([]);
+  const [mainDrumstickRating, setMainDrumstickRating] = useState(0);
+
   const { currentPlaylistItems, currentVideoIndex, currentPlaylistId, allPlaylists, setAllPlaylists, setCurrentVideoIndex } = usePlaylistStore();
 
   const items = currentPlaylistItems || [];
@@ -86,6 +105,76 @@ const FullscreenVideoInfo = () => {
     currentVideoIndex < items.length;
 
   const video = hasValidIndex ? items[currentVideoIndex] : null;
+
+  const isPinned = usePinStore(state =>
+    video?.id ? state.pinnedVideos.some(v => v.id === video.id) && !state.priorityPinIds.includes(video.id) : false
+  );
+  const isPriority = usePinStore(state =>
+    video?.id ? state.priorityPinIds.includes(video.id) : false
+  );
+  const { togglePin, togglePriorityPin, removePin } = usePinStore();
+
+  useEffect(() => {
+    if (currentPlaylistId && video?.id) {
+      getDrumstickRating(currentPlaylistId, video.id)
+        .then(rating => setMainDrumstickRating(rating))
+        .catch(err => console.error('Failed to load drumstick rating:', err));
+
+      getVideoFolderAssignments(currentPlaylistId, video.id)
+        .then(folders => setMainVideoFolders(Array.isArray(folders) ? folders : []))
+        .catch(err => console.error('Failed to load folder assignments:', err));
+    } else {
+      setMainVideoFolders([]);
+      setMainDrumstickRating(0);
+    }
+  }, [currentPlaylistId, video?.id]);
+
+  const handleMainThumbnailContextMenu = (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    if (mainMenuRef.current) {
+      mainMenuRef.current.openAt(e.clientX, e.clientY);
+    }
+  };
+
+  const handleDrumstickRate = async (newRating) => {
+    if (!currentPlaylistId || !video?.id) return;
+    try {
+      await setDrumstickRating(currentPlaylistId, video.id, newRating);
+      setMainDrumstickRating(newRating);
+    } catch (err) {
+      console.error('Failed to set drumstick rating:', err);
+    }
+  };
+
+  const handleStarColorLeftClick = async (vid, colorId) => {
+    if (!currentPlaylistId || !vid?.id) return;
+    const isAssigned = mainVideoFolders.includes(colorId);
+    try {
+      if (isAssigned) {
+        await unassignVideoFromFolder(currentPlaylistId, vid.id, colorId);
+        setMainVideoFolders(prev => prev.filter(c => c !== colorId));
+      } else {
+        await assignVideoToFolder(currentPlaylistId, vid.id, colorId);
+        setMainVideoFolders(prev => [...prev, colorId]);
+      }
+    } catch (err) {
+      console.error('Failed to update folder assignment:', err);
+    }
+  };
+
+  const handleMenuOptionClick = async (option) => {
+    if (!option?.action || !currentPlaylistId || !video?.id) return;
+    if (option.action === 'delete') {
+      try {
+        await removeVideoFromPlaylist(currentPlaylistId, video.id);
+      } catch (err) {
+        console.error('Failed to remove video from playlist:', err);
+      }
+    }
+  };
 
   const handleVideoSelect = (videoUrl) => {
     if (!videoUrl || !items || items.length === 0) return;
@@ -302,7 +391,7 @@ const FullscreenVideoInfo = () => {
             const isLocal = video.is_local || (!video.video_url?.includes('youtube.com') && !video.video_url?.includes('youtu.be'));
 
             const renderVideoThumbnail = () => (
-              <div className="relative group/thumb px-0 my-1">
+              <div className="relative group/thumb px-0 my-1 cursor-context-menu" onContextMenu={handleMainThumbnailContextMenu}>
                 {thumbnailUrl ? (
                   <div className="rounded-xl overflow-hidden shadow-2xl border-[2px] border-black/50 aspect-video relative">
                     <img
@@ -593,6 +682,37 @@ const FullscreenVideoInfo = () => {
           })()}
         </div>
       </div>
+
+      {video && (
+        <VideoCardThreeDotMenu
+          ref={mainMenuRef}
+          video={video}
+          playlistId={currentPlaylistId}
+          isPinned={isPinned}
+          isPriority={isPriority}
+          onTogglePin={togglePin}
+          onTogglePriorityPin={togglePriorityPin}
+          onRemovePin={removePin}
+          videoFolders={mainVideoFolders}
+          onStarColorLeftClick={handleStarColorLeftClick}
+          drumstickRating={mainDrumstickRating}
+          onDrumstickRate={handleDrumstickRate}
+          menuOptions={[
+            {
+              label: 'Delete',
+              danger: true,
+              icon: (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              ),
+              action: 'delete',
+            }
+          ]}
+          onMenuOptionClick={handleMenuOptionClick}
+          triggerClassName="hidden"
+        />
+      )}
     </div>
   );
 };

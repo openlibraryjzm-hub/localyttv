@@ -43,8 +43,9 @@ The Fullscreen Video Info panel is a dedicated component that appears in the rig
     - **Right Edge**: Subtle, low-profile YouTube icon button (`ExternalLink` icon button, absolute-positioned on the right).
   - **Row 2 (Dedicated Prominent Full-Width Metadata Bar)**:
     - **Center**: Full-width dedicated row displaying View Count & Upload Date in large, bold, high-visibility typography (**`text-[15px] font-black text-[#052F4A]`**, e.g. `1,234,567 views  •  October 10, 2026`).
-- **Main Video Thumbnail (Hover Controls Overlay)**: 
+- **Main Video Thumbnail (Hover Controls & Context Menu)**: 
   - 16:9 aspect ratio thumbnail positioned directly underneath the Hero Video Metadata Card.
+  - **Right-Click Context Menu**: Right-clicking the main thumbnail opens `VideoCardThreeDotMenu` for the currently playing video at the cursor's exact coordinates (`cursor-context-menu`), giving instant access to pin toggles, drumstick 1–5 rating, colored folder assignments, and deletion.
   - **Hover Overlay Controls Bar**: Hovering over the main video thumbnail reveals a gradient backdrop bar at the bottom of the thumbnail containing:
     - Integrated Volume Slider controller (mute button + volume range track)
     - Info vs. Playlist mode tab toggle button (`ListMusic` / `Info`)

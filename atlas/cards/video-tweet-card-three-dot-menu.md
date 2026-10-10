@@ -47,6 +47,7 @@ The menu is a **vertical standard popup** with these sections from top to bottom
 | **Component** | `src/components/DrumstickRating.jsx` | 1–5 rating used in the “Pins, Rating, Sticky” section. |
 | **Card** | `src/components/VideoCard.jsx` | Renders the 3-dot trigger and passes props (pin, folder, rating, menu options, etc.). |
 | **Card** | `src/components/TweetCard.jsx` | Same: single 3-dot trigger, same menu. |
+| **Panel** | `src/components/FullscreenVideoInfo.jsx` | Invokes menu imperatively on right-click of main video thumbnail for the currently playing video. |
 | **Page** | `src/components/VideosPage.jsx` | Provides handlers: `handleMenuOptionClick`, `handleStarColorLeftClick`, `handleRenameFolder`, etc. |
 | **State** | `src/store/pinStore.js` | Pin / priority / follower state. |
 | **State** | `src/store/folderStore.js` | Folder assignments, bulk tag state. |

@@ -1,6 +1,6 @@
 # Web Version Architecture & Specification (`localyt.tv`)
 
-This document provides a comprehensive overview of the **localyt.tv** web implementation for the YouTube TV v2 (`yttv2`) codebase. It outlines the dual-target architecture, database strategy, platform adapters, audio visualizer web options, and deployment specifications.
+This document provides a comprehensive overview of the **localyt.tv** web implementation for the YouTube TV v2 (`yttv2`) codebase. It outlines the dual-target architecture, database strategy, platform adapters, audio visualizer web options, deployment specifications, and automated directory sync workflows.
 
 ---
 
@@ -33,7 +33,7 @@ The application uses a **Single Repository Architecture** supporting two distinc
 
 ## Platform Detection & Bridge Layer
 
-Platform environment detection is centralized in [`src/utils/platform.js`](file:///c:/Users/jodyn/Desktop/yttv%20in%20october%202026/src/utils/platform.js):
+Platform environment detection is centralized in [`src/utils/platform.js`](file:///c:/Users/GGPC/Desktop/yttv%20on%20desktop/src/utils/platform.js):
 
 * `isTauri()`: Returns `true` inside Tauri desktop window (`window.__TAURI_INTERNALS__`).
 * `isWebView2()`: Returns `true` inside C# WPF host window.
@@ -48,24 +48,44 @@ Platform environment detection is centralized in [`src/utils/platform.js`](file:
 ## Supabase Database & Storage Integration
 
 ### Configuration
-* **Client Initializer**: [`src/api/supabaseClient.js`](file:///c:/Users/jodyn/Desktop/yttv%20in%20october%202026/src/api/supabaseClient.js)
+* **Client Initializer**: [`src/api/supabaseClient.js`](file:///c:/Users/GGPC/Desktop/yttv%20on%20desktop/src/api/supabaseClient.js)
 * **Environment Variables**:
-  * `VITE_SUPABASE_URL`: Supabase project REST API endpoint.
-  * `VITE_SUPABASE_ANON_KEY`: Safe, public anon/publishable key.
+  * `VITE_SUPABASE_URL`: Supabase project REST API endpoint (e.g. `https://giguvusbbgonlvsqtrei.supabase.co`).
+  * `VITE_SUPABASE_ANON_KEY`: Safe, public anon/publishable key (`sb_publishable_...`).
 
 > [!CAUTION]
 > Never expose Supabase `secret` keys in frontend code or environment variables bundled by Vite. Only use the public publishable `anon` key.
 
-### Database Schema ([`supabase_schema.sql`](file:///c:/Users/jodyn/Desktop/yttv%20in%20october%202026/supabase_schema.sql))
+### Database Schema ([`supabase_schema.sql`](file:///c:/Users/GGPC/Desktop/yttv%20on%20desktop/supabase_schema.sql))
 * `playlists`: Shared demo playlists (id, name, description, custom_ascii, custom_thumbnail_url).
 * `playlist_items`: Shared YouTube video records (playlist_id, video_url, video_id, title, thumbnail_url, author, view_count, position).
 * `orb_presets`: Preset color schemes, visualizer modes, and app banner assignments.
 * `app_banners`: Shared header background assets.
 
+### Row Level Security (RLS) & Permissions
+To allow seamless background seed scripts alongside web visitor access:
+* **Table Grants**: `GRANT ALL ON TABLE playlists, playlist_items TO anon, authenticated, postgres, service_role;`
+* **Policies**: Permissive `FOR ALL` policy (`CREATE POLICY "Full access for playlists" ON playlists FOR ALL USING (true) WITH CHECK (true);`).
+
 ### Data Isolation Strategy
-* **Public Shared Cloud**: Playlists, video metadata, Orb configurations, and banner images live in Supabase PostgreSQL & Storage Buckets with Row-Level Security (RLS) public read access.
+* **Public Shared Cloud**: Playlists, video metadata, Orb configurations, and banner images live in Supabase PostgreSQL with public access.
 * **Visitor Local Sandbox**: Individual watch history, likes, pins, folder assignments, progress percentage, and user-imported playlists (via JSON or links) are stored in the visitor's browser `LocalStorage` / `IndexedDB` to ensure privacy and prevent global state pollution.
-* **Metadata Schema Alignment**: Local storage playlists conform to the standard `PlaylistMetadata` schema (`{ playlist_id, count, first_video, recent_video }`), ensuring local JSON imports seamless render item counts, thumbnails, and metadata across all pages.
+* **Metadata Schema Alignment**: Local storage playlists conform to the standard `PlaylistMetadata` schema (`{ playlist_id, count, first_video, recent_video }`), ensuring local JSON imports seamlessly render item counts, thumbnails, and metadata across all pages.
+
+---
+
+## Automated Curated Directory Sync (`npm run seed:supabase`)
+
+To eliminate complex playlist diffing, the project uses a **Full Directory Sync Model**:
+
+* **Script Location**: [`scripts/seedSupabase.js`](file:///c:/Users/GGPC/Desktop/yttv%20on%20desktop/scripts/seedSupabase.js)
+* **Single Source of Truth**: [`curated_json/`](file:///c:/Users/GGPC/Desktop/yttv%20on%20desktop/curated_json) directory.
+* **Command**: `npm run seed:supabase`
+* **Sync Workflow**:
+  1. Clears existing global records in Supabase `playlist_items` and `playlists` tables.
+  2. Reads all export `.json` files inside `curated_json/`.
+  3. Bulk-inserts playlists and video records into Supabase in batches.
+  4. Changes are immediately live on `localyt.tv` upon page refresh without requiring a Vercel re-deployment.
 
 ---
 
@@ -102,12 +122,14 @@ On the Web target (`isWeb()`), window controls are hidden and replaced with a di
 * **Build Tool**: Vite 7
 * **Build Command**: `npm run build`
 * **Output Directory**: `dist/`
-* **Target Domain**: `localyt.tv`
-* **Hosting Support**: Vercel, Netlify, Cloudflare Pages
+* **Live Target Domain**: `https://localyt.tv`
+* **Hosting Platform**: Vercel (Production)
+* **Single-Page Application (SPA) Routing**:
+  * Vercel Rewrite Rules: [`vercel.json`](file:///c:/Users/GGPC/Desktop/yttv%20on%20desktop/vercel.json)
+  * Netlify/Cloudflare Fallback: [`public/_redirects`](file:///c:/Users/GGPC/Desktop/yttv%20on%20desktop/public/_redirects)
 
-### Vercel / Netlify Environment Setup
-Add the following variables to the hosting project settings:
+### Production Environment Setup (Vercel)
 ```ini
-VITE_SUPABASE_URL=https://<project-id>.supabase.co
-VITE_SUPABASE_ANON_KEY=sb_publishable_<key>
+VITE_SUPABASE_URL=https://giguvusbbgonlvsqtrei.supabase.co
+VITE_SUPABASE_ANON_KEY=sb_publishable_-eLh4iHUShl5pYEyXOLEvg_YBvfrLST
 ```

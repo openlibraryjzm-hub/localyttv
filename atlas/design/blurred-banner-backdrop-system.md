@@ -1,6 +1,15 @@
-# Atmospheric Blurred App Banner Backdrop System
+# Atmospheric Blurred App Banner Backdrop System [DEPRECATED]
 
-The **Blurred App Banner Backdrop System** is an architectural pattern used across major UI containers (`FullscreenVideoInfo`, `PlayerControllerPlaylistMenu`, `PlayerControllerVideoMenu`, and `VideosPage`). It renders a rich, atmospheric overlay derived from the active App Banner image over a solid opaque container, eliminating see-through content bleed while establishing visual continuity across the application.
+> [!WARNING] DEPRECATED (October 2026)
+> The **Atmospheric Blurred App Banner Backdrop System** described in this document has been decommissioned across all UI containers (`FullscreenVideoInfo`, `PlayerControllerPlaylistMenu`, `PlayerControllerVideoMenu`, `VideosPage`, `PlaylistsPage`, `HistoryPage`, `LikesPage`, `PinsPage`).
+> It has been replaced by a **hardcoded pure black (`#000000`) dark mode standard** to eliminate GPU memory overhead, eliminate disk image reading lag, and provide instant visual contrast with zero borders.
+> 
+> For the current architecture, refer to `atlas/session updates/2026-10-25-dark-mode-aesthetic-refactor.md`.
+> This file is preserved for historical and reference purposes only.
+
+---
+
+The **Blurred App Banner Backdrop System** was an architectural pattern used across major UI containers (`FullscreenVideoInfo`, `PlayerControllerPlaylistMenu`, `PlayerControllerVideoMenu`, and `VideosPage`). It renders a rich, atmospheric overlay derived from the active App Banner image over a solid opaque container, eliminating see-through content bleed while establishing visual continuity across the application.
 
 ---
 

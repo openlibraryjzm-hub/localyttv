@@ -1,6 +1,6 @@
 # Long Playlist Card (Horizontal & Tablet Optimized)
 
-The `LongPlaylistCard` is a high-density, horizontal variant of the playlist card, specifically designed for tablet and desktop views. It organizes metadata, management controls, and deep content previews into a dual-column layout with a solid top header bar and floating preview items.
+The `LongPlaylistCard` is a high-density, horizontal variant of the playlist card, specifically designed for tablet and desktop views. It organizes metadata, management controls, and deep content previews into a dual-column layout with a pure black header bar and floating preview items.
 
 ---
 
@@ -8,26 +8,26 @@ The `LongPlaylistCard` is a high-density, horizontal variant of the playlist car
 
 The card uses a responsive flex container (`md:flex-row`) that prioritizes a stable visual balance between the primary identity (Top/Header) and content discovery (Bottom/Grid).
 
-### 1. Outer Container & Backdrop Integration
-- **Transparent Body**: The outer container is styled with `bg-transparent border-0 shadow-none`, allowing preview elements to float directly over atmospheric page backgrounds (such as the **Blurred App Banner Backdrop System** on `PlaylistsPage`).
-- **Solid Top Header**: A prominent solid header bar (`bg-slate-100 border-2 border-[#052F4A] rounded-xl shadow-md`) anchors the top of the card, consolidating metrics, playlist title, and action controls.
+### 1. Outer Container & Aesthetic Integration
+- **Pure Black Canvas**: The outer container is styled with `bg-transparent border-0 shadow-none`, allowing elements to merge seamlessly into the solid `#000000` page background.
+- **Header Bar**: A sleek `#000000` header bar (`bg-black border border-transparent hover:border-white/20 rounded-xl shadow-none transition-all`) anchors the top of the card, consolidating metrics, playlist title in pure white, and action controls without static border outlines.
 
 ---
 
 ### 2. Header Bar: Identity & Management Hub
-The solid top header bar acts as the control center for the playlist:
+The header bar acts as the control center for the playlist:
 
-- **Metadata Bar (Metrics):** Sleek SVG icon indicators resting directly on the header card background without individual box backdrops for non-zero item categories:
+- **Metadata Bar (Metrics):** Sleek SVG icon indicators resting directly on the black header background without individual box backdrops for non-zero item categories:
   - **Videos:** `<Play>` (Sky Blue) indicator for standard video files/links.
   - **Orbs:** `<Sparkles>` (Amber) indicator for assigned visualizer Orb themes.
   - **Banners:** `<Image>` (Indigo) indicator for assigned banner presets.
   - **Tracked Playlists:** `<ListMusic>` (Emerald) indicator for linked playlist trackers.
   - **Tracked Channels:** `<User>` (Purple) indicator for linked channel trackers.
-- **Centered Title:** Bold typography displaying the playlist name with line truncation and hover color transitions.
-- **Action Bar:** Dedicated row for management tasks resting directly on the header background:
+- **Centered Title:** Bold white typography displaying the playlist name with line truncation and hover color transitions (`text-white hover:text-white/80`).
+- **Action Bar:** Dedicated row for management tasks:
   - **Grid Preview Button:** Toggles full grid preview mode (`Grid3x3`).
-  - **Flash Add Button:** Dark Navy `+` button triggering a light-themed popover (`bg-slate-100 border-2 border-[#052F4A]`) for opening the Playlist Uploader, quick-adding clipboard URLs, or assigning to 1 of 4 Quick Assign Slots.
-  - **Three-Dot Menu:** Trigger icon opening a light-themed dropdown popover for secondary actions (Open in Uploader, Export, Group Assignment, Hide, Delete).
+  - **Flash Add Button:** Quick-add button triggering a dark popover menu for opening the Playlist Uploader, quick-adding clipboard URLs, or assigning to 1 of 4 Quick Assign Slots.
+  - **Three-Dot Menu:** Trigger icon opening a dark dropdown popover for secondary actions (Open in Uploader, Export, Group Assignment, Hide, Delete).
 
 ---
 
@@ -35,15 +35,13 @@ The solid top header bar acts as the control center for the playlist:
 
 - **1x4 Mini-Thumbnail Preview Grid**:
   - Renders 4 mini thumbnails in a 1-row by 4-column grid layout (`grid-cols-4 gap-2.5`).
-  - Video preview items use a compact **`aspect-[4/3]`** card container where the 16:9 thumbnail occupies ~75% of card height and a single-line 14px bold title (**`text-sm font-bold text-[#052F4A] truncate`**) occupies the bottom ~25% strip (Orbs preserve `aspect-square rounded-full`).
-  - Mini preview strips display standard YouTube video thumbnails (Orbs, Banners, Channel Cards, and Playlist/Folder Trackers are filtered out via `filterTrackerAndChannelItems`), ordered by **Most Recently WATCHED** (ordered by `COALESCE(vp.last_updated, '1970-01-01') DESC, pi.position DESC`).
-  - **Hover Interaction & Styling**: Mini preview cards feature smooth hover scale animations and ring highlights (`hover:ring-4 hover:ring-sky-500/20`), presenting clean thumbnail graphics without play button overlays or native title tooltips.
-  - **Buffered Preview Data**: `PlaylistsPage` requests preview items with a buffer (`getAllPlaylistItemsPreviews(15)`) to ensure all 4 mini preview slots remain fully populated after excluding channel/tracker cards.
+  - Video preview items use a compact **`aspect-[4/3]`** card container where the 16:9 thumbnail occupies ~75% of card height and a single-line 14px bold title (**`text-sm font-bold text-white truncate`**) over a solid black bottom strip (**`bg-black`**) without static dividers.
+  - Mini preview cards use `border border-transparent hover:border-white/30 hover:ring-2 hover:ring-white/20`, rendering borderless statically and displaying a clean outline on hover.
+  - Mini preview strips display standard YouTube video thumbnails ordered by **Most Recently WATCHED** (ordered by `COALESCE(vp.last_updated, '1970-01-01') DESC, pi.position DESC`).
   - Right-clicking any mini slot swaps that video into the primary cover position.
 - **Skeleton Loading & Empty State System**:
-  - **Pre-Data Fetching Skeletons**: While database/IPC preview requests are resolving, 4 animated pulsing skeleton slots (`aspect-[4/3] bg-slate-900/60 animate-pulse border border-[#052F4A]/20`) maintain exact card height and prevent layout jump.
-  - **Network Image Download Placeholders**: Each `MiniPreviewItem` tracks image loading state using DOM element `ref` inspection (`el.complete`) and `onLoad` listeners. A dark pulsing background (`bg-slate-800 animate-pulse`) displays until thumbnail image bytes finish downloading over the network.
-  - **Empty State Placeholders**: Truly empty playlists (0 items) display 4 subtle dashed placeholder slots (`aspect-[4/3] border border-dashed border-[#052F4A]/15 bg-slate-100/40`) for visual card uniformity.
+  - **Pre-Data Fetching Skeletons**: While database/IPC preview requests are resolving, 4 pulsing skeleton slots (`aspect-[4/3] bg-black border border-transparent rounded-xl shadow-none`) maintain exact card height without harsh static borders.
+  - **Empty State Placeholders**: Truly empty playlists (0 items) display 4 subtle dashed placeholder slots (`aspect-[4/3] border border-dashed border-zinc-800/60 bg-black text-zinc-600`) for visual card uniformity.
 
 ---
 

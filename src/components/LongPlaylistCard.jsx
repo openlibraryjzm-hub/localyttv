@@ -78,10 +78,10 @@ const MiniPreviewItem = ({
   return (
     <div
       key={slotKey}
-      className={`relative w-full overflow-hidden transition-all cursor-pointer group/mini shadow-sm border ${
+      className={`relative w-full overflow-hidden transition-all cursor-pointer group/mini shadow-none border ${
         isOrb 
           ? "aspect-square rounded-full border-amber-500/30 bg-amber-900/20 hover:border-amber-400 hover:ring-4 hover:ring-amber-500/20" 
-          : "aspect-[4/3] rounded-xl border-[#052F4A]/30 bg-slate-900/40 hover:border-sky-500/50 hover:ring-4 hover:ring-sky-500/20"
+          : "aspect-[4/3] rounded-xl border-transparent bg-black hover:border-white/30 hover:ring-2 hover:ring-white/20"
       }`}
       {...longPress}
       onContextMenu={(e) => handleMiniVideoRightClick(e, item, index)}
@@ -115,9 +115,9 @@ const MiniPreviewItem = ({
         </div>
       ) : (
         /* Video Rendering: Mini-Card Style */
-        <div className="w-full h-full bg-white flex flex-col">
+        <div className="w-full h-full bg-black flex flex-col">
             {/* Thumbnail: Aspect Video on Top */}
-            <div className="relative aspect-video w-full overflow-hidden flex-shrink-0 bg-slate-900">
+            <div className="relative aspect-video w-full overflow-hidden flex-shrink-0 bg-black">
                 {showImg ? (
                     <>
                         <img
@@ -131,19 +131,19 @@ const MiniPreviewItem = ({
                             onError={() => setMiniImageErrors((prev) => new Set(prev).add(slotKey))}
                         />
                         {!imgLoaded && (
-                            <div className="absolute inset-0 bg-slate-800 animate-pulse pointer-events-none" />
+                            <div className="absolute inset-0 bg-zinc-900 animate-pulse pointer-events-none" />
                         )}
                     </>
                 ) : (
-                    <div className="w-full h-full flex items-center justify-center text-slate-600 bg-slate-800/40">
+                    <div className="w-full h-full flex items-center justify-center text-zinc-500 bg-zinc-900/40">
                          <span className="text-[10px] font-bold uppercase">{item.isBannerPreset ? "Banner" : "Video"}</span>
                     </div>
                 )}
             </div>
 
             {/* Title Area: Single line bold text-sm (14px) */}
-            <div className="flex-1 px-1.5 py-0.5 flex flex-col justify-center min-h-0 bg-white">
-                <h4 className="text-sm font-bold text-[#052F4A] truncate leading-tight" title={getPreviewItemTitle(item)}>
+            <div className="flex-1 px-1.5 py-0.5 flex flex-col justify-center min-h-0 bg-black">
+                <h4 className="text-sm font-bold text-white truncate leading-tight" title={getPreviewItemTitle(item)}>
                     {getPreviewItemTitle(item)}
                 </h4>
             </div>
@@ -689,43 +689,43 @@ const filterTrackerAndChannelItems = (items) => {
         <div className="absolute inset-0 bg-gradient-to-br from-sky-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
 
         {/* Top Header: Info Metrics, Centered Title & Action Controls */}
-        <div className="w-full flex flex-col md:flex-row items-center justify-between gap-3 px-4 py-2.5 relative z-10 bg-slate-100 border-2 border-[#052F4A] rounded-xl shadow-md">
+        <div className="w-full flex flex-col md:flex-row items-center justify-between gap-3 px-4 py-2.5 relative z-10 bg-black border border-transparent hover:border-white/20 rounded-xl shadow-none transition-all">
             {/* Info Bar (Metrics) */}
             <div className="flex items-center gap-1.5 px-1 py-1">
                 <div className="flex items-center gap-2.5">
                     {videoCount > 0 && (
-                        <div className="flex items-center gap-1 text-[#052F4A]/80" title={`${videoCount} Videos`}>
-                            <Play size={12} className="text-sky-600" fill="currentColor" />
+                        <div className="flex items-center gap-1 text-white/80" title={`${videoCount} Videos`}>
+                            <Play size={12} className="text-sky-400" fill="currentColor" />
                             <span className="text-xs font-bold">{videoCount}</span>
                         </div>
                     )}
                     {orbCount > 0 && (
-                        <div className="flex items-center gap-1 text-[#052F4A]/80" title={`${orbCount} Orbs`}>
-                            <Sparkles size={12} className="text-amber-500" />
+                        <div className="flex items-center gap-1 text-white/80" title={`${orbCount} Orbs`}>
+                            <Sparkles size={12} className="text-amber-400" />
                             <span className="text-xs font-bold">{orbCount}</span>
                         </div>
                     )}
                     {bannerCount > 0 && (
-                        <div className="flex items-center gap-1 text-[#052F4A]/80" title={`${bannerCount} Banners`}>
-                            <Image size={12} className="text-indigo-500" />
+                        <div className="flex items-center gap-1 text-white/80" title={`${bannerCount} Banners`}>
+                            <Image size={12} className="text-indigo-400" />
                             <span className="text-xs font-bold">{bannerCount}</span>
                         </div>
                     )}
                     {playlistTrackerCount > 0 && (
-                        <div className="flex items-center gap-1 text-[#052F4A]/80" title={`${playlistTrackerCount} Tracked Playlists`}>
-                            <ListMusic size={12} className="text-emerald-600" />
+                        <div className="flex items-center gap-1 text-white/80" title={`${playlistTrackerCount} Tracked Playlists`}>
+                            <ListMusic size={12} className="text-emerald-400" />
                             <span className="text-xs font-bold">{playlistTrackerCount}</span>
                         </div>
                     )}
                     {channelTrackerCount > 0 && (
-                        <div className="flex items-center gap-1 text-[#052F4A]/80" title={`${channelTrackerCount} Tracked Channels`}>
-                            <User size={12} className="text-purple-600" />
+                        <div className="flex items-center gap-1 text-white/80" title={`${channelTrackerCount} Tracked Channels`}>
+                            <User size={12} className="text-purple-400" />
                             <span className="text-xs font-bold">{channelTrackerCount}</span>
                         </div>
                     )}
                     {videoCount === 0 && orbCount === 0 && bannerCount === 0 && playlistTrackerCount === 0 && channelTrackerCount === 0 && (
-                        <div className="flex items-center gap-1 text-[#052F4A]/50" title="0 Items">
-                            <Play size={12} className="text-slate-400" />
+                        <div className="flex items-center gap-1 text-white/50" title="0 Items">
+                            <Play size={12} className="text-zinc-500" />
                             <span className="text-xs font-bold">0</span>
                         </div>
                     )}
@@ -733,7 +733,7 @@ const filterTrackerAndChannelItems = (items) => {
             </div>
 
             {/* Centered Playlist Title */}
-            <h3 className="text-xl font-black text-[#052F4A] truncate leading-tight group-hover:text-sky-600 transition-colors text-center flex-1 mx-2" title={playlist.name}>
+            <h3 className="text-xl font-black text-white truncate leading-tight hover:text-white/80 transition-colors text-center flex-1 mx-2" title={playlist.name}>
                 {playlist.name}
             </h3>
 
@@ -743,7 +743,7 @@ const filterTrackerAndChannelItems = (items) => {
                 <button
                     data-card-action="true"
                     onClick={handlePreviewPlaylist}
-                    className="w-9 h-9 rounded-xl text-[#052F4A] hover:bg-slate-200/70 hover:text-sky-600 transition-all flex items-center justify-center active:scale-95"
+                    className="w-9 h-9 rounded-xl text-white hover:bg-white/10 transition-all flex items-center justify-center active:scale-95"
                     title="Preview Grid"
                 >
                     <Grid3x3 size={18} />
@@ -754,11 +754,11 @@ const filterTrackerAndChannelItems = (items) => {
                 {/* Flash Add Menu */}
                 <div data-card-action="true">
                     <CardMenu
-                        theme="light"
+                        theme="dark"
                         customButton={
                             <button
                                 type="button"
-                                className="w-9 h-9 rounded-xl text-[#052F4A] hover:bg-slate-200/70 hover:text-sky-600 transition-all flex items-center justify-center active:scale-95"
+                                className="w-9 h-9 rounded-xl text-white hover:bg-white/10 transition-all flex items-center justify-center active:scale-95"
                                 title="Add Options"
                             >
                                 <Plus size={20} strokeWidth={2.5} />
@@ -777,10 +777,10 @@ const filterTrackerAndChannelItems = (items) => {
                                                 handleQuickAdd(false);
                                                 closeMenu();
                                             }}
-                                            className="flex-1 text-left px-4 py-2.5 text-sm text-[#052F4A] hover:bg-slate-200/80 transition-colors flex items-center gap-3 rounded-l-md font-semibold"
+                                            className="flex-1 text-left px-4 py-2.5 text-sm text-white hover:bg-white/10 transition-colors flex items-center gap-3 rounded-l-md font-semibold"
                                             title="Add clipboard to playlist in background"
                                         >
-                                            <Plus size={16} className="text-emerald-600 flex-shrink-0" />
+                                            <Plus size={16} className="text-emerald-400 flex-shrink-0" />
                                             <span className="truncate">Quick Add</span>
                                         </button>
                                         <button
@@ -791,7 +791,7 @@ const filterTrackerAndChannelItems = (items) => {
                                                 handleQuickAdd(true);
                                                 closeMenu();
                                             }}
-                                            className="px-4 py-2.5 hover:bg-slate-200/80 transition-colors flex items-center justify-center border-l border-slate-200 text-emerald-600 hover:text-emerald-700 rounded-r-md"
+                                            className="px-4 py-2.5 hover:bg-white/10 transition-colors flex items-center justify-center border-l border-white/10 text-emerald-400 hover:text-emerald-300 rounded-r-md"
                                             title="Add and Play immediately"
                                         >
                                             <Play size={14} className="fill-current flex-shrink-0" />
@@ -802,14 +802,14 @@ const filterTrackerAndChannelItems = (items) => {
                             {
                                 label: "Assign to Quick Slot...",
                                 submenu: "quickAssign",
-                                icon: <Grid3x3 size={16} className="text-amber-600" />
+                                icon: <Grid3x3 size={16} className="text-amber-400" />
                             }
                         ]}
                         submenuOptions={{
                             quickAssign: [0, 1, 2, 3].map(i => ({
                                 label: `Slot ${i + 1}: ${quickAssignSlots?.[i]?.name || 'Empty'}`,
                                 action: `assignSlot${i}`,
-                                icon: <Plus size={14} className={quickAssignSlots?.[i]?.id === playlist.id ? "text-emerald-600" : "text-slate-400"} />
+                                icon: <Plus size={14} className={quickAssignSlots?.[i]?.id === playlist.id ? "text-emerald-400" : "text-zinc-500"} />
                             }))
                         }}
                         onOptionClick={(opt) => {
@@ -850,19 +850,19 @@ const filterTrackerAndChannelItems = (items) => {
                 {/* Management Menu */}
                 <div data-card-action="true">
                     <CardMenu
-                        theme="light"
+                        theme="dark"
                         customButton={
-                            <button className="w-9 h-9 rounded-xl text-[#052F4A] hover:bg-slate-200/70 hover:text-sky-600 transition-all flex items-center justify-center active:scale-95" title="More Options">
+                            <button className="w-9 h-9 rounded-xl text-white hover:bg-white/10 transition-all flex items-center justify-center active:scale-95" title="More Options">
                                 <MoreVertical size={18} strokeWidth={2.5} />
                             </button>
                         }
                         options={[
-                            { label: "Open in Playlist Uploader", action: "openUploader", icon: <Upload size={16} className="text-sky-600" /> },
-                            { label: "Export Playlist", action: "export", icon: <ExternalLink size={16} className="text-[#052F4A]" /> },
-                            { label: "Assign to group", action: "openAssignToGroup", icon: <Grid3x3 size={16} className="text-sky-600" /> },
-                            ...(isInAnyCarousel ? [{ label: "Remove from carousel(s)", action: "removeFromCarousel", icon: <X size={16} className="text-red-600" />, danger: true }] : []),
-                            { label: isHidden ? "Unhide" : "Hide", action: isHidden ? "unhide" : "hide", icon: isHidden ? <Eye size={16} className="text-[#052F4A]" /> : <EyeOff size={16} className="text-[#052F4A]" /> },
-                            { label: "Delete", action: "delete", danger: true, icon: <X size={16} className="text-red-600" /> }
+                            { label: "Open in Playlist Uploader", action: "openUploader", icon: <Upload size={16} className="text-sky-400" /> },
+                            { label: "Export Playlist", action: "export", icon: <ExternalLink size={16} className="text-white" /> },
+                            { label: "Assign to group", action: "openAssignToGroup", icon: <Grid3x3 size={16} className="text-sky-400" /> },
+                            ...(isInAnyCarousel ? [{ label: "Remove from carousel(s)", action: "removeFromCarousel", icon: <X size={16} className="text-red-500" />, danger: true }] : []),
+                            { label: isHidden ? "Unhide" : "Hide", action: isHidden ? "unhide" : "hide", icon: isHidden ? <Eye size={16} className="text-white" /> : <EyeOff size={16} className="text-white" /> },
+                            { label: "Delete", action: "delete", danger: true, icon: <X size={16} className="text-red-500" /> }
                         ]}
                         onOptionClick={(opt) => {
                             if (opt.action === "openUploader") handleExportPlaylist?.(playlist.id, playlist.name);
@@ -978,12 +978,12 @@ const filterTrackerAndChannelItems = (items) => {
                             Array.from({ length: 4 }).map((_, idx) => (
                                 <div
                                     key={`skeleton-${idx}`}
-                                    className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-[#052F4A]/20 bg-slate-900/60 p-1 flex flex-col justify-between animate-pulse shadow-sm"
+                                    className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-transparent bg-black p-1 flex flex-col justify-between animate-pulse shadow-none"
                                 >
-                                    <div className="w-full aspect-video rounded-lg bg-slate-800/80" />
+                                    <div className="w-full aspect-video rounded-lg bg-zinc-900" />
                                     <div className="flex-1 mt-1 flex flex-col justify-center gap-1">
-                                        <div className="w-full h-2 rounded bg-slate-800/80" />
-                                        <div className="w-2/3 h-2 rounded bg-slate-800/60" />
+                                        <div className="w-full h-2 rounded bg-zinc-900" />
+                                        <div className="w-2/3 h-2 rounded bg-zinc-900/60" />
                                     </div>
                                 </div>
                             ))
@@ -992,9 +992,9 @@ const filterTrackerAndChannelItems = (items) => {
                             Array.from({ length: 4 }).map((_, idx) => (
                                 <div
                                     key={`empty-slot-${idx}`}
-                                    className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-dashed border-[#052F4A]/15 bg-slate-100/40 flex flex-col items-center justify-center text-slate-400 select-none"
+                                    className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-dashed border-zinc-800/60 bg-black flex flex-col items-center justify-center text-zinc-600 select-none shadow-none"
                                 >
-                                    <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400/60">Empty</span>
+                                    <span className="text-[9px] font-bold uppercase tracking-wider text-zinc-600">Empty</span>
                                 </div>
                             ))
                         )

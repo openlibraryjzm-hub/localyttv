@@ -354,15 +354,15 @@ const VideoCardInner = ({
                   if (authorMatch) {
                     return (
                       <>
-                        <span className="font-bold text-[#052F4A] text-sm">{authorMatch[1]}</span>
-                        <span className="text-slate-500 text-xs">@{authorMatch[2]}</span>
+                        <span className="font-bold text-white text-sm">{authorMatch[1]}</span>
+                        <span className="text-zinc-400 text-xs">@{authorMatch[2]}</span>
                       </>
                     );
                   }
-                  return <span className="font-bold text-[#052F4A] text-sm">{video.author || 'Twitter User'}</span>;
+                  return <span className="font-bold text-white text-sm">{video.author || 'Twitter User'}</span>;
                 })()}
               </div>
-              <p className="text-slate-700 text-xs leading-relaxed line-clamp-2">
+              <p className="text-zinc-300 text-xs leading-relaxed line-clamp-2">
                 {video.title || "Check out this amazing content!"}
               </p>
             </div>
@@ -390,7 +390,7 @@ const VideoCardInner = ({
   // Default YouTube style rendering
   return (
     <div
-      className={`group relative bg-white dark:bg-slate-800 rounded-2xl border border-black dark:border-black shadow-sm hover:shadow-md transition-all flex flex-col h-full ${isSelected ? 'ring-2 ring-sky-500' : ''
+      className={`group relative bg-black rounded-2xl border border-transparent shadow-none hover:border-white/30 transition-all flex flex-col h-full ${isSelected ? 'ring-2 ring-white/50' : ''
         } ${isCurrentlyPlaying ? 'ring-4 ring-red-500' : ''} ${bulkTagMode ? 'overflow-visible cursor-default' : 'overflow-visible cursor-context-menu'
         }`}
       {...longPressProps}
@@ -398,7 +398,7 @@ const VideoCardInner = ({
       style={bulkTagBorderColor ? { borderColor: bulkTagBorderColor, borderWidth: '2px' } : undefined}
     >
       {/* Thumbnail Section */}
-      <div className="relative aspect-video w-full flex-shrink-0 overflow-hidden rounded-t-2xl bg-slate-100 dark:bg-slate-900 border-b border-slate-100 dark:border-white/5">
+      <div className="relative aspect-video w-full flex-shrink-0 overflow-hidden rounded-t-2xl bg-black">
         <CardThumbnail
           src={thumbnailUrl}
           alt={video.title || `Video ${index + 1}`}
@@ -413,9 +413,9 @@ const VideoCardInner = ({
         />
       </div>
 
-      {/* Content Section (White bar at bottom) */}
+      {/* Content Section (Pure black bar at bottom) */}
       <div
-        className={`relative pt-5 px-3 pb-3 flex flex-col justify-center bg-white dark:bg-slate-800 flex-1 overflow-hidden ${bulkTagMode ? '' : 'rounded-b-2xl'
+        className={`relative pt-5 px-3 pb-3 flex flex-col justify-center bg-black flex-1 overflow-hidden ${bulkTagMode ? '' : 'rounded-b-2xl'
           }`}
       >
         {/* Metadata overlay on hover */}
@@ -437,7 +437,7 @@ const VideoCardInner = ({
         <div className="relative z-10 flex items-center justify-between min-h-[28px]">
           <div className="min-w-0 flex-1 mr-2">
             <h3
-              className="font-bold text-sm text-slate-800 dark:text-white leading-tight line-clamp-2"
+              className="font-bold text-sm text-white leading-tight line-clamp-2"
               title={video.title}
             >
               {video.title || `Video ${index + 1}`}

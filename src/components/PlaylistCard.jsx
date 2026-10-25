@@ -75,7 +75,7 @@ const MiniPreviewItem = ({
       key={slotKey}
       data-card-action="true"
       onClick={handleClick}
-      className="aspect-video relative rounded-md overflow-hidden bg-black/50 border-2 border-[#052F4A] hover:ring-2 hover:ring-sky-500 transition-all cursor-pointer group/mini shadow-md"
+      className="aspect-video relative rounded-md overflow-hidden bg-black border border-transparent hover:border-white/50 transition-all cursor-pointer group/mini shadow-none"
       {...longPress}
       onContextMenu={(e) => handleMiniVideoRightClick(e, item, index)}
     >
@@ -688,46 +688,43 @@ const PlaylistCard = ({
       data-playlist-name={playlist.name}
     >
       <div
-        className={`rounded-xl h-full flex flex-col ${inCarousel ? 'bg-white' : size === 'small' ? 'bg-slate-100/90 border-2 border-slate-700/50 hover:border-sky-500/50 transition-colors' : 'bg-transparent border-0 shadow-none'} ${size === 'small' ? 'p-0 overflow-hidden' : 'pt-1.25 pb-0.25 px-2.5'} ${String(playlist.id) === String(currentPlaylistId) ? "active-playlist-marker" : ""}`}
+        className={`rounded-xl h-full flex flex-col ${inCarousel ? 'bg-black border border-transparent' : size === 'small' ? 'bg-black border border-transparent hover:border-white/30 transition-colors' : 'bg-transparent border-0 shadow-none'} ${size === 'small' ? 'p-0 overflow-hidden' : 'pt-1.25 pb-0.25 px-2.5'} ${String(playlist.id) === String(currentPlaylistId) ? "active-playlist-marker" : ""}`}
         data-active-playlist={
           String(playlist.id) === String(currentPlaylistId) ? "true" : "false"
         }
       >
         {/* Title bar – only in large size; small carousel uses title below thumbnail (VideoCard-style) */}
         {size !== 'small' && !hideTitleBar && (
-          <div className={`mb-1.25 border-2 border-[#052F4A] rounded-2xl bg-slate-100 shadow-sm relative overflow-hidden flex flex-col p-1`}>
+          <div className={`mb-1.25 border-0 rounded-2xl bg-black shadow-none relative overflow-hidden flex flex-col p-1`}>
             <div className="flex items-center justify-between relative h-[32px] w-full">
               <h3
-                className="font-bold truncate transition-colors px-2 flex-1 text-center text-base"
-                style={{ color: "#052F4A" }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "#38bdf8")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "#052F4A")}
+                className="font-bold truncate transition-colors px-2 flex-1 text-center text-base text-white hover:text-white/80"
                 title={playlist.name}
               >
                 {playlist.name}
               </h3>
 
-              <div className="flex items-center gap-0.5 md:opacity-0 md:group-hover:opacity-100 transition-opacity absolute right-1 top-0 bottom-0 pr-1 pl-4 bg-gradient-to-l from-slate-100 via-slate-100 to-transparent z-10">
+              <div className="flex items-center gap-0.5 md:opacity-0 md:group-hover:opacity-100 transition-opacity absolute right-1 top-0 bottom-0 pr-1 pl-4 bg-gradient-to-l from-black via-black to-transparent z-10">
                 {!showOnlyShuffleHover && (
                   <>
                     <div className="flex items-center">
                       <button
                         onClick={handlePreviewPlaylist}
-                        className="p-1 hover:bg-slate-200 rounded text-[#052F4A] hover:text-sky-600 transition-colors"
+                        className="p-1 hover:bg-white/10 rounded text-white transition-colors"
                         title="Preview playlist"
                       >
                         <Grid3x3 size={18} strokeWidth={2.5} />
                       </button>
                     </div>
 
-                    <div className="w-px h-5 bg-slate-300 mx-0.5" />
+                    <div className="w-px h-5 bg-white/10 mx-0.5" />
                   </>
                 )}
 
                   {previewThumbnail?.isShuffled && (
                     <button
                       onClick={handleResetShuffle}
-                      className="p-1 hover:bg-slate-200 rounded text-[#052F4A] hover:text-sky-600 transition-colors"
+                      className="p-1 hover:bg-white/10 rounded text-white transition-colors"
                       title="Reset to default cover"
                     >
                       <RotateCcw size={18} strokeWidth={2.5} />
@@ -736,7 +733,7 @@ const PlaylistCard = ({
 
                 {!showOnlyShuffleHover && (
                   <>
-                    <div className="w-px h-5 bg-slate-300 mx-0.5" />
+                    <div className="w-px h-5 bg-white/10 mx-0.5" />
 
                     <div className="flex items-center gap-0.5">
                       <div data-card-menu="true">

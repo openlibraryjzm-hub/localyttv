@@ -24,65 +24,8 @@ const LayoutShell = ({
 
   const { viewMode, menuQuarterMode, showDebugBounds } = useLayoutStore();
   const {
-    fullscreenBanner,
-    splitscreenBanner,
-    playerBorderPattern,
     fullscreenPlayerWidthPercent,
-    bannerNavBannerId,
-    bannerPresets
   } = useConfigStore();
-
-  // Resolve Effective Banners (Normal vs Nav Mode)
-  let effectiveLeftBanner = fullscreenBanner;
-  let effectiveRightBanner = splitscreenBanner;
-
-  // Only apply navigation override if a preset is selected AND we're not in the editor
-  // We detect "in editor" by the presence of stashedBanners
-  const stashedBanners = useConfigStore(state => state.stashedBanners);
-
-  if (bannerNavBannerId && !stashedBanners) {
-    const preset = bannerPresets.find(p => p.id === bannerNavBannerId);
-    if (preset) {
-      if (preset.fullscreenBanner) effectiveLeftBanner = preset.fullscreenBanner;
-      if (preset.splitscreenBanner) effectiveRightBanner = preset.splitscreenBanner;
-    }
-  }
-
-  // Helper: Generate Banner Style
-  const renderHalfBanner = (config, side) => {
-    if (!config) return null;
-
-    const {
-      image: bannerImage,
-      verticalPosition,
-      scale,
-      scrollEnabled,
-      horizontalOffset,
-      flipped
-    } = config;
-
-    const isGif = bannerImage?.startsWith('data:image/gif');
-
-    return (
-      <div
-        key={`${side}-banner`}
-        className="layout-shell__banner-bg"
-        style={{
-          backgroundImage: `url("${bannerImage || DEFAULT_BANNER_IMAGE}")`,
-          ...(isGif || !scrollEnabled ? { animation: 'none' } : {}),
-          backgroundPosition: `${horizontalOffset ?? 0}% ${verticalPosition ?? 0}%`,
-          backgroundRepeat: bannerImage ? 'repeat-x' : 'repeat',
-          backgroundSize: bannerImage ? `${(scale ?? 100) / 2}vw auto` : '40px 40px', // Maintain fixed pattern sizing for default grid
-          height: '200px',
-          width: '50vw',
-          left: side === 'left' ? '0' : '50vw',
-          zIndex: 15,
-          pointerEvents: 'none',
-          transform: flipped ? 'scaleX(-1)' : 'none'
-        }}
-      />
-    );
-  };
 
   return (
     <div className={`layout-shell layout-shell--${viewMode} ${menuQuarterMode ? 'layout-shell--menu-quarter' : ''} ${showDebugBounds ? 'layout-shell--debug' : ''}`}>
@@ -93,10 +36,6 @@ const LayoutShell = ({
         data-debug-label="Top Controller"
         data-tauri-drag-region
       >
-        {/* Dual Banner System: Left and Right halves */}
-        {renderHalfBanner(effectiveLeftBanner, 'left')}
-        {renderHalfBanner(effectiveRightBanner, 'right')}
-
         {isWeb() ? <WebDownloadPrompt /> : <WindowControls />}
 
         {!showDebugBounds && (
@@ -110,8 +49,8 @@ const LayoutShell = ({
           </div>
         )}
 
-        {/* Dynamic Pattern Separator - Acts as top border for player/menu below */}
-        <div className={`layout-shell__separator pattern-${playerBorderPattern || 'diagonal'}`} />
+        {/* Separator Line */}
+        <div className="layout-shell__separator" />
       </div>
 
 
@@ -196,7 +135,7 @@ const LayoutShell = ({
 
         {/* Main Player Slot */}
         <div
-          className={`layout-shell__player layout-shell__player--${viewMode} pattern-${playerBorderPattern || 'diagonal'} ${showDebugBounds ? 'debug-bounds debug-bounds--player' : ''}`}
+          className={`layout-shell__player layout-shell__player--${viewMode} ${showDebugBounds ? 'debug-bounds debug-bounds--player' : ''}`}
           data-debug-label="Main Player"
           style={{ position: 'relative', overflow: showDebugBounds ? 'visible' : undefined }}
         >

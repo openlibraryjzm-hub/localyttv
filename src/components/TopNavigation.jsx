@@ -92,7 +92,7 @@ const TopNavigation = () => {
     }
 
     // Determine font styling based on the context
-    let floatingTitleStyle = { color: '#052F4A' }; // Default playlist style
+    let floatingTitleStyle = { color: '#ffffff' }; // Default playlist style
     if (isColoredFolder) {
         if (isUnsorted) {
             floatingTitleStyle = {
@@ -111,7 +111,7 @@ const TopNavigation = () => {
     const containerStyle = {};
 
     const titleStyle = {
-        color: '#052F4A'
+        color: '#ffffff'
     };
 
     const isContentEmpty = (!isPlaylistsPage && hasActiveContext) || isPlaylistsPage;
@@ -123,7 +123,7 @@ const TopNavigation = () => {
     return (
         <>
             <div
-                className={`relative w-full flex items-end justify-between pb-4 transition-all duration-300 min-h-[100px] overflow-hidden ${!hasActiveContext ? `${theme.menuBg} ${theme.menuBorder} backdrop-blur-md border rounded-xl px-8` : ''}`}
+                className={`relative w-full flex items-end justify-between pb-4 transition-all duration-300 min-h-[100px] overflow-hidden ${!hasActiveContext ? `${theme.menuBg} border-0 rounded-xl px-8` : ''}`}
                 style={containerStyle}
             >
 

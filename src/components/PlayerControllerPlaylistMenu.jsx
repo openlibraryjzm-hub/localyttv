@@ -94,15 +94,15 @@ const COLORS = FOLDER_COLORS.map(color => ({
   id: color.id
 }));
 
-// White icon with black outline (no circle) - use as wrapper style for toolbar icons
+// White icon with clean styling
 const ICON_WHITE_OUTLINE = {
   display: 'inline-flex',
-  color: '#052F4A'
+  color: '#ffffff'
 };
 
-// Badge text: solid dark blue
+// Badge text: solid white
 const BADGE_TEXT_STYLE = {
-  color: '#052F4A',
+  color: '#ffffff',
   fontWeight: 900
 };
 
@@ -208,15 +208,10 @@ export default function PlayerControllerPlaylistMenu(props) {
             {playlistCheckpoint !== null && <><button onClick={() => handleCommit('playlist')} className="w-9 h-9 rounded-full flex items-center justify-center shadow-md bg-emerald-500 text-white active:scale-90" title={getInspectTitle('Commit playlist preview')}><Check size={20} strokeWidth={3} /></button><button onClick={() => handleRevert('playlist')} className="w-9 h-9 rounded-full flex items-center justify-center shadow-md bg-rose-500 text-white active:scale-90" title={getInspectTitle('Revert playlist preview')}><X size={20} strokeWidth={3} /></button></>}
           </div>
         </div>
-        <div className={`shadow-2xl flex flex-col relative overflow-visible transition-all duration-300 group/playlist ${isEditMode ? 'ring-4 ring-sky-400/30' : 'bg-transparent rounded-2xl'}`} style={{
+        <div className={`flex flex-col relative overflow-visible transition-all duration-300 group/playlist ${isEditMode ? 'ring-4 ring-white/30' : 'bg-transparent'}`} style={{
           width: `${menuWidth}px`,
           height: `${menuHeight}px`
         }}>
-          {/* Solid Light Card Backdrop Layer */}
-          <div 
-            aria-hidden="true" 
-            className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none z-0 border-2 border-[#052F4A] shadow-xl bg-slate-100"
-          />
           <div 
             className="flex-grow flex flex-col items-center justify-center px-4 relative z-10 overflow-x-visible overflow-y-hidden w-full h-full min-h-0" 
             {...useLongPress(handleShufflePlaylist, handlePlaylistsGrid)}
@@ -226,7 +221,7 @@ export default function PlayerControllerPlaylistMenu(props) {
               handleShufflePlaylist();
             }}
           >
-            <h1 ref={playlistTitleRef} className="font-black text-center leading-tight line-clamp-3 tracking-tight transition-all pb-1 cursor-pointer hover:opacity-90 select-none text-[#052F4A]" style={{
+            <h1 ref={playlistTitleRef} className="font-black text-center leading-tight line-clamp-3 tracking-tight transition-all pb-1 cursor-pointer hover:opacity-90 select-none text-white" style={{
               fontSize: `${titleFontSize}px`,
               pointerEvents: 'none'
             }} title={getInspectTitle(`Playlist: ${playlistTitle} (Click for Playlists Grid, Right-click for Mega Shuffle)`) || `${playlistTitle} (Long-press for mega shuffle)`}>
@@ -259,7 +254,7 @@ export default function PlayerControllerPlaylistMenu(props) {
 
           </div>
 
-          <div className="border-t-2 border-[#052F4A]/20 flex items-center px-6 shrink-0 relative rounded-b-2xl bg-transparent" style={{
+          <div className="flex items-center px-6 shrink-0 relative bg-transparent" style={{
             height: `${bottomBarHeight}px`
           }}>
             <div className="w-full h-full flex items-center relative">
@@ -270,13 +265,13 @@ export default function PlayerControllerPlaylistMenu(props) {
                 <div className="relative flex items-center justify-center -translate-x-6">
                   <button onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)} onTouchStart={() => setIsMoreMenuOpen(!isMoreMenuOpen)} className="flex items-center justify-center group/tool" title={getInspectTitle('More Options (Visualizer, Banners & Color Pickers)')}>
                     <span style={ICON_WHITE_OUTLINE}>
-                      <MoreHorizontal size={Math.round(bottomIconSize * 0.5)} color="#052F4A" strokeWidth={3} />
+                      <MoreHorizontal size={Math.round(bottomIconSize * 0.5)} color="#ffffff" strokeWidth={3} />
                     </span>
                   </button>
-                  {isMoreMenuOpen && <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-56 bg-sky-50 border border-sky-300 rounded-lg shadow-xl overflow-hidden z-[10001] animate-in fade-in zoom-in-95 duration-100 flex flex-col p-1" style={{
+                  {isMoreMenuOpen && <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-56 bg-black/95 border border-white/20 rounded-lg shadow-2xl overflow-hidden z-[10001] animate-in fade-in zoom-in-95 duration-100 flex flex-col p-1 text-white" style={{
                     zIndex: 10001
                   }}>
-                    <button className="w-full text-left px-4 py-2 text-sm text-sky-900 hover:bg-sky-200 transition-colors flex items-center gap-2" onClick={() => {
+                    <button className="w-full text-left px-4 py-2 text-sm text-white hover:bg-white/10 transition-colors flex items-center gap-2" onClick={() => {
                       document.getElementById('banner-upload').click();
                       setIsMoreMenuOpen(false);
                     }} onTouchStart={() => {
@@ -287,7 +282,7 @@ export default function PlayerControllerPlaylistMenu(props) {
                       Change Banner
                     </button>
 
-                    <button className="w-full text-left px-4 py-2 text-sm text-sky-900 hover:bg-sky-200 transition-colors flex items-center gap-2" onClick={() => {
+                    <button className="w-full text-left px-4 py-2 text-sm text-white hover:bg-white/10 transition-colors flex items-center gap-2" onClick={() => {
                       setIsVisualizerEnabled(!isVisualizerEnabled);
                       // Do not close menu if enabling so user can choose style
                       if (isVisualizerEnabled) setIsMoreMenuOpen(false);
@@ -301,10 +296,10 @@ export default function PlayerControllerPlaylistMenu(props) {
 
                     {/* Visualizer Color Picker */}
                     {isVisualizerEnabled && (
-                      <div className="px-2 py-1.5 border-t border-sky-200 mt-1">
-                          <div className="text-[10px] font-bold text-sky-700 uppercase tracking-wider mb-1.5 px-1 flex justify-between items-center">
+                      <div className="px-2 py-1.5 border-t border-white/10 mt-1">
+                          <div className="text-[10px] font-bold text-white/70 uppercase tracking-wider mb-1.5 px-1 flex justify-between items-center">
                             <span>Color</span>
-                            <span className="text-[9px] font-medium text-sky-600 bg-sky-200/50 px-1.5 py-0.5 rounded">
+                            <span className="text-[9px] font-medium text-white/80 bg-white/10 px-1.5 py-0.5 rounded">
                               {visualizerColor === '#ffffff' ? 'Default' : 'Custom'}
                             </span>
                           </div>
@@ -316,7 +311,7 @@ export default function PlayerControllerPlaylistMenu(props) {
                               type="button"
                               onClick={(e) => { e.stopPropagation(); setVisualizerColor('#ffffff'); }}
                               onTouchStart={(e) => { e.stopPropagation(); setVisualizerColor('#ffffff'); }}
-                              className={`w-5 h-5 rounded-full border shadow-sm transition-all relative ${visualizerColor === '#ffffff' ? 'ring-2 ring-sky-500 scale-110 border-sky-400' : 'border-sky-300 hover:scale-105'}`}
+                              className={`w-5 h-5 rounded-full border shadow-sm transition-all relative ${visualizerColor === '#ffffff' ? 'ring-2 ring-white scale-110 border-white' : 'border-white/30 hover:scale-105'}`}
                               style={{ backgroundColor: '#ffffff' }}
                               title="Default White"
                             >
@@ -336,7 +331,7 @@ export default function PlayerControllerPlaylistMenu(props) {
                                 type="button"
                                 onClick={(e) => { e.stopPropagation(); setVisualizerColor(preset.hex); }}
                                 onTouchStart={(e) => { e.stopPropagation(); setVisualizerColor(preset.hex); }}
-                                className={`w-5 h-5 rounded-full border shadow-sm transition-all relative ${visualizerColor === preset.hex ? 'ring-2 ring-sky-500 scale-110 border-sky-400' : 'border-sky-300 hover:scale-105'}`}
+                                className={`w-5 h-5 rounded-full border shadow-sm transition-all relative ${visualizerColor === preset.hex ? 'ring-2 ring-white scale-110 border-white' : 'border-white/30 hover:scale-105'}`}
                                 style={{ backgroundColor: preset.hex }}
                                 title={preset.name}
                               >
@@ -345,7 +340,7 @@ export default function PlayerControllerPlaylistMenu(props) {
                             ))}
 
                             {/* Custom Color Input Palette button */}
-                            <label className="relative w-5 h-5 rounded-full border border-sky-300 hover:scale-105 transition-all cursor-pointer flex items-center justify-center bg-gradient-to-tr from-rose-400 via-emerald-400 to-sky-400">
+                            <label className="relative w-5 h-5 rounded-full border border-white/30 hover:scale-105 transition-all cursor-pointer flex items-center justify-center bg-gradient-to-tr from-rose-400 via-emerald-400 to-sky-400">
                               <Palette size={10} className="text-white" strokeWidth={3} />
                               <input
                                 type="color"
@@ -361,7 +356,7 @@ export default function PlayerControllerPlaylistMenu(props) {
 
                           {/* Sliding rainbow gradient */}
                           <div className="px-1 flex items-center gap-2">
-                            <div className="flex-1 relative h-3 rounded-full overflow-hidden border border-sky-300" style={{
+                            <div className="flex-1 relative h-3 rounded-full overflow-hidden border border-white/20" style={{
                               background: 'linear-gradient(to right, #ff0000 0%, #ffff00 17%, #00ff00 33%, #00ffff 50%, #0000ff 67%, #ff00ff 83%, #ff0000 100%)'
                             }}>
                               <input
@@ -395,7 +390,7 @@ export default function PlayerControllerPlaylistMenu(props) {
                 {/* 2. History Clock Icon */}
                 <div className="relative flex items-center justify-center h-full -translate-x-[5px]">
                   <div className="absolute -left-6 opacity-100 pointer-events-auto">
-                    <button onClick={handleHistoryBack} onTouchStart={handleHistoryBack} className="p-0.5 text-[#052F4A] hover:scale-110 active:scale-95 transition-transform" title={getInspectTitle('History Back (Previous video in history)')}>
+                    <button onClick={handleHistoryBack} onTouchStart={handleHistoryBack} className="p-0.5 text-white hover:scale-110 active:scale-95 transition-transform" title={getInspectTitle('History Back (Previous video in history)')}>
                       <ChevronLeft size={navChevronSize} strokeWidth={3} />
                     </button>
                   </div>                  <button 
@@ -414,12 +409,12 @@ export default function PlayerControllerPlaylistMenu(props) {
                     title={getInspectTitle('Watch History Page (Click to open Watch History page)')}
                   >
                     <span style={ICON_WHITE_OUTLINE}>
-                      <Clock size={Math.round(bottomIconSize * 0.5)} color="#052F4A" strokeWidth={3} />
+                      <Clock size={Math.round(bottomIconSize * 0.5)} color="#ffffff" strokeWidth={3} />
                     </span>
                   </button>
 
                   <div className="absolute -right-6 opacity-100 pointer-events-auto">
-                    <button onClick={handleHistoryForward} onTouchStart={handleHistoryForward} className="p-0.5 text-[#052F4A] hover:scale-110 active:scale-95 transition-transform" title={getInspectTitle('History Forward (Next video in history)')}>
+                    <button onClick={handleHistoryForward} onTouchStart={handleHistoryForward} className="p-0.5 text-white hover:scale-110 active:scale-95 transition-transform" title={getInspectTitle('History Forward (Next video in history)')}>
                       <ChevronRight size={navChevronSize} strokeWidth={3} />
                     </button>
                   </div>
@@ -430,27 +425,27 @@ export default function PlayerControllerPlaylistMenu(props) {
               <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center z-10 w-10">
                 <button onClick={() => setIsAddMenuOpen(!isAddMenuOpen)} onTouchStart={() => setIsAddMenuOpen(!isAddMenuOpen)} className="flex items-center justify-center group/tool" title={getInspectTitle('Add to Playlist (Add link or Quick Assign)')}>
                   <span style={ICON_WHITE_OUTLINE}>
-                    <Plus size={Math.round(bottomIconSize * 0.5)} color="#052F4A" strokeWidth={3} />
+                    <Plus size={Math.round(bottomIconSize * 0.5)} color="#ffffff" strokeWidth={3} />
                   </span>
                 </button>
-                {isAddMenuOpen && <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-[280px] bg-sky-50 border border-sky-300 rounded-lg shadow-xl overflow-hidden z-[10001] animate-in fade-in zoom-in-95 duration-100 flex flex-col p-1" style={{
+                {isAddMenuOpen && <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-[280px] bg-black/95 border border-white/20 rounded-lg shadow-2xl overflow-hidden z-[10001] animate-in fade-in zoom-in-95 duration-100 flex flex-col p-1 text-white" style={{
                   zIndex: 10001
                 }}>
-                  <div className="flex border-b border-sky-200">
-                    <button className="flex-1 text-left px-4 py-2 text-sm text-sky-900 hover:bg-sky-200 transition-colors flex items-center gap-2 font-semibold" onClick={() => handleAddClipboardToQuickVideos(false)} onTouchStart={() => handleAddClipboardToQuickVideos(false)} title="Add clipboard to Quick Videos playlist">
-                      <Plus size={14} className="text-sky-700 shrink-0" />
+                  <div className="flex border-b border-white/10">
+                    <button className="flex-1 text-left px-4 py-2 text-sm text-white hover:bg-white/10 transition-colors flex items-center gap-2 font-semibold" onClick={() => handleAddClipboardToQuickVideos(false)} onTouchStart={() => handleAddClipboardToQuickVideos(false)} title="Add clipboard to Quick Videos playlist">
+                      <Plus size={14} className="text-white/70 shrink-0" />
                       <span className="truncate">Add to quick videos</span>
                     </button>
-                    <button className="px-4 hover:bg-sky-200 transition-colors flex items-center justify-center border-l border-sky-200 text-sky-900 shrink-0" onClick={() => handleAddClipboardToQuickVideos(true)} onTouchStart={() => handleAddClipboardToQuickVideos(true)} title="Add and Play immediately">
+                    <button className="px-4 hover:bg-white/10 transition-colors flex items-center justify-center border-l border-white/10 text-white shrink-0" onClick={() => handleAddClipboardToQuickVideos(true)} onTouchStart={() => handleAddClipboardToQuickVideos(true)} title="Add and Play immediately">
                       <Play size={14} className="fill-current" />
                     </button>
                   </div>
-                  <div className="flex border-b border-sky-200">
-                    <button className="flex-1 text-left px-4 py-2 text-sm text-sky-900 hover:bg-sky-200 transition-colors flex items-center gap-2 font-semibold" onClick={() => handleAddClipboardToCurrentPlaylist(false)} onTouchStart={() => handleAddClipboardToCurrentPlaylist(false)} title="Add clipboard to Current Playlist">
-                      <Plus size={14} className="text-sky-700 shrink-0" />
+                  <div className="flex border-b border-white/10">
+                    <button className="flex-1 text-left px-4 py-2 text-sm text-white hover:bg-white/10 transition-colors flex items-center gap-2 font-semibold" onClick={() => handleAddClipboardToCurrentPlaylist(false)} onTouchStart={() => handleAddClipboardToCurrentPlaylist(false)} title="Add clipboard to Current Playlist">
+                      <Plus size={14} className="text-white/70 shrink-0" />
                       <span className="truncate">Add to current playlist</span>
                     </button>
-                    <button className="px-4 hover:bg-sky-200 transition-colors flex items-center justify-center border-l border-sky-200 text-sky-900 shrink-0" onClick={() => handleAddClipboardToCurrentPlaylist(true)} onTouchStart={() => handleAddClipboardToCurrentPlaylist(true)} title="Add and Play immediately">
+                    <button className="px-4 hover:bg-white/10 transition-colors flex items-center justify-center border-l border-white/10 text-white shrink-0" onClick={() => handleAddClipboardToCurrentPlaylist(true)} onTouchStart={() => handleAddClipboardToCurrentPlaylist(true)} title="Add and Play immediately">
                       <Play size={14} className="fill-current" />
                     </button>
                   </div>
@@ -458,20 +453,20 @@ export default function PlayerControllerPlaylistMenu(props) {
                   {(quickAssignSlots || [null, null, null, null]).map((slot, idx) => {
                     const isAssigned = slot && slot.id && slot.name;
                     return (
-                      <div key={idx} className={`flex ${idx < 3 ? 'border-b border-sky-100/60' : ''}`}>
+                      <div key={idx} className={`flex ${idx < 3 ? 'border-b border-white/10' : ''}`}>
                         <button
                           disabled={!isAssigned}
-                          className={`flex-1 text-left px-4 py-2 text-sm flex items-center gap-2 transition-colors overflow-hidden ${isAssigned ? 'text-sky-950 hover:bg-sky-100 font-medium' : 'text-slate-400 italic cursor-not-allowed'}`}
+                          className={`flex-1 text-left px-4 py-2 text-sm flex items-center gap-2 transition-colors overflow-hidden ${isAssigned ? 'text-white hover:bg-white/10 font-medium' : 'text-zinc-600 italic cursor-not-allowed'}`}
                           onClick={() => isAssigned && handleAddClipboardToTargetPlaylist(slot.id, false)}
                           onTouchStart={() => isAssigned && handleAddClipboardToTargetPlaylist(slot.id, false)}
                           title={isAssigned ? `Add clipboard to ${slot.name}` : `Empty Quick Assign Slot ${idx + 1}`}
                         >
-                          <Plus size={14} className={`shrink-0 ${isAssigned ? "text-sky-600" : "text-slate-300"}`} />
+                          <Plus size={14} className={`shrink-0 ${isAssigned ? "text-white/80" : "text-zinc-600"}`} />
                           <span className="truncate">Add to {isAssigned ? slot.name : `[EMPTY SLOT ${idx + 1}]`}</span>
                         </button>
                         <button
                           disabled={!isAssigned}
-                          className={`px-4 flex items-center justify-center border-l border-sky-100/60 transition-colors shrink-0 ${isAssigned ? 'text-sky-900 hover:bg-sky-100' : 'text-slate-300 cursor-not-allowed'}`}
+                          className={`px-4 flex items-center justify-center border-l border-white/10 transition-colors shrink-0 ${isAssigned ? 'text-white hover:bg-white/10' : 'text-zinc-600 cursor-not-allowed'}`}
                           onClick={() => isAssigned && handleAddClipboardToTargetPlaylist(slot.id, true)}
                           onTouchStart={() => isAssigned && handleAddClipboardToTargetPlaylist(slot.id, true)}
                           title={isAssigned ? "Add and Play immediately" : undefined}
@@ -520,7 +515,7 @@ export default function PlayerControllerPlaylistMenu(props) {
                           <Circle 
                             size={Math.round(bottomIconSize * 0.5)} 
                             fill={isAll ? '#ffffff' : dotHex} 
-                            color="#052F4A" 
+                            color="#ffffff" 
                             strokeWidth={3} 
                           />
                         </span>
@@ -532,19 +527,19 @@ export default function PlayerControllerPlaylistMenu(props) {
                 {/* 5. Grid Button */}
                 <div className="relative flex items-center justify-center h-full translate-x-[14px]">
                   <div className="absolute -left-6 opacity-100 pointer-events-auto">
-                    <button onClick={() => navigatePlaylist('down')} onTouchStart={() => navigatePlaylist('down')} className="p-0.5 text-[#052F4A] hover:scale-110 active:scale-95 transition-transform" title={getInspectTitle('Previous playlist')}>
+                    <button onClick={() => navigatePlaylist('down')} onTouchStart={() => navigatePlaylist('down')} className="p-0.5 text-white hover:scale-110 active:scale-95 transition-transform" title={getInspectTitle('Previous playlist')}>
                       <ChevronLeft size={navChevronSize} strokeWidth={3} />
                     </button>
                   </div>
 
                   <button onClick={handlePlaylistsGrid} onTouchStart={handlePlaylistsGrid} className="flex items-center justify-center group/tool transition-all" title={getInspectTitle('Playlists Grid View (Browse all playlist cards)')}>
                     <span style={ICON_WHITE_OUTLINE}>
-                      <Menu size={Math.round(bottomIconSize * 0.5)} color="#052F4A" strokeWidth={3} />
+                      <Menu size={Math.round(bottomIconSize * 0.5)} color="#ffffff" strokeWidth={3} />
                     </span>
                   </button>
 
                   <div className="absolute -right-6 opacity-100 pointer-events-auto">
-                    <button onClick={() => navigatePlaylist('up')} onTouchStart={() => navigatePlaylist('up')} className="p-0.5 text-[#052F4A] hover:scale-110 active:scale-95 transition-transform" title={getInspectTitle('Next playlist')}>
+                    <button onClick={() => navigatePlaylist('up')} onTouchStart={() => navigatePlaylist('up')} className="p-0.5 text-white hover:scale-110 active:scale-95 transition-transform" title={getInspectTitle('Next playlist')}>
                       <ChevronRight size={navChevronSize} strokeWidth={3} />
                     </button>
                   </div>

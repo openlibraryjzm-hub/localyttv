@@ -1,20 +1,9 @@
-/* Cool Light Blue Pattern Variable */
-:root {
-  --cool-blue-pattern: repeating-linear-gradient(45deg,
-      #bae6fd,
-      /* Sky 200 */
-      #bae6fd 10px,
-      #7dd3fc 10px,
-      /* Sky 300 */
-      #7dd3fc 20px);
-}
-
 /* LayoutShell.css */
 .layout-shell {
   display: grid;
   height: 100vh;
   width: 100vw;
-  background: transparent;
+  background: #000000;
   grid-template-rows: auto 1fr;
   grid-template-columns: 1fr;
   overflow: hidden;
@@ -26,62 +15,28 @@
   grid-column: 1 / -1;
   height: 200px;
 
-  /* Fallback Gradient if image is missing */
-  background-color: transparent;
+  /* Hardcoded pure black background */
+  background-color: #000000;
 
-  /* Border removed, using ::after for pattern separator */
   border-bottom: none;
 
   position: relative;
-  /* This is the new 'anchor' for the component */
-  /* This is the new 'anchor' for the component */
   overflow: visible;
-  /* Temporarily hide the mess so we can find center */
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 100;
-  /* Ensure stacking context for children z-indexes */
   isolation: isolate;
 }
 
-/* Background Layer needed for spill logic */
+/* Background Layer - Hidden / neutral in hardcoded black mode */
 .layout-shell__banner-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  /* Height set via inline styles based on spill settings */
-  height: 100%;
-
-  /* Default Banner Image */
-  background-image: url('/banner.PNG');
-  background-size: 100vw auto;
-  background-position: 0 top;
-  background-repeat: repeat-x;
-  animation: bannerScrollRight 60s linear infinite;
-
-  /* Make sure it's behind content but above player (z-index of parent is 100) */
-  /* Relative to parent stacking context... */
-  /* We want it BEHIND the .layout-shell__top-controller-wrapper (z=2) and separator (z=10) */
-  z-index: 15;
-
-  /* Allow clicks to pass through spilled areas to the player below */
-  pointer-events: none;
+  display: none;
 }
 
-/* Pattern Separator using ::after REMOVED - replaced by real element */
-/* .layout-shell__top-controller::after { ... } */
-
-/* Separator Strip */
+/* Separator Strip - Removed for seamless dark merge */
 .layout-shell__separator {
-  position: absolute;
-  bottom: 0px;
-  left: 0;
-  width: 100%;
-  height: 12px;
-  z-index: 10;
-  /* background handled by pattern class in JSX */
+  display: none;
 }
 
 /* Wrapper for top controller content */
@@ -300,7 +255,7 @@
   grid-row: unset;
   display: grid;
   grid-template-rows: auto 1fr;
-  border-left: 1px solid rgba(0, 0, 0, 0.1);
+  border-left: none;
   background: transparent;
   flex: 1;
   min-height: 0;

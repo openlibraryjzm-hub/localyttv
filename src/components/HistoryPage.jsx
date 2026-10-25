@@ -440,30 +440,9 @@ const HistoryPage = ({ onVideoSelect, onSecondPlayerSelect }) => {
     };
 
   return (
-    <div className="w-full h-full flex flex-col relative overflow-hidden bg-slate-950">
-      {/* Blurred App Banner Background Layer */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 pointer-events-none z-0 overflow-hidden"
-      >
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            backgroundImage: `url(${bannerImage})`,
-            backgroundPosition: `${bannerHorizontal}% ${bannerVertical}%`,
-            backgroundRepeat: 'repeat-x',
-            backgroundSize: `${bannerScale}vw auto`,
-            filter: 'blur(36px)',
-            transform: 'scale(1.25)',
-            opacity: 0.85,
-          }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40" />
-      </div>
-
+    <div className="w-full h-full flex flex-col relative overflow-hidden bg-black">
       {/* Main Content Layer */}
-      <div className="relative z-10 flex-1 flex flex-col min-h-0">
+      <div className="relative z-10 flex-1 flex flex-col min-h-0 bg-black">
         <div className="flex-1 overflow-y-auto relative">
           <BottomNavigation />
           {renderContent()}

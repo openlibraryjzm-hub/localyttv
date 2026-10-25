@@ -334,23 +334,8 @@ const FullscreenVideoInfo = () => {
   const bannerVertical = effectiveBanner?.verticalPosition ?? 0;
   const bannerHorizontal = effectiveBanner?.horizontalOffset ?? 0;
 
-  const blurredBannerStyle = {
-    position: 'absolute',
-    inset: 0,
-    zIndex: 0,
-    backgroundImage: `url(${bannerImage})`,
-    backgroundPosition: `${bannerHorizontal}% ${bannerVertical}%`,
-    backgroundRepeat: 'repeat-x',
-    backgroundSize: `${bannerScale}vw auto`,
-    filter: 'blur(28px)',
-    transform: 'scale(1.15)',
-    pointerEvents: 'none'
-  };
-
   return (
-    <div className="layout-shell__fullscreen-video-info" data-debug-label="Fullscreen Video Info" style={{ position: 'relative', overflow: 'hidden' }}>
-      {/* Heavily blurred version of current app banner */}
-      <div aria-hidden="true" style={blurredBannerStyle} />
+    <div className="layout-shell__fullscreen-video-info bg-black" data-debug-label="Fullscreen Video Info" style={{ position: 'relative', overflow: 'hidden', backgroundColor: '#000000' }}>
       <div className="flex flex-col h-full w-full" style={{ position: 'relative', zIndex: 1, minHeight: 0 }}>
         {/* Scrollable area - metadata only now */}
         <div className="flex-1 overflow-y-auto px-0 pb-0 scrollbar-hide" style={{ minHeight: 0 }}>
@@ -395,7 +380,7 @@ const FullscreenVideoInfo = () => {
             const renderVideoThumbnail = () => (
               <div className="relative group/thumb px-0 my-1 cursor-context-menu" onContextMenu={handleMainThumbnailContextMenu}>
                 {thumbnailUrl ? (
-                  <div className="rounded-xl overflow-hidden shadow-2xl border-[2px] border-black/50 aspect-video relative">
+                  <div className="rounded-xl overflow-hidden shadow-none border-0 aspect-video relative">
                     <img
                       src={thumbnailUrl}
                       alt={video.title || 'Video thumbnail'}
@@ -529,7 +514,7 @@ const FullscreenVideoInfo = () => {
               <div className="flex flex-col gap-0.5">
                 {/* Single Unified Hero Video Metadata Card */}
                 <div className="mt-1 px-2.5">
-                  <div className="border-2 border-[#052F4A] rounded-2xl p-3 bg-slate-100 shadow-md relative overflow-hidden flex flex-col gap-2.5 shrink-0 text-[#052F4A]">
+                  <div className="border-0 rounded-2xl p-3 bg-black shadow-none relative overflow-hidden flex flex-col gap-2.5 shrink-0 text-white">
                     {/* Row 1: Centered Avatar (48px) & Uploader Name with Subtle YouTube Icon Button on Right */}
                     <div className="relative flex items-center justify-center w-full min-w-0">
                       <div className="flex items-center justify-center gap-3 min-w-0 max-w-full px-7">
@@ -537,18 +522,18 @@ const FullscreenVideoInfo = () => {
                           <img
                             src={profileImg}
                             alt={author}
-                            className="w-12 h-12 rounded-full border-2 border-[#052F4A] object-cover bg-slate-900 shrink-0 shadow-sm"
+                            className="w-12 h-12 rounded-full border-0 object-cover bg-zinc-900 shrink-0 shadow-none"
                             onError={(e) => {
                               e.target.style.display = 'none';
                             }}
                           />
                         ) : (
-                          <div className="w-12 h-12 rounded-full border-2 border-[#052F4A] bg-[#052F4A] flex items-center justify-center text-white shrink-0 shadow-sm">
+                          <div className="w-12 h-12 rounded-full border-0 bg-zinc-800 flex items-center justify-center text-white shrink-0 shadow-none">
                             <User size={22} strokeWidth={2.5} />
                           </div>
                         )}
 
-                        <span className="font-black text-lg text-[#052F4A] truncate leading-tight text-center" title={author}>
+                        <span className="font-black text-lg text-white truncate leading-tight text-center" title={author}>
                           {author}
                         </span>
                       </div>
@@ -562,7 +547,7 @@ const FullscreenVideoInfo = () => {
                             href={ytUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="absolute right-0 top-1/2 -translate-y-1/2 border-2 border-[#052F4A] rounded-xl p-1.5 bg-slate-200/60 hover:bg-sky-100 shadow-sm flex items-center justify-center text-[#052F4A] transition-all active:scale-95 cursor-pointer select-none shrink-0"
+                            className="absolute right-0 top-1/2 -translate-y-1/2 border border-transparent hover:border-white/20 rounded-xl p-1.5 bg-zinc-900/60 hover:bg-zinc-800 shadow-none flex items-center justify-center text-white transition-all active:scale-95 cursor-pointer select-none shrink-0"
                             title="View on YouTube"
                           >
                             <ExternalLink size={16} strokeWidth={2.5} />
@@ -571,12 +556,12 @@ const FullscreenVideoInfo = () => {
                       })()}
                     </div>
 
-                    {/* Horizontal Divider */}
-                    <div className="w-full h-px bg-[#052F4A]/20" />
+                    {/* Dedicated Spacing (Divider line removed for total black merge) */}
+                    <div className="w-full h-1" />
 
                     {/* Row 2: Dedicated Full-Width Prominent View Count & Upload Date */}
                     {(viewCountText || formattedDate) && (
-                      <div className="flex items-center justify-center text-center font-black text-[15px] text-[#052F4A] truncate py-0.5 tracking-tight">
+                      <div className="flex items-center justify-center text-center font-black text-[15px] text-white truncate py-0.5 tracking-tight">
                         {viewCountText && <span>{viewCountText} views</span>}
                         {viewCountText && formattedDate && <span className="mx-2.5 opacity-40">•</span>}
                         {formattedDate && <span>{formattedDate}</span>}
@@ -593,7 +578,7 @@ const FullscreenVideoInfo = () => {
                       {/* Integrated Description Box */}
                       <div className="flex flex-col">
                         <div
-                          className={`flex flex-col p-3 rounded-2xl border-2 border-slate-700/40 bg-black/30 backdrop-blur-md transition-all duration-300 overflow-hidden ${descriptionMode === 'full' ? 'h-auto max-h-[500px] overflow-y-auto scrollbar-hide' : 'h-[220px]'}`}
+                          className={`flex flex-col p-3 rounded-2xl border-0 bg-transparent transition-all duration-300 overflow-hidden ${descriptionMode === 'full' ? 'h-auto max-h-[500px] overflow-y-auto scrollbar-hide' : 'h-[220px]'}`}
                         >
                           <div className="text-sm font-semibold leading-relaxed whitespace-pre-wrap" style={TEXT_SECONDARY}>
                             {description ? (

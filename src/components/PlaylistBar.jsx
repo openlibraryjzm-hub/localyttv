@@ -159,7 +159,7 @@ const PlaylistBar = ({
         className={`sticky top-0 z-40 transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) overflow-visible
           ${isStuck
             ? 'backdrop-blur-xl border-y shadow-2xl mx-0 rounded-none mb-4 pt-2 pb-2 bg-slate-900/70'
-            : 'backdrop-blur-[2px] border-b border-x border-t border-white/10 shadow-xl mx-0 rounded-none mb-4 mt-0 pt-1 pb-0 bg-transparent'
+            : 'backdrop-blur-[2px] border-0 shadow-none mx-0 rounded-none mb-4 mt-0 pt-1 pb-0 bg-transparent'
           }
         `}
         style={{

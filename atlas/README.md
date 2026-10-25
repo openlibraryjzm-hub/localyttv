@@ -258,8 +258,12 @@ yttv2/
 **Covers**: Main and secondary YouTube players, MPV native playback, progress tracking, Zen Mode.
 
 #### `app banner/app-banner.md`
-**Covers**: Top-level application header background with a dual-half independent configuration system (Left/Right).
-**Key Topics**: Dual-half rendering, horizontal mirroring (flip), sync copying, infinite scroll, and hub-isolated preset management.
+**Covers**: Top-level application header background and Player Controller visual anchor.
+**Key Topics**: Hardcoded `#000000` dark mode standard, performance banner pruning, floating controller layout, and historical dual-half system notes.
+
+#### `session updates/2026-10-25-dark-mode-aesthetic-refactor.md`
+**Covers**: Complete architectural overhaul from light navy/blue backdrops to high-performance pure black (`#000000`) dark mode.
+**Key Topics**: Removal of dynamic disk banners, blurred banner backdrop purge across pages, borderless floating controls with white typography, static border/divider removal, and Central Orb customizability preservation.
 
 #### `pages/page-banner.md`
 **Covers**: Contextual page banners on all pages with metadata and customization.

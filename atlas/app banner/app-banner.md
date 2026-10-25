@@ -1,13 +1,11 @@
 ### App Banner
 
-The App Banner is the top-level background system that spans the full width of the application and serves as the background for the Player Controller. It utilizes a **Dual-Half System** to provide independent, customizable background layers for the left and right halves of the application header.
+The App Banner is the top-level header background system that spans the full width of the application and serves as the visual anchor for the Player Controller. Following the October 2026 dark mode refactor, the App Banner has been simplified to a **hardcoded pure black (`#000000`) background**, shedding performance-intensive disk image lookups, background scaling calculations, and continuous infinite scroll CSS animations.
 
 **Related Documentation:**
-- **Player Controller**: See `advanced-player-controller.md` for the controller that sits on this banner
-- **Blurred Backdrop System**: See `blurred-banner-backdrop-system.md` for details on how downstream components reuse the banner as a blurred background layer
-- **Layout**: See `ui-layout.md` for layout system details
-- **Page Banner**: See `page-banner.md` for the page-level banners used on Videos/Playlists pages
-- **App Page (Editor)**: See `app-page.md` for the banner configuration interface
+- **Player Controller**: See `player-controller-unified.md` and `player-controller-top-menus.md` for the controller that sits on this banner
+- **Layout**: See `ui-layout.md` for shell layout details
+- **Fullscreen Video Info**: See `fullscreen-video-info.md` for right-panel styling
 
 ---
 
@@ -15,73 +13,31 @@ The App Banner is the top-level background system that spans the full width of t
 
 **1: User-Perspective Description**
 
-Users see a full-width header (200px height) at the very top of the application, which is split into two distinct 50vw (viewport width) sections:
+Users see a clean, full-width header (200px height) at the very top of the application:
 
-- **Dual-Half System**: The header is composed of a **Left Half** and a **Right Half**. Each can have its own image and configuration.
-- **Visual Persistence**: Both halves are visible simultaneously across all view modes (Full, Half, Quarter).
-- **Infinite Scroll Animation**: Each half supports a seamless horizontal scrolling animation (`repeat-x`).
-- **Flip / Mirror Support**: Images can be horizontally flipped to create symmetrical or mirrored aesthetics.
-- **Custom Upload Support**: Independent uploads for each half via the App Configuration page.
+- **Solid Black Canvas**: Hardcoded `#000000` background eliminating GPU and memory overhead previously spent loading and scrolling high-resolution banner images.
+- **Floating Controls**: The Player Controller (Top Playlist Menu, Central Orb, Top Video Menu) floats seamlessly over the black canvas without card backdrops.
 - **Window Controls / Web Prompt**: Custom window controls (Minimize, Maximize, Close) float in the top-right corner on Desktop targets (`isTauri()` / `isWebView2()`). On Web target (`isWeb()`), a dismissable/collapsible `<WebDownloadPrompt />` card floats in the top-right corner, constrained within the 200px banner height.
-- **Draggable Region**: The banner area is a dedicated drag region (`data-tauri-drag-region`) for moving the application window.
+- **Draggable Region**: The banner area serves as a dedicated drag region (`data-tauri-drag-region`) for moving the application window.
+- **Seamless Merge**: The bottom separator line (`.layout-shell__separator`) has been hidden (`display: none;`), allowing the top controller area to merge seamlessly into the video player and content areas below it.
 
 **2: File Manifest**
 
 **UI/Components:**
-- `src/LayoutShell.jsx`: The core rendering engine. It calculates `50vw` widths for each half, applies store configurations, and conditionally renders `WindowControls` or `WebDownloadPrompt`.
-- `src/components/AppPage.jsx`: The "Two-Bar" editor for configuring both halves side-by-side.
+- `src/LayoutShell.jsx`: Core rendering container. Renders the top controller slot (`#top-controller-anchor`), WindowControls / WebDownloadPrompt, and radial menu overlays.
 - `src/components/WindowControls.jsx`: Desktop window controls positioned in the top-right corner.
-- `src/components/WebDownloadPrompt.jsx`: Web-exclusive dismissable download prompt card and collapsible capsule pill.
-
-**State Management:**
-- `src/store/configStore.js`:
-  - `fullscreenBanner` (Left Half): Configuration object for the left side.
-  - `splitscreenBanner` (Right Half): Configuration object for the right side.
-  - **Properties**:
-    - `image`: Base64 string or URL of the image.
-    - `scale`: Percentage for image sizing (influences background-size).
-    - `verticalPosition`: Vertical alignment percentage.
-    - `horizontalOffset`: Horizontal alignment percentage.
-    - `scrollEnabled`: Boolean toggle for infinite scroll.
-    - `flipped`: Boolean toggle for horizontal mirroring.
-  - `stashedBanners`: Temporary state used to store "original" banners while live-editing in the AppPage.
+- `src/components/WebDownloadPrompt.jsx`: Web-exclusive download prompt card and collapsible capsule pill.
 
 **CSS/Styling:**
 - `src/LayoutShell.css`:
-  - `.layout-shell__banner-bg`: Shared style for both halves.
-  - `animation: bannerScrollRight`: 60s horizontal translation loop.
-
-**3: The Logic & State Chain**
-
-**Dual-Half Rendering Logic:**
-- `LayoutShell` renders two `div` elements with `width: 50vw`.
-- The **Left Half** is anchored at `left: 0`.
-- The **Right Half** is anchored at `left: 50vw`.
-- **Scaling Math**: `background-size` is calculated as `(scale / 2)vw auto`. This ensures that at 100% scale, the image precisely fills its 50vw container.
-
-**Live Preview & Restoration Flow:**
-1. **Entry**: Opening the App Page triggers `stashBanners()`.
-2. **Editing**: Changes to `fullscreenBanner` or `splitscreenBanner` are immediate. `LayoutShell` prioritizes these store values over any playlist-specific presets if a "stash" exists.
-3. **Exit**: Closing the page triggers `restoreBanners()`, reverting the global state to the stashed values.
-
-**4: Technical Implementation Details**
-
-**Independent Symmetry:**
-The system is designed to allow "Mirrored" designs. By uploading the same image to both halves, setting them to the same scale/offset, and enabling `flipped` on one side, users can create a perfectly mirrored panoramic header.
-
-**Playlist Presets:**
-While the store uses `fullscreenBanner` and `splitscreenBanner` as global defaults, the **Preset System** can override these per-playlist. When navigating to a playlist with a linked banner preset, the `LayoutShell` swaps the rendered configs to those stored in the preset.
+  - `.layout-shell__top-controller`: Set to `background-color: #000000; border-bottom: none;`.
+  - `.layout-shell__banner-bg`: Hidden (`display: none;`).
+  - `.layout-shell__separator`: Hidden (`display: none;`).
 
 ---
 
-#### Customization Capabilities
+#### Historical Note: Legacy Dual-Half Banner System
 
-**Editor Features (`AppPage.jsx`):**
-- **Side-by-Side Bars**: Simultaneous controls for both halves.
-- **Copy to Other**: A "Sync" button that clones all settings (image, scale, etc.) from one half to the other.
-- **Horizontal Flip**: A mirror toggle for each half.
-- **Target Playlists**: A filtered dropdown to link configurations to specific playlists within the current **Explorer Hub**.
+Prior to October 2026, the App Banner utilized a customizable "Dual-Half System" split into two `50vw` sections (`fullscreenBanner` for the left half, `splitscreenBanner` for the right half) with independent custom image uploads, scaling math, horizontal mirroring, and a continuous 60s horizontal infinite scroll loop (`animation: bannerScrollRight`). 
 
-**File Format Support:**
-- **Static Images**: PNG, JPG, WEBP.
-- **GIFs**: Native playback (infinite scroll disabled automatically to prevent frame-stepping issues).
+This system and its associated "Atmospheric Blurred Banner Backdrop" (which blurred `/banner.PNG` across main page backgrounds) were decommissioned to provide immediate load times, consistent dark-room contrast, and eliminate memory and rendering stalls.

@@ -83,15 +83,15 @@ const COLORS = FOLDER_COLORS.map(color => ({
   id: color.id
 }));
 
-// White icon with black outline (no circle) - use as wrapper style for toolbar icons
+// White icon with clean styling
 const ICON_WHITE_OUTLINE = {
   display: 'inline-flex',
-  color: '#052F4A'
+  color: '#ffffff'
 };
 
-// Badge text: solid dark blue
+// Badge text: solid white
 const BADGE_TEXT_STYLE = {
-  color: '#052F4A',
+  color: '#ffffff',
   fontWeight: 900
 };
 
@@ -240,15 +240,10 @@ export default function PlayerControllerVideoMenu(props) {
   return (
     <div className="flex items-center justify-start origin-left scale-105">
       <div className="flex items-center gap-4 relative z-10 flex-shrink-0">
-        <div className={`shadow-2xl flex flex-col relative overflow-visible transition-all duration-300 ${isEditMode ? 'ring-4 ring-sky-400/30' : 'bg-transparent rounded-2xl'}`} style={{
+        <div className={`flex flex-col relative overflow-visible transition-all duration-300 ${isEditMode ? 'ring-4 ring-white/30' : 'bg-transparent'}`} style={{
           width: `${menuWidth}px`,
           height: `${menuHeight}px`
         }}>
-          {/* Solid Light Card Backdrop Layer */}
-          <div 
-            aria-hidden="true" 
-            className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none z-0 border-2 border-[#052F4A] shadow-xl bg-slate-100"
-          />
           {showColorPicker && <button onClick={() => {
             setShowColorPicker(null);
             setHoveredColorName(null);
@@ -256,15 +251,13 @@ export default function PlayerControllerVideoMenu(props) {
           <div className="absolute top-0 left-0 w-full flex items-center -translate-y-1/2 z-40 px-2 pointer-events-none h-0">
             {/* Normal pins track removed per user request */}
           </div>
-          {/* Header Metadata - Centered above (Mirrors Playlist Title) */}
-          {/* Header Metadata - Removed from here, moved to Playlist Menu */}
 
           <div className="flex-grow flex flex-col items-center justify-center px-4 relative z-10 overflow-hidden">
             {showColorPicker ? <div className="flex flex-col items-center animate-in zoom-in duration-200" style={{
               transform: `translateY(${dotMenuY}px)`
             }}>
-              <p className="text-[9px] font-black uppercase text-sky-600 tracking-[0.2em] mb-3">Accent: {showColorPicker}</p>
-              <div className="grid grid-cols-7 gap-1.5 p-2.5 bg-white/60 backdrop-blur-md rounded-2xl border border-sky-200 shadow-inner overflow-hidden flex items-center justify-center" style={{
+              <p className="text-[9px] font-black uppercase text-white/80 tracking-[0.2em] mb-3">Accent: {showColorPicker}</p>
+              <div className="grid grid-cols-7 gap-1.5 p-2.5 bg-black/90 backdrop-blur-md rounded-2xl border border-white/20 shadow-2xl overflow-hidden flex items-center justify-center" style={{
                 width: `${dotMenuWidth}px`,
                 height: `${dotMenuHeight}px`
               }}>
@@ -312,21 +305,21 @@ export default function PlayerControllerVideoMenu(props) {
                 ))}
               </div>
             </div> : <div className="w-full flex flex-col justify-center transition-all relative h-full">
-              <h1 className="font-black text-center leading-tight line-clamp-3 tracking-tight transition-all pb-1 text-[#052F4A]" style={{
+              <h1 className="font-black text-center leading-tight line-clamp-3 tracking-tight transition-all pb-1 text-white" style={{
                 fontSize: `${titleFontSize}px`
               }}>
                 {displayVideo.title}
               </h1>
             </div>}
           </div>
-          <div className="border-t-2 border-[#052F4A]/20 flex items-center px-3 shrink-0 relative rounded-b-2xl bg-transparent" style={{
+          <div className="flex items-center px-3 shrink-0 relative bg-transparent" style={{
             height: `${bottomBarHeight}px`
           }}>
-            {showColorPicker ? <div className="flex items-center justify-center w-full h-full animate-in fade-in slide-in-from-bottom-1 duration-300"><span className="text-[10px] font-black uppercase tracking-[0.3em] text-sky-700/80">{hoveredColorName || `Select ${showColorPicker} color`}</span></div> : <div className="w-full h-full relative">
+            {showColorPicker ? <div className="flex items-center justify-center w-full h-full animate-in fade-in slide-in-from-bottom-1 duration-300"><span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/80">{hoveredColorName || `Select ${showColorPicker} color`}</span></div> : <div className="w-full h-full relative">
               {/* Navigation Controls - Now Absolute Centered */}
               {/* Navigation Contols (Left Cluster - "Far Left") - Mirrored from Playlist */}
               {/* Previous Video - Left of Grid */}
-              <button onClick={handlePrevVideo} className="absolute left-1/2 top-1/2 p-0.5 text-[#052F4A]" style={{
+              <button onClick={handlePrevVideo} className="absolute left-1/2 top-1/2 p-0.5 text-white hover:scale-110 active:scale-95 transition-transform" style={{
                 transform: `translate(calc(-50% - 148px), -50%)`
               }} title={getInspectTitle('Previous Video in Queue')}>
                 <ChevronLeft size={navChevronSize} strokeWidth={3} />
@@ -343,7 +336,7 @@ export default function PlayerControllerVideoMenu(props) {
               >
                 <span style={ICON_WHITE_OUTLINE}>
                   <svg width={Math.round(bottomIconSize * 0.55)} height={Math.round(bottomIconSize * 0.55)} viewBox="0 0 24 24" fill="none" style={{
-                    color: '#052F4A'
+                    color: '#ffffff'
                   }}>
                     {/* 3x3 grid of dots like a dice face */}
                     <circle cx="6" cy="6" r="2" fill="currentColor" />
@@ -360,7 +353,7 @@ export default function PlayerControllerVideoMenu(props) {
               </MenuButton>
 
               {/* Next Video - Right of Grid */}
-              <button onClick={handleNextVideo} className="absolute left-1/2 top-1/2 p-0.5 text-[#052F4A]" style={{
+              <button onClick={handleNextVideo} className="absolute left-1/2 top-1/2 p-0.5 text-white hover:scale-110 active:scale-95 transition-transform" style={{
                 transform: `translate(calc(-50% - 92px), -50%)`
               }} title={getInspectTitle('Next Video in Queue')}>
                 <ChevronRight size={navChevronSize} strokeWidth={3} />
@@ -388,7 +381,7 @@ export default function PlayerControllerVideoMenu(props) {
                     </span>;
                   }
                   return <span style={ICON_WHITE_OUTLINE}>
-                    <Play size={Math.round(bottomIconSize * 0.5)} color="#052F4A" fill="#052F4A" strokeWidth={0} />
+                    <Play size={Math.round(bottomIconSize * 0.5)} color="#ffffff" fill="#ffffff" strokeWidth={0} />
                   </span>;
                 })()}
               </MenuButton>
@@ -413,7 +406,7 @@ export default function PlayerControllerVideoMenu(props) {
                   } : FOLDER_COLORS.find(c => c.id === quickShuffleColor) || FOLDER_COLORS.find(c => c.id === 'indigo');
                   if (shuffleColorObj.hex === '#000') {
                     return <span style={ICON_WHITE_OUTLINE}>
-                      <Shuffle size={Math.round(bottomIconSize * 0.5)} color="#052F4A" strokeWidth={3} />
+                      <Shuffle size={Math.round(bottomIconSize * 0.5)} color="#ffffff" strokeWidth={3} />
                     </span>;
                   }
                   return <Shuffle size={Math.round(bottomIconSize * 0.5)} color={shuffleColorObj.hex} strokeWidth={3} />;
@@ -441,7 +434,7 @@ export default function PlayerControllerVideoMenu(props) {
                     </span>;
                   }
                   return <span style={ICON_WHITE_OUTLINE}>
-                    <Star size={Math.round(bottomIconSize * 0.5)} color="#052F4A" fill="transparent" strokeWidth={3} />
+                    <Star size={Math.round(bottomIconSize * 0.5)} color="#ffffff" fill="transparent" strokeWidth={3} />
                   </span>;
                 })()}
               </MenuButton>
@@ -473,7 +466,7 @@ export default function PlayerControllerVideoMenu(props) {
                   const isPriority = targetVideo && isPriorityPin(targetVideo.id);
                   const isNormalPinned = targetVideo && isPinned(targetVideo.id) && !isPriority;
                   
-                  let iconColor = '#052F4A';
+                  let iconColor = '#ffffff';
                   let iconFill = 'transparent';
                   let strokeWidth = 2.5;
                   if (isPriority) {
@@ -515,7 +508,7 @@ export default function PlayerControllerVideoMenu(props) {
                 {isVideoLiked ? <span style={ICON_WHITE_OUTLINE}>
                   <ThumbsUp size={Math.round(bottomIconSize * 0.5)} color={likeColor} fill={likeColor} strokeWidth={3} />
                 </span> : <span style={ICON_WHITE_OUTLINE}>
-                  <ThumbsUp size={Math.round(bottomIconSize * 0.5)} color="#052F4A" fill="transparent" strokeWidth={3} />
+                  <ThumbsUp size={Math.round(bottomIconSize * 0.5)} color="#ffffff" fill="transparent" strokeWidth={3} />
                 </span>}
               </MenuButton>
 
@@ -529,22 +522,22 @@ export default function PlayerControllerVideoMenu(props) {
                   title={getInspectTitle('App Control Tutorial & Guide (Click to open Control Guide)')}
                 >
                   <span style={ICON_WHITE_OUTLINE}>
-                    <span className="text-[16px] font-black text-[#052F4A] leading-none select-none">?</span>
+                    <span className="text-[16px] font-black text-white leading-none select-none">?</span>
                   </span>
                 </button>
 
-                {isTooltipOpen && <div className="absolute top-full right-0 mt-3 w-80 bg-slate-100 border-2 border-[#052F4A] rounded-2xl shadow-2xl overflow-hidden z-[10002] animate-in fade-in zoom-in-95 duration-200 p-4 text-xs text-[#052F4A] font-medium" style={{
+                {isTooltipOpen && <div className="absolute top-full right-0 mt-3 w-80 bg-black/95 border border-white/20 rounded-2xl shadow-2xl overflow-hidden z-[10002] animate-in fade-in zoom-in-95 duration-200 p-4 text-xs text-white font-medium" style={{
                   zIndex: 10002
                 }}>
                   <div className="flex flex-col gap-3">
-                    <div className="flex items-center justify-between border-b border-[#052F4A]/20 pb-2">
-                      <span className="font-bold text-[#052F4A] uppercase tracking-wider text-[10px]">YouTube API Key</span>
+                    <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                      <span className="font-bold text-white uppercase tracking-wider text-[10px]">YouTube API Key</span>
                       {youtubeApiKey && (
-                        <span className="bg-emerald-500/15 text-emerald-800 text-[8px] font-bold px-1.5 py-0.5 rounded border border-emerald-600/30 uppercase">Configured</span>
+                        <span className="bg-emerald-500/20 text-emerald-400 text-[8px] font-bold px-1.5 py-0.5 rounded border border-emerald-500/30 uppercase">Configured</span>
                       )}
                     </div>
                     
-                    <p className="text-[10px] text-[#052F4A]/80 leading-normal">
+                    <p className="text-[10px] text-white/80 leading-normal">
                       Input your personal YouTube Data API v3 key to enable search, playlist import, and subscriptions.
                     </p>
 
@@ -554,12 +547,12 @@ export default function PlayerControllerVideoMenu(props) {
                         value={typedApiKey}
                         onChange={(e) => setTypedApiKey(e.target.value)}
                         placeholder="Abc123..."
-                        className="w-full bg-white border-2 border-[#052F4A]/30 rounded-lg p-2 pr-9 text-[#052F4A] focus:outline-none focus:border-[#052F4A] font-mono text-[10px] shadow-inner transition-colors placeholder-slate-400"
+                        className="w-full bg-zinc-900 border border-white/20 rounded-lg p-2 pr-9 text-white focus:outline-none focus:border-white font-mono text-[10px] shadow-inner transition-colors placeholder-zinc-500"
                       />
                       <button 
                         type="button" 
                         onClick={() => setShowKey(!showKey)} 
-                        className="absolute right-2 text-[#052F4A]/60 hover:text-[#052F4A] transition-colors"
+                        className="absolute right-2 text-white/60 hover:text-white transition-colors"
                         title={showKey ? 'Hide key' : 'Show key'}
                       >
                         {showKey ? <EyeOff size={14} /> : <Eye size={14} />}
@@ -567,22 +560,22 @@ export default function PlayerControllerVideoMenu(props) {
                     </div>
 
                     {validationStatus === 'validating' && (
-                      <div className="text-[9px] text-sky-700 flex items-center gap-1.5 py-0.5 animate-pulse font-semibold">
-                        <Circle size={8} className="fill-sky-600 animate-ping" />
+                      <div className="text-[9px] text-sky-400 flex items-center gap-1.5 py-0.5 animate-pulse font-semibold">
+                        <Circle size={8} className="fill-sky-400 animate-ping" />
                         <span>Validating API key against Google servers...</span>
                       </div>
                     )}
 
                     {validationStatus === 'success' && (
-                      <div className="text-[9px] text-emerald-800 flex items-center gap-1.5 py-0.5 bg-emerald-500/10 border border-emerald-600/30 rounded p-1.5 font-semibold">
-                        <CheckCircle2 size={12} className="shrink-0 text-emerald-600" />
+                      <div className="text-[9px] text-emerald-400 flex items-center gap-1.5 py-0.5 bg-emerald-500/10 border border-emerald-500/30 rounded p-1.5 font-semibold">
+                        <CheckCircle2 size={12} className="shrink-0 text-emerald-400" />
                         <span>Success! API Key validated and saved.</span>
                       </div>
                     )}
 
                     {validationStatus === 'error' && (
-                      <div className="text-[9px] text-rose-800 flex items-start gap-1.5 py-0.5 bg-rose-500/10 border border-rose-600/30 rounded p-1.5 leading-normal font-semibold">
-                        <X size={12} className="shrink-0 mt-0.5 text-rose-600" />
+                      <div className="text-[9px] text-rose-400 flex items-start gap-1.5 py-0.5 bg-rose-500/10 border border-rose-500/30 rounded p-1.5 leading-normal font-semibold">
+                        <X size={12} className="shrink-0 mt-0.5 text-rose-400" />
                         <span className="break-all">{validationError}</span>
                       </div>
                     )}
@@ -591,14 +584,14 @@ export default function PlayerControllerVideoMenu(props) {
                       <button
                         onClick={handleTestAndSave}
                         disabled={validationStatus === 'validating'}
-                        className="flex-1 bg-[#052F4A] text-white rounded-lg py-1.5 font-bold hover:bg-[#073f63] transition-colors disabled:opacity-50 active:scale-95 text-[10px] shadow-sm"
+                        className="flex-1 bg-white text-black rounded-lg py-1.5 font-bold hover:bg-zinc-200 transition-colors disabled:opacity-50 active:scale-95 text-[10px] shadow-sm"
                       >
                         Test & Save
                       </button>
                       {youtubeApiKey && (
                         <button
                           onClick={handleClearKey}
-                          className="bg-slate-200 text-[#052F4A] border border-slate-300 rounded-lg px-2.5 hover:bg-slate-300 transition-all text-[10px] font-semibold"
+                          className="bg-zinc-800 text-white border border-zinc-700 rounded-lg px-2.5 hover:bg-zinc-700 transition-all text-[10px] font-semibold"
                         >
                           Clear
                         </button>
@@ -609,7 +602,7 @@ export default function PlayerControllerVideoMenu(props) {
                       href="https://developers.google.com/youtube/v3/getting-started" 
                       target="_blank" 
                       rel="noopener noreferrer" 
-                      className="text-[9px] text-sky-700 hover:text-sky-900 hover:underline text-center mt-1 font-semibold flex items-center justify-center gap-1 no-drag"
+                      className="text-[9px] text-sky-400 hover:text-sky-300 hover:underline text-center mt-1 font-semibold flex items-center justify-center gap-1 no-drag"
                     >
                       How to get a YouTube API Key
                     </a>

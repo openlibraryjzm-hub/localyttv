@@ -19,22 +19,20 @@ The Videos Page displays the contents of a specific playlist, folder, or view wi
   - Pushed tight into the bottom of the sticky toolbar via negative margins.
 
 - **Background Styling**:
-  - Uses the **Atmospheric Blurred App Banner Backdrop System** (`atlas/design/blurred-banner-backdrop-system.md`).
-  - Anchored on a solid `bg-slate-950` container with an absolute positioned blurred banner overlay (`filter: blur(36px)`, `transform: scale(1.25)`, `opacity: 0.85`), dynamically synced to the active App Banner / preset image in real-time.
-  - The sticky toolbar and grid content float crisply above this backdrop layer (`z-10 relative`) with white text and black stroke/shadow outlines for 100% legibility.
+  - Pure black (`#000000`) dark mode surface.
+  - The sticky toolbar and grid cards float cleanly directly over the black canvas with crisp white typography and high contrast.
 
 - **Empty States**:
-  - If a folder filter is applied but contains no videos, the grid remains an empty colored blur box.
   - Explicit UI messages for "No playlist selected" and "No videos in this playlist".
 
 ## 2. Component Hierarchies
 
 ### The Sticky Toolbar
-Sits directly below the Page Banner and anchors strictly to the top of the viewport when scrolling down.
-- **Compact Layout**: Single-row configuration matching the Playlists page.
-- **Left Side**: `VideoSortFilters` containing Home (default shuffle) and Funnel (dropdown properties: Sort by date, progress, last viewed, and drumstick ratings).
+Sits at the top of the Videos page content and anchors strictly to the top of the viewport when scrolling down.
+- **Backdrop**: Solid black (`#000000`) without bar-spanning glow, unifying seamlessly with the dark mode page background.
+- **Left Side**: `VideoSortFilters` containing Home (default shuffle) and Funnel (dropdown properties: sort by date, progress, last viewed, watch count, and heart ratings).
 - **Middle Group**: Add (open uploader), Refresh (subscriptions data sync), and Bulk tag toggles.
-- **Folder Prism**: Right side of the toolbar populated with the 16 folder colors showing localized video counts. Unsorted (Black) and All (White) precede them. See `video-sort-filters.md` for detail.
+- **Folder Prism**: Right side of the toolbar populated with the 16 folder colors showing localized video counts, plus Unsorted (black with permanent white outline) and All (white). See `video-sort-filters.md` for detail.
 - **Context Buttons**: Back (returns from history/preview entry), Close (swaps out of fullscreen).
 
 ### The Sticky Video Carousel

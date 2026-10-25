@@ -6,17 +6,17 @@ This document describes the **Playlists page sticky toolbar** (`PlaylistBar.jsx`
 
 ## 1. Overview
 
-**Location**: Rendered inside `PlaylistsPage.jsx` at the top of the page content. The bar is **sticky** (`sticky top-0`); when the user scrolls down, it sticks to the viewport and gains stronger backdrop/blur and border for visibility.
+**Location**: Rendered inside `PlaylistsPage.jsx` at the top of the page content. The bar is **sticky** (`sticky top-0`); when the user scrolls down, it sticks cleanly to the top of the viewport.
 
 **Layout (left to right)**:
 
-1. **Full Bar Glow Context** – The toolbar background features a dynamically colored atmospheric layer providing a full-width glow based on the active selection (White for All Playlists, Black for Unsorted, Hex for Folder Groups).
-2. **Action Buttons Container** – The left side of the bar permanently displays the action buttons directly over the background glow without requiring mouse hover.
+1. **Solid Black Toolbar Backdrop** – The toolbar background is permanently solid black (`#000000`), unifying with the pure black dark mode aesthetic without any bar-spanning glow.
+2. **Action Buttons Container** – The left side of the bar permanently displays the action buttons directly on the black bar.
 3. **PlaylistSortFilters** – The first button in the action buttons group. The Home command (default / shuffle order) was moved inside the Funnel dropdown as the first sort. The sort and filter states (`playlistSortBy`, `showHiddenPlaylists`, `playlistContentFilter`) are managed in `PlaylistsPage.jsx` and passed down. Playlists can be sorted by item count, date created, or alphabetically.
 4. **Action buttons (Plus & Tag)** – Located next to the Funnel. A Plus button opens the playlist uploader; a Tag button serves as a UI placeholder for future bulk tagging capability on playlists.
 5. **Pagination Controls** – Located next to the Action buttons if multiple pages exist. Left/Right chevrons to navigate, with current page number between them.
 6. **Folder prism** – Fills the remaining width. Segments: **All** (white), **Unsorted** (black, if any playlists are unassigned), and **one segment per folder color that has a group carousel**. Clicking a segment sets the selected folder; PlaylistsPage shows either the full grid (All/Unsorted) or the single carousel for that color. Includes context menu (right-click) to toggle populated-only mode.
-7. **Right side** – Back (when navigation history or playlist preview exists), Close (fullscreen / close menu via `layoutStore.setViewMode('full')`). Elements are lifted to `z-20` to stay on top of the bar's background glow.
+7. **Right side** – Back (when navigation history or playlist preview exists), Close (fullscreen / close menu via `layoutStore.setViewMode('full')`).
 
 **Data flow**: PlaylistsPage passes `groupColorIds` (array of folder color ids that have a group), `allPlaylistCount`, `unsortedCount`, `selectedFolder`, and `onFolderSelect`. The prism shows only colors that have a group in populated-only mode; right-click toggles to all 16 segments.
 
@@ -59,7 +59,9 @@ This document describes the **Playlists page sticky toolbar** (`PlaylistBar.jsx`
 
 ### 3.3 Selection and styling
 
-- **Selected segment**: Highlighted with an inset ring (`after:ring-2 after:ring-inset`). The ring color adjusts contextually: All uses `after:ring-black/10`, Unsorted uses `after:ring-white/30`, and standard colors use `after:ring-white/50`.
+- **Unselected segment vibrancy**: Colored segments sit at `opacity-90` (hovering to `opacity-100`) on the solid black toolbar to maintain rich color saturation without appearing washed out or dim.
+- **Black colored folder (Unsorted)**: Never merges into the black background; permanently outlined with a crisp inset white ring (`after:ring-1 after:ring-inset after:ring-white/80` when unselected, `after:ring-2 after:ring-inset after:ring-white` when selected).
+- **Selected segment**: Highlighted with an inset ring (`after:ring-2 after:ring-inset`). Standard colors and Unsorted use a bold pure white outline (`after:ring-white`); All uses `after:ring-black/20`.
 - **Segment background**: The background matches the folder color definition (All = white, Unsorted = black, colors = respective hex values from `FOLDER_COLORS`). Text/counts on colored segments feature a subtle drop shadow (`drop-shadow-md`) and white contrast for high legibility.
 
 ---
@@ -67,12 +69,10 @@ This document describes the **Playlists page sticky toolbar** (`PlaylistBar.jsx`
 ## 4. Sticky Behavior and Styling
 
 - A **sentinel** div (1px, invisible) above the bar is observed with `IntersectionObserver`. When it leaves the viewport upward (`intersectionRatio < 1` and `boundingClientRect.top < 0`), the bar is considered **stuck**.
-- **Not stuck**: Lighter border/blur, transparent background, compact padding.
-- **Stuck**: Stronger backdrop blur (`backdrop-blur-xl`), border-y, shadow, `bg-slate-900/70`, slightly taller row (`h-[52px]`).
-- **Full Bar Glow**: Replaces localized title glows with an absolute background layer (z-0) spanning the entire bar width. Uses dual-blur effects (20px/10px) to emit an atmospheric glow matching the selected context.
-- **Unsorted Display**: When the Unsorted folder is selected, it triggers a black background glow.
-- **All Selection**: Triggers a bright white background glow.
-- **Z-Index**: Action buttons and prism segments are lifted to `z-20` to ensure they remain reliably on top of the atmospheric background glow.
+- **Backdrop**: Permanently solid black (`#000000`) in both stuck and unstuck states to seamlessly blend with the dark mode aesthetic.
+- **Not stuck**: Compact vertical padding.
+- **Stuck**: Slightly taller row (`h-[52px]`) with smooth transition.
+- **No Bar Glow**: The toolbar does not emit any background glow; active segment selection is indicated cleanly by the segment's inset white outline ring.
 
 ---
 

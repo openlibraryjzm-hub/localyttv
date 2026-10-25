@@ -103,10 +103,9 @@ const PlaylistSortFilters = ({
                 </button>
                 {dropdownOpen && (
                     <div
-                        className={`absolute left-0 top-full pt-2 z-50 min-w-[200px] rounded-lg border-2 shadow-lg py-1 ${isLight ? 'bg-white border-black/20 text-black/90' : 'bg-slate-800 border-white/20 text-white/90'
-                            }`}
+                        className="absolute left-0 top-full pt-2 z-50 min-w-[200px] rounded-lg border border-white/20 shadow-2xl py-1 bg-black/95 text-white"
                     >
-                        <div className="px-3 py-1 mb-1 text-xs font-semibold uppercase opacity-50 tracking-wider">
+                        <div className="px-3 py-1 mb-1 text-xs font-semibold uppercase text-white/50 tracking-wider">
                             Sort By
                         </div>
                         {SORT_OPTIONS.map(({ mode, label, Icon }) => {
@@ -117,12 +116,8 @@ const PlaylistSortFilters = ({
                                     type="button"
                                     onClick={() => handleSortOptionClick(mode)}
                                     className={`w-full flex items-center justify-between gap-2 px-3 py-2 text-left text-sm transition-colors ${active
-                                        ? isLight
-                                            ? 'bg-black/10 font-medium'
-                                            : 'bg-white/10 font-medium'
-                                        : isLight
-                                            ? 'hover:bg-gray-100'
-                                            : 'hover:bg-white/10'
+                                        ? 'bg-white/10 font-medium text-white'
+                                        : 'hover:bg-white/10 text-white/80'
                                         }`}
                                     title={active ? (mode === 'scramble' ? 'Click to reshuffle' : 'Click to cycle direction') : label}
                                 >
@@ -135,15 +130,14 @@ const PlaylistSortFilters = ({
                             );
                         })}
 
-                        <div className={`h-px w-full my-1 ${isLight ? 'bg-black/10' : 'bg-white/10'}`} />
-                        <div className="px-3 py-1 mb-1 text-xs font-semibold uppercase opacity-50 tracking-wider">
+                        <div className="h-px w-full my-1 bg-white/10" />
+                        <div className="px-3 py-1 mb-1 text-xs font-semibold uppercase text-white/50 tracking-wider">
                             Visibility Filters
                         </div>
                         <button
                             type="button"
                             onClick={() => setShowHidden(!showHidden)}
-                            className={`w-full flex items-center justify-between gap-2 px-3 py-2 text-left text-sm transition-colors ${isLight ? 'hover:bg-gray-100' : 'hover:bg-white/10'
-                                }`}
+                            className="w-full flex items-center justify-between gap-2 px-3 py-2 text-left text-sm transition-colors hover:bg-white/10 text-white/80"
                         >
                             <span className="flex items-center gap-2">
                                 {showHidden ? <Eye size={14} strokeWidth={2.5} /> : <EyeOff size={14} strokeWidth={2.5} />}
@@ -151,8 +145,8 @@ const PlaylistSortFilters = ({
                             </span>
                         </button>
 
-                        <div className={`h-px w-full my-1 ${isLight ? 'bg-black/10' : 'bg-white/10'}`} />
-                        <div className="px-3 py-1 mb-1 text-xs font-semibold uppercase opacity-50 tracking-wider">
+                        <div className="h-px w-full my-1 bg-white/10" />
+                        <div className="px-3 py-1 mb-1 text-xs font-semibold uppercase text-white/50 tracking-wider">
                             Content Filters
                         </div>
                         {[
@@ -167,12 +161,8 @@ const PlaylistSortFilters = ({
                                     type="button"
                                     onClick={() => setContentFilter(mode)}
                                     className={`w-full flex items-center justify-between gap-2 px-3 py-2 text-left text-sm transition-colors ${active
-                                        ? isLight
-                                            ? 'bg-black/10 font-medium'
-                                            : 'bg-white/10 font-medium'
-                                        : isLight
-                                            ? 'hover:bg-gray-100'
-                                            : 'hover:bg-white/10'
+                                        ? 'bg-white/10 font-medium text-white'
+                                        : 'hover:bg-white/10 text-white/80'
                                         }`}
                                 >
                                     <span className="flex items-center gap-2">

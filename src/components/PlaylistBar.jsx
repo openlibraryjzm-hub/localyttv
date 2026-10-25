@@ -67,36 +67,14 @@ const PlaylistBar = ({
   const { history, goBack, setCurrentPage } = useNavigationStore();
   const { setViewMode } = useLayoutStore();
   const { previewPlaylistId, clearPreview } = usePlaylistStore();
-  const { allFolderMetadata, setHoveredFolder, hoveredFolder } = useFolderStore();
+  const { setHoveredFolder } = useFolderStore();
   const { groups, getGroupByColorId, renameGroup, addGroup } = usePlaylistGroupStore();
 
-  const [filterDropdownOpen, setFilterDropdownOpen] = useState(false);
   const [prismMenuOpen, setPrismMenuOpen] = useState(false);
   const [prismMenuPosition, setPrismMenuPosition] = useState({ top: 0, left: 0 });
   const [prismMenuContextFolder, setPrismMenuContextFolder] = useState(null);
   const [prismMenuContextLabel, setPrismMenuContextLabel] = useState("");
   const [showEditModal, setShowEditModal] = useState(false);
-  const isDropdownActive = filterDropdownOpen;
-
-    // No longer displaying text/titles per user request
-  let bannerHex = '#ffffff';
-  let isUnsorted = false;
-  let isColoredFolder = false;
-
-  const effectiveFolder = hoveredFolder !== undefined ? hoveredFolder : selectedFolder;
-
-  if (effectiveFolder !== null && effectiveFolder !== undefined) {
-    isColoredFolder = true;
-    if (effectiveFolder === 'unsorted') {
-      bannerHex = '#000000';
-      isUnsorted = true;
-    } else {
-      const color = FOLDER_COLORS.find(c => c.id === effectiveFolder);
-      if (color) {
-        bannerHex = color.hex;
-      }
-    }
-  }
 
   const ICON_WHITE_OUTLINE = {
     color: 'white',
@@ -156,30 +134,17 @@ const PlaylistBar = ({
     <>
       <div ref={stickySentinelRef} className="absolute h-px w-full -mt-px pointer-events-none opacity-0" />
       <div
-        className={`sticky top-0 z-40 transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) overflow-visible
+        className={`sticky top-0 z-40 transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) overflow-visible bg-black
           ${isStuck
-            ? 'backdrop-blur-xl border-y shadow-2xl mx-0 rounded-none mb-4 pt-2 pb-2 bg-slate-900/70'
-            : 'backdrop-blur-[2px] border-0 shadow-none mx-0 rounded-none mb-4 mt-0 pt-1 pb-0 bg-transparent'
+            ? 'mx-0 rounded-none mb-4 pt-2 pb-2'
+            : 'mx-0 rounded-none mb-4 mt-0 pt-1 pb-0'
           }
         `}
         style={{
-          backgroundColor: isStuck ? undefined : 'transparent',
           marginTop: '0px',
         }}
       >
         <div className={`px-4 flex items-center justify-between transition-all duration-300 relative z-10 ${isStuck ? 'h-[52px]' : 'py-0.5'}`}>
-
-          {/* Full Bar Glow */}
-          <div className={`absolute -inset-x-4 inset-y-0 z-0 pointer-events-none transition-opacity duration-300 ${isDropdownActive ? 'opacity-0' : 'opacity-100'}`}>
-            <div
-              className="absolute inset-0 pointer-events-none blur-[20px] opacity-70 transition-colors duration-300"
-              style={{ backgroundColor: bannerHex }}
-            />
-            <div
-              className="absolute inset-0 pointer-events-none blur-[10px] opacity-85 transition-colors duration-300"
-              style={{ backgroundColor: bannerHex }}
-            />
-          </div>
 
           <div className={`relative flex items-center min-h-[32px] pl-1 pr-1 shrink-0 mr-2`}>
 
@@ -194,9 +159,8 @@ const PlaylistBar = ({
                 setShowHidden={setShowHidden}
                 contentFilter={contentFilter}
                 setContentFilter={setContentFilter}
-                isLight={true}
+                isLight={false}
                 className="shrink-0"
-                onOpenChange={setFilterDropdownOpen}
               />
 
               <button
@@ -241,9 +205,10 @@ const PlaylistBar = ({
                   const isSelected = selectedFolder === seg.id;
                   const isAll = seg.type === 'all';
                   const isUnsorted = seg.type === 'unsorted';
-                  const ringClass = isSelected
-                    ? (isAll ? 'after:ring-black/10' : isUnsorted ? 'after:ring-white/30' : 'after:ring-white/50')
-                    : '';
+                  const outlineClass = isSelected
+                    ? (isAll ? 'after:ring-2 after:ring-inset after:ring-black/20' : 'after:ring-2 after:ring-inset after:ring-white')
+                    : (isUnsorted ? 'after:ring-1 after:ring-inset after:ring-white/80' : '');
+                  const hasAfter = isSelected || isUnsorted;
                   const bg = isAll ? 'bg-white text-black' : isUnsorted ? 'bg-black text-white' : '';
                   const segLabel = isAll ? 'All' : isUnsorted ? 'Unsorted' : (seg.label || 'Carousel');
                   return (
@@ -260,13 +225,13 @@ const PlaylistBar = ({
                       onMouseEnter={() => setHoveredFolder(seg.id)}
                       onMouseLeave={() => setHoveredFolder(undefined)}
                       className={`h-full flex-1 min-w-0 flex items-center justify-center transition-all tabular-nums px-0.5 text-[10px] font-bold leading-none ${isSelected
-                        ? `opacity-100 z-10 relative after:content-[""] after:absolute after:inset-0 after:ring-2 after:ring-inset ${ringClass}`
-                        : 'opacity-60 hover:opacity-100'
-                        } ${isFirst ? 'rounded-l-md' : ''} ${isLast ? 'rounded-r-md' : ''} ${bg}`}
+                        ? 'opacity-100 z-10'
+                        : 'opacity-90 hover:opacity-100'
+                        } ${hasAfter ? 'relative after:content-[""] after:absolute after:inset-0 ' + outlineClass : ''} ${isFirst ? 'rounded-l-md' : ''} ${isLast ? 'rounded-r-md' : ''} ${bg}`}
                       style={seg.hex ? { backgroundColor: seg.hex } : undefined}
                       title={isAll ? `Show All (${seg.count})` : isUnsorted ? `Unsorted (${seg.count})` : `${seg.label} (${seg.count})`}
                     >
-                      <span className={seg.hex ? 'text-white/90 drop-shadow-md' : ''}>{seg.count}</span>
+                      <span className={seg.hex ? 'text-white drop-shadow-md' : ''}>{seg.count}</span>
                     </PrismButton>
                   );
                 })
@@ -284,8 +249,8 @@ const PlaylistBar = ({
                     onMouseEnter={() => setHoveredFolder(null)}
                     onMouseLeave={() => setHoveredFolder(undefined)}
                     className={`h-full min-w-[2.25rem] flex-1 flex items-center justify-center transition-all rounded-l-md tabular-nums px-px max-w-[3rem] ${selectedFolder === null
-                      ? 'opacity-100 z-10 relative after:content-[""] after:absolute after:inset-0 after:ring-2 after:ring-inset after:ring-black/10'
-                      : 'opacity-60 hover:opacity-100'
+                      ? 'opacity-100 z-10 relative after:content-[""] after:absolute after:inset-0 after:ring-2 after:ring-inset after:ring-black/20'
+                      : 'opacity-90 hover:opacity-100'
                       } bg-white text-black text-[10px] font-bold leading-none`}
                     title={`Show All (${allPlaylistCount} playlists)`}
                   >
@@ -302,9 +267,9 @@ const PlaylistBar = ({
                     }}
                     onMouseEnter={() => setHoveredFolder('unsorted')}
                     onMouseLeave={() => setHoveredFolder(undefined)}
-                    className={`h-full min-w-[2.25rem] flex-1 flex items-center justify-center transition-all tabular-nums px-px max-w-[3rem] ${selectedFolder === 'unsorted'
-                      ? 'opacity-100 z-10 relative after:content-[""] after:absolute after:inset-0 after:ring-2 after:ring-inset after:ring-white/30'
-                      : 'opacity-60 hover:opacity-100'
+                    className={`h-full min-w-[2.25rem] flex-1 flex items-center justify-center transition-all tabular-nums px-px max-w-[3rem] relative after:content-[""] after:absolute after:inset-0 ${selectedFolder === 'unsorted'
+                      ? 'opacity-100 z-10 after:ring-2 after:ring-inset after:ring-white'
+                      : 'opacity-90 hover:opacity-100 after:ring-1 after:ring-inset after:ring-white/80'
                       } bg-black text-white text-[10px] font-bold leading-none`}
                     title={`Unsorted (${unsortedCount} playlists)`}
                   >
@@ -330,14 +295,14 @@ const PlaylistBar = ({
                         onMouseEnter={() => setHoveredFolder(color.id)}
                         onMouseLeave={() => setHoveredFolder(undefined)}
                         className={`h-full flex-1 min-w-0 flex items-center justify-center transition-all tabular-nums px-0.5 ${isSelected
-                          ? 'opacity-100 z-10 relative after:content-[""] after:absolute after:inset-0 after:ring-2 after:ring-inset after:ring-white/50'
-                          : 'opacity-60 hover:opacity-100'
+                          ? 'opacity-100 z-10 relative after:content-[""] after:absolute after:inset-0 after:ring-2 after:ring-inset after:ring-white'
+                          : 'opacity-90 hover:opacity-100'
                           } ${isLast ? 'rounded-r-md' : ''}`}
                         style={{ backgroundColor: color.hex }}
                         title={`${label} (${count})`}
                       >
                         {count > 0 && (
-                          <span className="text-[10px] font-bold text-white/90 drop-shadow-md truncate max-w-full">
+                          <span className="text-[10px] font-bold text-white drop-shadow-md truncate max-w-full">
                             {count}
                           </span>
                         )}

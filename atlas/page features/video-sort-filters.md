@@ -6,15 +6,15 @@ This document describes the **Videos page sticky toolbar**: the icon-based sort/
 
 ## 1. Overview
 
-**Location**: The sticky toolbar sits at the top of the Videos page content area (`VideosPage.jsx`). When the user scrolls down, the bar sticks to the top of the viewport (sticky positioning) and gains a stronger backdrop/blur for visibility.
+**Location**: The sticky toolbar sits at the top of the Videos page content area (`VideosPage.jsx`). The bar is permanently solid black (`#000000`) and sticks cleanly to the top of the viewport when scrolling down.
 
 **Layout (left to right)**:
 
-1. **Sort & rating filters** – `VideoSortFilters.jsx`: two toolbar buttons (Home, Funnel). Funnel dropdown contains sort options and rating filter.
+1. **Sort & rating filters** – `VideoSortFilters.jsx`: toolbar buttons (Home, Funnel). Funnel dropdown contains sort options and heart rating filter.
 2. **Action buttons** – Add (uploader), Refresh (subscriptions; right-click = manage modal), Bulk tag (right-click = Auto-Tag). Same row, right of the filter; driven by `layoutStore`; VideosPage opens modals/refresh and clears one-shot flags.
-3. **Full Bar Glow Context** – The row features a dynamically colored background layer that provides a **full-bar glow** effect. This glow updates based on the selected folder (All = white, Unsorted = black, colors = respective hex).
-4. **Folder prism** – Inline in `VideosPage.jsx`: a colored segment bar (All, Unsorted, 16 folder colors) that fills the remaining width. **Right-click** anywhere on the prism opens a context menu. This menu allows toggling between populated-only and all-segments mode, as well as an option to rename the specific colored folder (or the main playlist if clicking the All/Unsorted segments).
-5. **Right side** – Back (when history or preview) and Close (fullscreen). These elements are lifted to `z-20` to remain on top of the background glow. **TopNavigation** no longer shows Add, Subscriptions, Bulk tag, Back, or Close when on Videos page.
+3. **Pagination Controls** – Located next to the action buttons when multiple pages exist (chevrons and current page indicator).
+4. **Folder prism** – Inline in `VideosPage.jsx`: a colored segment bar (All, Unsorted, 16 folder colors) that fills the remaining width. **Right-click** anywhere on the prism opens a context menu to toggle between populated-only and all-segments mode, as well as an option to rename the specific colored folder (or the main playlist if clicking All/Unsorted).
+5. **Right side** – Back (when history or preview) and Close (fullscreen). **TopNavigation** is hidden on the Videos page, allowing the toolbar to sit cleanly at the top.
 
 **State ownership**: Sort mode, sort direction, selected ratings, and prism mode are local state in `VideosPage.jsx`. Folder selection is in `folderStore`; folder counts and segment data are derived in `VideosPage` from `videoFolderAssignments` and `activePlaylistItems`.
 
@@ -45,16 +45,16 @@ Icon-based sort and rating filter bar. **Home** and **Funnel** use Lucide icons;
 | `setSortDirection` | `function` | Setter for direction. |
 | `selectedRatings`  | `number[]` | Array of selected rating values (1–5). Empty = no rating filter. |
 | `onToggleRating`   | `function` | `(rating: number) => void`. Toggle that rating in/out of `selectedRatings`. |
-| `isLight`          | `boolean`  | Optional, default `true`. When `true`, bar uses light theme (white/gray buttons, black borders). When `false`, uses dark theme (white-on-dark) for Unsorted/folder context. |
+| `isLight`          | `boolean`  | Optional, default `false`. Inherited theme flag. |
 | `className`        | `string`   | Optional. Applied to the root flex container. |
 
 ### 2.3 Styling and UX Details
 
-- **Full Bar Glow**: The toolbar features an absolute background layer (z-0) with dual blur passes (20px @ 70% opacity and 10px @ 85% opacity) that spans the entire width of the sticky bar. This background color reflects the current view context (All: bright white, Unsorted: black, Folders: folder hex color).
-- **Buttons**: Rounded, border-2, padding; active = filled (black in light theme, white in dark); inactive = translucent with hover darkening. Actions are defined using the `ICON_WHITE_OUTLINE` style. They are permanently visible on the left side of the bar.
-- **Funnel dropdown**: Opens below the funnel button; left-aligned. Contains (1) five sort rows (Date, Added to App, Progress, Last viewed, Watch Count), each with icon + label; active row shows direction arrow (↑ asc, ↓ desc); clicking a row selects that sort (desc) or cycles direction if already selected. (2) **Rating filter** section with a label and a horizontal row of five drumstick buttons (1–5); multi-select toggles; selected state = full opacity + scale. Dropdown uses same light/dark styling; closes on outside mousedown.
-- ~~**Title Behavior**~~: The contextual text titles that used to hover over the glowing background have been completely removed per user request.
-- ~~**Drumstick strip**~~: Rating filter is now inside the funnel dropdown as a horizontal row (see above).
+- **Solid Black Backdrop**: The toolbar sits on a permanent solid black (`#000000`) background without any atmospheric or bar-spanning glow, unifying with the dark mode aesthetic.
+- **Buttons**: Actions use the `ICON_WHITE_OUTLINE` style (pure white icon with multi-directional black shadow outline) for crisp visibility directly on top of the black surface.
+- **Funnel Dropdown**: Opens below the funnel button in a dark floating popover (`bg-black/95 border border-white/20 text-white shadow-2xl rounded-lg`). Contains:
+  1. Five sort options (Date, Added to App, Progress, Last viewed, Watch Count), each with icon + label; active row shows direction arrow (↑ asc, ↓ desc); clicking a row selects that sort (desc) or cycles direction if already selected.
+  2. **Rating filter** section with a label and horizontal row of 0 (unrated) + 1–5 heart buttons; selected state highlights hearts with interactive preview. Dropdown closes on outside mousedown.
 
 ---
 
@@ -82,11 +82,10 @@ The **folder prism** is implemented inside `VideosPage.jsx`, not in `VideoSortFi
 
 ### 3.2 Segment Types and Appearance
 
-- **All** (`selectedFolder === null`): White background, black text; shows total count (videos + assigned orbs + assigned banners). **Triggers full-bar white glow.**
-- **Unsorted** (`selectedFolder === 'unsorted'`): Black background, white text; shows count of videos with no folder assignment. **Triggers full-bar black glow.** The main display title remains the playlist name (without suffix).
-- **Color segments**: Background from `FOLDER_COLORS[].hex`; text white with drop-shadow; shows count when visible (in “all segments” mode, count only shown when &gt; 0). **Triggers full-bar hex color glow.**
-
-Selected segment is emphasized with a ring (inset ring-2); All uses `after:ring-black/10`, Unsorted `after:ring-white/30`, colors `after:ring-white/50`. Segments sit on top of the bar's full-width background glow.
+- **All** (`selectedFolder === null`): White background, black text; shows total count (videos + assigned orbs + assigned banners). Selected state uses `after:ring-2 after:ring-inset after:ring-black/20`.
+- **Unsorted** (`selectedFolder === 'unsorted'`): Black background, white text; shows count of videos with no folder assignment. **Permanently outlined with an inset white ring** (`after:ring-1 after:ring-inset after:ring-white/80` when unselected, `after:ring-2 after:ring-inset after:ring-white` when selected) so it never merges into the black background.
+- **Color segments**: Background from `FOLDER_COLORS[].hex`; text white with drop-shadow; shows count when visible (in “all segments” mode, count only shown when &gt; 0). Sit at `opacity-90` (hovering to `opacity-100`) to preserve rich color saturation on black.
+- **Selected segment**: Emphasized with a bold 2px solid white inset ring (`after:ring-2 after:ring-inset after:ring-white`) for colored and unsorted segments. All uses `after:ring-black/20`. No bar-spanning glow is rendered.
 
 ### 3.3 Data and State (VideosPage)
 
@@ -147,26 +146,9 @@ Progress, last-viewed, and watch count data come from `getAllVideoProgress` / `g
 
 - **VideoSortFilters**: A unified toolbar cluster containing:
   - **Home** (default order)
-  - **Funnel** (dropdown): sort options (Date, Added to App, Progress, Last viewed, Watch Count; select or cycle asc/desc) and horizontal **Rating filter** row (1–5 drumsticks).
-  - **Plus / Actions** (dropdown): Consolidated Add (uploader), Refresh (subscriptions), and Bulk tag functionalities.
+  - **Funnel** (dropdown): sort options (Date, Added to App, Progress, Last viewed, Watch Count; select or cycle asc/desc) and horizontal **Rating filter** row (0 unrated + 1–5 hearts).
+  - **Actions**: Add (uploader), Refresh (subscriptions), and Bulk tag functionalities.
   - **Pagination**: Left and Right chevron buttons flanking the current page number.
-- **Full Bar Glow**: The toolbar background features an absolute dual-blur layer that provides a full-width background glow based on the active folder context (White for All, Black for Unsorted, Hex for folders).
-- **Styling**: The buttons employ a floating `ICON_WHITE_OUTLINE` style (white fill with solid black drop-shadow) without boxy backgrounds. The sticky toolbar uses a base color of `#cde5fa` but is dynamically overlaid by the folder glow layer.
-- **Folder prism**: Colored segment bar (All, Unsorted, 16 colors) in the same row. **Right-click on the prism** opens a context menu that contains options to rename the right-clicked segment (or playlist) and to toggle between populated-only (only segments with ≥1 item, equal width) and all segments display modes.
-- State for sort, direction, ratings, pagination, and prism mode lives in `VideosPage`; folder selection in `folderStore`. Sorting and rating filtering are applied in `VideosPage` after folder filtering; pagination and scroll position (reset to top) are reset when any of these change.
-
----
-
-## 8. Change log
-
-- **VideoSortFilters consolidation**: Calendar (sort by date), ListPlus (added to app), Bar chart (sort by progress), Clock (sort by last viewed), and Eye (watch count) were consolidated into a single **Funnel** icon button; click opens a dropdown with those five sort options (each select or cycle asc/desc). **Drumstick** rating filter was moved into the same funnel dropdown as a horizontal row (1–5). 
-- **Action Button Consolidation**: Add Videos, Subscriptions, and Bulk Tag tools were wrapped into a single **Plus** button dropdown within `VideoSortFilters` mirroring the Funnel structure.
-- **Pagination Addition**: Simple `ChevronLeft` and `ChevronRight` page navigation buttons and a page number indicator were appended immediately following the Plus dropdown natively inside `VideoSortFilters`, accepting `currentPage` and `totalPages` props.
-- **Aesthetic Refinements**: `VideoSortFilters` buttons alongside the Go Back and Close buttons stripped out backdrop boundaries, strictly employing white icons cleanly outlined with a thick black drop-shadow (`ICON_WHITE_OUTLINE`).
-- **Full Bar Glow**: Replaced localized title-circle glows with a background layer spanning the entire toolbar width, using dual-blur passes for a premium atmospheric effect (White/Black/Color).
-- **Title Text Removal**: The contextual text titles (Playlist names, Folder names) that previously hovered over the glowing background on the sticky toolbars have been completely removed. This cleans up the UI and makes the filter/sort action icons permanently visible on the left side of the bar without requiring mouse hover.
-- **Unsorted Display**: Refined display logic so that the "Unsorted" folder state on the Videos page no longer appends a suffix to the playlist name, keeping the title clean over a black background glow.
-- **Sticky toolbar backdrop**: The shifting transparency and `backdrop-blur` UI effect on scrolling was flattened into a solid backdrop color matching the native app theme, now overlaid by the dynamic glow layer.
-- **Folder prism**: The separate arrow button to the right of the prism was removed. **Right-click** anywhere on the prism opens a context menu. We added the options to rename folders/playlists and toggle between populated-only (only segments with ≥1 item, equal width) and all segments. Tooltip on the prism reflects that a context menu is available.
-- **Sticky toolbar setup**: Container uses `overflow-visible` so the funnel and actions dropdowns are not clipped; dropdowns and prisms use `z-20` or higher to sit on top of the glow.
-- **Watch Count Sorting** (2026-06-15): Introduced the `watchCount` sort option as a new metric. It sorts videos by their lifetime play count (recorded whenever a video starts playing in the app). Available through the Funnel dropdown with ascending and descending toggle support.
+- **Styling**: Permanently solid black (`#000000`) background across both stuck and unstuck states with no atmospheric glow. The buttons employ floating `ICON_WHITE_OUTLINE` style (white fill with solid black drop-shadow) without boxy backgrounds. Dropdowns use dark popover styling (`bg-black/95 border border-white/20 text-white`).
+- **Folder prism**: Colored segment bar (All, Unsorted, 16 colors) in the same row. Unsorted has a permanent inset white outline to prevent merging into the black backdrop. Colored segments maintain high color vibrancy (`opacity-90` unselected, `opacity-100` with 2px white outline when selected). **Right-click on the prism** opens a context menu to rename the segment and toggle between populated-only and all-segments display modes.
+- **State**: Sort, direction, ratings, pagination, and prism mode live in `VideosPage`; folder selection in `folderStore`. Sorting and rating filtering are applied in `VideosPage` after folder filtering; pagination and scroll position (reset to top) reset when any of these change.

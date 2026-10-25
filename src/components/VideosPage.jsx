@@ -1781,7 +1781,7 @@ const VideosPage = ({ onVideoSelect, onSecondPlayerSelect }) => {
 
           {/* Sticky Toolbar */}
           <div
-            className={`sticky top-0 z-40 transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) overflow-visible bg-[#cde5fa]
+            className={`sticky top-0 z-40 transition-all duration-500 cubic-bezier(0.4, 0, 0.2, 1) overflow-visible bg-black
             ${isStuck
                 ? 'pt-2 pb-2'
                 : 'mb-4 mt-0 pt-1 pb-0'
@@ -1802,7 +1802,7 @@ const VideosPage = ({ onVideoSelect, onSecondPlayerSelect }) => {
                 setSortDirection={setSortDirection}
                 selectedRatings={selectedRatings}
                 onToggleRating={handleToggleRating}
-                isLight={selectedFolder === null}
+                isLight={false}
                 className="shrink-0 mr-2"
                 onAddClick={() => setShowVideosUploader(true)}
                 onRefreshClick={() => setShowSubscriptionManager(true)}
@@ -1838,9 +1838,10 @@ const VideosPage = ({ onVideoSelect, onSecondPlayerSelect }) => {
                       const isSelected = selectedFolder === seg.id;
                       const isAll = seg.type === 'all';
                       const isUnsorted = seg.type === 'unsorted';
-                      const ringClass = isSelected
-                        ? (isAll ? 'after:ring-black/10' : isUnsorted ? 'after:ring-white/30' : 'after:ring-white/50')
-                        : '';
+                      const outlineClass = isSelected
+                        ? (isAll ? 'after:ring-2 after:ring-inset after:ring-black/20' : 'after:ring-2 after:ring-inset after:ring-white')
+                        : (isUnsorted ? 'after:ring-1 after:ring-inset after:ring-white/80' : '');
+                      const hasAfter = isSelected || isUnsorted;
                       const bg = isAll ? 'bg-white text-black' : isUnsorted ? 'bg-black text-white' : '';
                       return (
                         <PrismButton
@@ -1850,13 +1851,13 @@ const VideosPage = ({ onVideoSelect, onSecondPlayerSelect }) => {
                           onMouseEnter={() => setHoveredFolder(seg.id)}
                           onMouseLeave={() => setHoveredFolder(undefined)}
                           className={`h-full flex-1 min-w-0 flex items-center justify-center transition-all tabular-nums px-0.5 text-[10px] font-bold leading-none ${isSelected
-                            ? `opacity-100 z-10 relative after:content-[""] after:absolute after:inset-0 after:ring-2 after:ring-inset ${ringClass}`
-                            : 'opacity-60 hover:opacity-100'
-                            } ${isFirst ? 'rounded-l-md' : ''} ${isLast ? 'rounded-r-md' : ''} ${bg}`}
+                            ? 'opacity-100 z-10'
+                            : 'opacity-90 hover:opacity-100'
+                            } ${hasAfter ? 'relative after:content-[""] after:absolute after:inset-0 ' + outlineClass : ''} ${isFirst ? 'rounded-l-md' : ''} ${isLast ? 'rounded-r-md' : ''} ${bg}`}
                           style={seg.hex ? { backgroundColor: seg.hex } : undefined}
                           title={isAll ? `Show All (${seg.count})` : isUnsorted ? `Unsorted (${seg.count})` : `${allFolderMetadata[seg.id]?.name || seg.label} (${seg.count})`}
                         >
-                          <span className={seg.hex ? 'text-white/90 drop-shadow-md' : ''}>{seg.count}</span>
+                          <span className={seg.hex ? 'text-white drop-shadow-md' : ''}>{seg.count}</span>
                         </PrismButton>
                       );
                     })
@@ -1869,8 +1870,8 @@ const VideosPage = ({ onVideoSelect, onSecondPlayerSelect }) => {
                         onMouseEnter={() => setHoveredFolder(null)}
                         onMouseLeave={() => setHoveredFolder(undefined)}
                         className={`h-full min-w-[2.25rem] flex-1 flex items-center justify-center transition-all rounded-l-md tabular-nums px-px max-w-[3rem] ${selectedFolder === null
-                          ? 'opacity-100 z-10 relative after:content-[""] after:absolute after:inset-0 after:ring-2 after:ring-inset after:ring-black/10'
-                          : 'opacity-60 hover:opacity-100'
+                          ? 'opacity-100 z-10 relative after:content-[""] after:absolute after:inset-0 after:ring-2 after:ring-inset after:ring-black/20'
+                          : 'opacity-90 hover:opacity-100'
                           } bg-white text-black text-[10px] font-bold leading-none`}
                         title={`Show All (${allCount} items)`}
                       >
@@ -1882,9 +1883,9 @@ const VideosPage = ({ onVideoSelect, onSecondPlayerSelect }) => {
                         onLongPress={(e) => handlePrismContextMenu(e, 'unsorted', "Unsorted")}
                         onMouseEnter={() => setHoveredFolder('unsorted')}
                         onMouseLeave={() => setHoveredFolder(undefined)}
-                        className={`h-full min-w-[2.25rem] flex-1 flex items-center justify-center transition-all tabular-nums px-px max-w-[3rem] ${selectedFolder === 'unsorted'
-                          ? 'opacity-100 z-10 relative after:content-[""] after:absolute after:inset-0 after:ring-2 after:ring-inset after:ring-white/30'
-                          : 'opacity-60 hover:opacity-100'
+                        className={`h-full min-w-[2.25rem] flex-1 flex items-center justify-center transition-all tabular-nums px-px max-w-[3rem] relative after:content-[""] after:absolute after:inset-0 ${selectedFolder === 'unsorted'
+                          ? 'opacity-100 z-10 after:ring-2 after:ring-inset after:ring-white'
+                          : 'opacity-90 hover:opacity-100 after:ring-1 after:ring-inset after:ring-white/80'
                           } bg-black text-white text-[10px] font-bold leading-none`}
                         title={`Unsorted (${unsortedCount} items)`}
                       >
@@ -1903,14 +1904,14 @@ const VideosPage = ({ onVideoSelect, onSecondPlayerSelect }) => {
                             onMouseEnter={() => setHoveredFolder(color.id)}
                             onMouseLeave={() => setHoveredFolder(undefined)}
                             className={`h-full flex-1 min-w-0 flex items-center justify-center transition-all tabular-nums px-0.5 ${isSelected
-                              ? 'opacity-100 z-10 relative after:content-[""] after:absolute after:inset-0 after:ring-2 after:ring-inset after:ring-white/50'
-                              : 'opacity-60 hover:opacity-100'
+                              ? 'opacity-100 z-10 relative after:content-[""] after:absolute after:inset-0 after:ring-2 after:ring-inset after:ring-white'
+                              : 'opacity-90 hover:opacity-100'
                               } ${isLast ? 'rounded-r-md' : ''}`}
                             style={{ backgroundColor: color.hex }}
                             title={`${allFolderMetadata[color.id]?.name || color.name} (${count})`}
                           >
                             {count > 0 && (
-                              <span className="text-[10px] font-bold text-white/90 drop-shadow-md truncate max-w-full">
+                              <span className="text-[10px] font-bold text-white drop-shadow-md truncate max-w-full">
                                 {count}
                               </span>
                             )}

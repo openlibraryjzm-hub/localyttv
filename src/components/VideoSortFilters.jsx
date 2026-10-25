@@ -24,12 +24,6 @@ const FilterButton = ({
     </button>
   );
 };
-import { useNavigationStore } from '../store/navigationStore';
-import { usePlaylistStore } from '../store/playlistStore';
-import { useFolderStore } from '../store/folderStore';
-import { usePlaylistGroupStore } from '../store/playlistGroupStore';
-import { FOLDER_COLORS } from '../utils/folderColors';
-
 const SORT_OPTIONS = [
   { mode: 'shuffle', label: 'Default / Shuffle', Icon: Home },
   { mode: 'chronological', label: 'Sort by date', Icon: CalendarDays },
@@ -39,12 +33,6 @@ const SORT_OPTIONS = [
   { mode: 'watchCount', label: 'Watch Count', Icon: Eye },
 ];
 
-/**
- * Icon-based sort and rating filter bar for the Videos page sticky toolbar.
- * - Home = default (shuffle)
- * - Funnel = dropdown with Date, Progress, Last viewed + horizontal rating filter (1–5)
- * - Plus = dropdown with Add, Refresh, Bulk Tag actions
- */
 const VideoSortFilters = ({
   sortBy,
   setSortBy,
@@ -52,7 +40,7 @@ const VideoSortFilters = ({
   setSortDirection,
   selectedRatings,
   onToggleRating,
-  isLight = true, // true when All selected (white bar), false when Unsorted/folder (colored bar)
+  isLight = false,
   className = '',
   onAddClick,
   onRefreshClick,
@@ -66,45 +54,8 @@ const VideoSortFilters = ({
   onNextPage,
 }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [actionDropdownOpen, setActionDropdownOpen] = useState(false);
   const [hoverRatingFilter, setHoverRatingFilter] = useState(0);
   const dropdownRef = useRef(null);
-  const actionDropdownRef = useRef(null);
-
-  const { currentPage: navCurrentPage } = useNavigationStore();
-  const getGroupByColorId = usePlaylistGroupStore((s) => s.getGroupByColorId);
-  const { previewPlaylistId, currentPlaylistId, currentPlaylistTitle, allPlaylists } = usePlaylistStore();
-  const { selectedFolder, hoveredFolder, allFolderMetadata } = useFolderStore();
-
-  const activePlaylistId = previewPlaylistId || currentPlaylistId;
-  const activePlaylist = allPlaylists.find(p => p.id === activePlaylistId);
-  const isPlaylistsPage = navCurrentPage === 'playlists';
-
-    // No longer displaying text/titles per user request
-
-  let bannerHex = '#ffffff';
-  let isUnsorted = false;
-  let isColoredFolder = false;
-
-  const effectiveFolder = hoveredFolder !== undefined ? hoveredFolder : selectedFolder;
-
-  if (effectiveFolder !== null && effectiveFolder !== undefined) {
-    isColoredFolder = true;
-    if (effectiveFolder === 'unsorted') {
-      // Don't append " - Unsorted", just keep the playlist name
-      bannerHex = '#000000';
-      isUnsorted = true;
-    } else {
-      const color = FOLDER_COLORS.find(c => c.id === effectiveFolder);
-      if (color) {
-        bannerHex = color.hex;
-      }
-    }
-  } else if (activePlaylist) {
-    bannerHex = '#ffffff';
-  }
-
-  const isDropdownActive = dropdownOpen || actionDropdownOpen;
 
   const cycleDirection = () => setSortDirection(d => (d === 'asc' ? 'desc' : 'asc'));
   const isShuffleActive = sortBy === 'shuffle';
@@ -139,36 +90,21 @@ const VideoSortFilters = ({
     }
   };
 
-  // Close dropdowns when clicking outside
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setDropdownOpen(false);
       }
-      if (actionDropdownRef.current && !actionDropdownRef.current.contains(e.target)) {
-        setActionDropdownOpen(false);
-      }
     };
-    if (dropdownOpen || actionDropdownOpen) {
+    if (dropdownOpen) {
       document.addEventListener('mousedown', handleClickOutside);
     }
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [dropdownOpen, actionDropdownOpen]);
+  }, [dropdownOpen]);
 
   return (
     <div className={`flex items-center gap-1 ${className}`}>
-
-      {/* Full Bar Glow */}
-      <div className={`absolute -inset-x-4 inset-y-0 z-0 pointer-events-none transition-opacity duration-300 ${isDropdownActive ? 'opacity-0' : 'opacity-100'}`}>
-        <div
-          className="absolute inset-0 pointer-events-none blur-[20px] opacity-70 transition-colors duration-300"
-          style={{ backgroundColor: bannerHex }}
-        />
-        <div
-          className="absolute inset-0 pointer-events-none blur-[10px] opacity-85 transition-colors duration-300"
-          style={{ backgroundColor: bannerHex }}
-        />
-      </div>
 
       {/* Title + Buttons Wrapper */}
       <div className={`relative flex items-center min-h-[32px] pl-1 pr-1 w-full`}>
@@ -179,7 +115,7 @@ const VideoSortFilters = ({
           <div className="relative shrink-0" ref={dropdownRef}>
             <button
               type="button"
-              onClick={() => { setDropdownOpen((o) => !o); setActionDropdownOpen(false); }}
+              onClick={() => { setDropdownOpen((o) => !o); }}
               className={`${btnBase} ${isFunnelActive ? btnActive : btnInactive}`}
               style={ICON_WHITE_OUTLINE}
               title="Sort & rating filter"
@@ -188,8 +124,7 @@ const VideoSortFilters = ({
             </button>
             {dropdownOpen && (
               <div
-                className={`absolute left-0 top-full pt-2 z-50 min-w-[200px] rounded-lg border-2 shadow-lg py-1 ${isLight ? 'bg-white border-black/20' : 'bg-slate-800 border-white/20'
-                  }`}
+                className="absolute left-0 top-full pt-2 z-50 min-w-[200px] rounded-lg border border-white/20 shadow-2xl py-1 bg-black/95 text-white"
               >
                 {SORT_OPTIONS.map(({ mode, label, Icon }) => {
                   const active = sortBy === mode;
@@ -199,12 +134,8 @@ const VideoSortFilters = ({
                       type="button"
                       onClick={() => { handleSortOptionClick(mode); }}
                       className={`w-full flex items-center justify-between gap-2 px-3 py-2 text-left text-sm rounded-md transition-colors ${active
-                        ? isLight
-                          ? 'bg-black/10 font-medium'
-                          : 'bg-white/10 font-medium'
-                        : isLight
-                          ? 'hover:bg-gray-100 text-black/80'
-                          : 'hover:bg-white/10 text-white/80'
+                        ? 'bg-white/10 font-medium text-white'
+                        : 'hover:bg-white/10 text-white/80'
                         }`}
                       title={active ? 'Click to cycle direction' : label}
                     >
@@ -217,10 +148,8 @@ const VideoSortFilters = ({
                   );
                 })}
 
-
-
                 {/* Rating filter: horizontal row of 0 (None/Unrated) + 1–5 hearts */}
-                <div className={`px-3 py-2 border-t ${isLight ? 'border-black/10' : 'border-white/10'}`}>
+                <div className="px-3 py-2 border-t border-white/10">
                   <div className="flex items-center justify-between text-xs font-medium mb-1.5 opacity-70">
                     <span>Rating filter</span>
                     {selectedRatings.length > 0 && (
@@ -254,9 +183,7 @@ const VideoSortFilters = ({
                                 ? 'bg-rose-500 text-white border-rose-600 shadow-sm opacity-100 scale-105'
                                 : isHovered
                                   ? 'bg-rose-500/20 text-rose-500 border-rose-500/40 opacity-90'
-                                  : isLight
-                                    ? 'bg-black/5 text-slate-700 border-black/15 opacity-70 hover:opacity-100'
-                                    : 'bg-white/10 text-slate-200 border-white/20 opacity-70 hover:opacity-100'
+                                  : 'bg-white/10 text-slate-200 border-white/20 opacity-70 hover:opacity-100'
                             }`}
                             title={isActive ? 'Clear unrated filter' : 'Filter for videos with No Rating (0 hearts)'}
                           >
@@ -282,9 +209,7 @@ const VideoSortFilters = ({
                             className={`transition-colors duration-150 ${
                               isFilled
                                 ? 'text-rose-500 fill-rose-500 opacity-100'
-                                : isLight
-                                  ? 'text-gray-400 fill-transparent opacity-40 hover:opacity-70'
-                                  : 'text-white/40 fill-transparent opacity-40 hover:opacity-70'
+                                : 'text-white/40 fill-transparent opacity-40 hover:opacity-70'
                             }`}
                           />
                         </button>

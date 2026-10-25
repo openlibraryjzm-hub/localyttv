@@ -2,7 +2,7 @@
 
 The UI system provides a consistent layout shell with a side menu that displays different pages based on navigation state. The system uses a reusable Card component architecture for displaying playlists, videos, and history items in a grid layout.
 
-**Theme**: The application uses a light sky blue background (`#e0f2fe`) with dark blue text (`#052F4A` / RGB(5, 47, 74)) for side menu content. Navigation buttons (TopNavigation, TabBar) remain white for contrast. See `THEME_CHANGES.md` in project root for detailed theme documentation.
+**Theme**: The application uses a high-performance, minimalist pure black (`#000000`) dark mode aesthetic with crisp white typography and iconography (`#ffffff`) floating cleanly over the black surface. Static dividers and persistent borders are purged to merge surfaces seamlessly into `#000000`.
 
 **Related Documentation:**
 - **Navigation**: See `navigation-routing.md` for page routing flows and navigation state management

@@ -121,6 +121,17 @@ flowchart TD
   - Removed the atmospheric blurred banner background layers (`filter: blur(36px)` / `backgroundImage: url(${bannerImage})`).
   - Converted page root containers from `bg-slate-950` to solid `bg-black`.
 
+### 3.6 Sticky Toolbars & Prism Refactor (Playlists & Videos Pages)
+- **`src/components/PlaylistBar.jsx` & `src/components/VideosPage.jsx`**:
+  - Removed full-width colored glow background effect (`blur-[20px]` / `blur-[10px]` with `bannerHex`).
+  - Converted sticky toolbar containers to solid black (`bg-black`) permanently across both stuck and unstuck states (replacing `bg-[#cde5fa]` and `bg-slate-900/70`).
+  - **Prism Segment Vibrancy**: Boosted unselected segment opacity from `opacity-60` to `opacity-90` (hovering to `opacity-100`) so colors remain vivid and bright against the pure black backdrop.
+  - **Black Folder (Unsorted) Permanent White Outline**: Granted the Unsorted folder a permanent inset white outline (`after:ring-1 after:ring-inset after:ring-white/80` when unselected, `after:ring-2 after:ring-white` when selected) so it never merges into the black background.
+  - **Selected Segment Outline**: Highlighted active colored segments with a pure, solid white 2px outline (`after:ring-2 after:ring-inset after:ring-white`).
+- **`src/components/VideoSortFilters.jsx` & `PlaylistSortFilters.jsx`**:
+  - Stripped bar-spanning glow layer and unused `bannerHex` computations.
+  - Dropdowns converted to pure dark mode floating popovers (`bg-black/95 border border-white/20 text-white`).
+
 ---
 
 ## 4. Verification & Testing

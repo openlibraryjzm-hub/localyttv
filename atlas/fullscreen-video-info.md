@@ -25,8 +25,8 @@ The Fullscreen Video Info panel is a dedicated component that appears in the rig
 +-------------------------------------------------------+
 ```
 
-### 1. Solid Pure Black Canvas
-- **Pure Black Canvas**: Hardcoded `#000000` (`bg-black`) container with zero background blur, glassmorphism, or glow effects.
+### 1. Minimalist Duo-Tone Canvas
+- **Theme Canvas Integration**: Dynamic `var(--theme-bg)` container matching the active 2-color duo-tone theme (OLED Black `#000000` or Sky Blue `#e0f2fe`) with zero background blur, glassmorphism, or glow overhead.
 - **Eliminated Atmospheric Banner Overhead**: Shed legacy blurred banner backdrop calculations and layers for maximum performance.
 
 ---
@@ -34,14 +34,14 @@ The Fullscreen Video Info panel is a dedicated component that appears in the rig
 ### 2. Layout Sections (Top to Bottom)
 
 - **Hero Video Metadata Card**:
-  - Borderless and shadowless container (`border-0 shadow-none bg-black text-white p-3 rounded-2xl`).
+  - Borderless and shadowless container (`border-0 shadow-none p-3 rounded-2xl` matching `var(--theme-bg)` and `var(--theme-fg)`).
   - Outer margin aligns pixel-perfectly with the main thumbnail via consistent 10px (`px-2.5`) outer container padding.
   - **Row 1 (Centered Hero Uploader & Subtle YouTube Link)**:
-    - **Center**: Centered circular author avatar (48px, borderless) alongside channel uploader name in prominent hero font (**`text-lg font-black text-white`**).
-    - **Right Edge**: Subtle, low-profile YouTube icon button (`ExternalLink` icon button, `border-transparent hover:border-white/20 bg-zinc-900/60 hover:bg-zinc-800`).
+    - **Center**: Centered circular author avatar (48px, borderless) alongside channel uploader name in prominent hero font (**`text-lg font-black` in `var(--theme-fg)`**).
+    - **Right Edge**: Subtle, low-profile YouTube icon button (`ExternalLink` icon button, `border-transparent hover:border-[var(--theme-hover-border)] bg-[var(--theme-hover-bg)]`).
   - **Row 2 (Dedicated Prominent Full-Width Metadata Bar)**:
-    - **Center**: Full-width dedicated row displaying View Count & Upload Date in crisp white typography (**`text-[15px] font-black text-white`**, e.g. `1,234,567 views  •  October 10, 2026`).
-    - The legacy horizontal divider line between Row 1 and Row 2 was removed, letting the metadata breathe naturally over black.
+    - **Center**: Full-width dedicated row displaying View Count & Upload Date in crisp typography (**`text-[15px] font-black` in `var(--theme-fg)`**, e.g. `1,234,567 views  •  October 10, 2026`).
+    - The legacy horizontal divider line between Row 1 and Row 2 was removed, letting the metadata breathe naturally over canvas.
 - **Main Video Thumbnail (Hover Controls & Context Menu)**: 
   - 16:9 aspect ratio thumbnail positioned directly underneath the Hero Video Metadata Card with clean borderless framing (`border-0 shadow-none rounded-xl`).
   - **Right-Click Context Menu**: Right-clicking the main thumbnail opens `VideoCardThreeDotMenu` for the currently playing video at the cursor's exact coordinates (`cursor-context-menu`), giving instant access to pin toggles, drumstick 1–5 rating, colored folder assignments, and deletion.

@@ -13,7 +13,7 @@ import { useInspectLabel } from '../utils/inspectLabels';
 import { getAllPlaylists, getPlaylistItems, getAllFoldersWithVideos, getVideosInFolder, getAllStuckFolders, assignVideoToFolder, unassignVideoFromFolder, getVideoFolderAssignments, createPlaylist, addVideoToPlaylist, removeVideoFromPlaylist, getFolderMetadata, getWatchHistory } from '../api/playlistApi';
 import { getThumbnailUrl, extractVideoId, fetchVideoMetadata } from '../utils/youtubeUtils';
 import { getFolderColorById, FOLDER_COLORS } from '../utils/folderColors';
-import { THEMES } from '../utils/themes';
+import { THEMES, getGradientTitleStyle } from '../utils/themes';
 import AudioVisualizer from './AudioVisualizer';
 import useLongPress from '../hooks/useLongPress';
 import { invoke, listen } from '../api/platformBridge';
@@ -97,12 +97,12 @@ const COLORS = FOLDER_COLORS.map(color => ({
 // White icon with clean styling
 const ICON_WHITE_OUTLINE = {
   display: 'inline-flex',
-  color: '#ffffff'
+  color: 'var(--theme-fg, #ffffff)'
 };
 
 // Badge text: solid white
 const BADGE_TEXT_STYLE = {
-  color: '#ffffff',
+  color: 'var(--theme-fg, #ffffff)',
   fontWeight: 900
 };
 
@@ -111,6 +111,7 @@ export default function PlayerControllerPlaylistMenu(props) {
     quickAssignSlots,
     visualizerColor = '#ffffff',
     setVisualizerColor,
+    appTheme = 'black',
     fullscreenBanner,
     bannerPreviewMode,
     bannerNavBannerId,
@@ -221,11 +222,13 @@ export default function PlayerControllerPlaylistMenu(props) {
               handleShufflePlaylist();
             }}
           >
-            <h1 ref={playlistTitleRef} className="font-black text-center leading-tight line-clamp-3 tracking-tight transition-all pb-1 cursor-pointer hover:opacity-90 select-none text-white" style={{
+            <h1 ref={playlistTitleRef} className="controller-title font-black text-center leading-tight line-clamp-3 tracking-tight transition-all pb-1 cursor-pointer hover:opacity-90 select-none" style={{
               fontSize: `${titleFontSize}px`,
               pointerEvents: 'none'
             }} title={getInspectTitle(`Playlist: ${playlistTitle} (Click for Playlists Grid, Right-click for Mega Shuffle)`) || `${playlistTitle} (Long-press for mega shuffle)`}>
-              {playlistTitle}
+              <span className="title-gradient-text" style={getGradientTitleStyle(visualizerColor, appTheme)}>
+                {playlistTitle}
+              </span>
             </h1>
 
             {/* Badges Container */}
@@ -265,7 +268,7 @@ export default function PlayerControllerPlaylistMenu(props) {
                 <div className="relative flex items-center justify-center -translate-x-6">
                   <button onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)} onTouchStart={() => setIsMoreMenuOpen(!isMoreMenuOpen)} className="flex items-center justify-center group/tool" title={getInspectTitle('More Options (Visualizer, Banners & Color Pickers)')}>
                     <span style={ICON_WHITE_OUTLINE}>
-                      <MoreHorizontal size={Math.round(bottomIconSize * 0.5)} color="#ffffff" strokeWidth={3} />
+                      <MoreHorizontal size={Math.round(bottomIconSize * 0.5)} color="currentColor" strokeWidth={3} />
                     </span>
                   </button>
                   {isMoreMenuOpen && <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-56 bg-black/95 border border-white/20 rounded-lg shadow-2xl overflow-hidden z-[10001] animate-in fade-in zoom-in-95 duration-100 flex flex-col p-1 text-white" style={{
@@ -409,7 +412,7 @@ export default function PlayerControllerPlaylistMenu(props) {
                     title={getInspectTitle('Watch History Page (Click to open Watch History page)')}
                   >
                     <span style={ICON_WHITE_OUTLINE}>
-                      <Clock size={Math.round(bottomIconSize * 0.5)} color="#ffffff" strokeWidth={3} />
+                      <Clock size={Math.round(bottomIconSize * 0.5)} color="currentColor" strokeWidth={3} />
                     </span>
                   </button>
 
@@ -425,7 +428,7 @@ export default function PlayerControllerPlaylistMenu(props) {
               <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center z-10 w-10">
                 <button onClick={() => setIsAddMenuOpen(!isAddMenuOpen)} onTouchStart={() => setIsAddMenuOpen(!isAddMenuOpen)} className="flex items-center justify-center group/tool" title={getInspectTitle('Add to Playlist (Add link or Quick Assign)')}>
                   <span style={ICON_WHITE_OUTLINE}>
-                    <Plus size={Math.round(bottomIconSize * 0.5)} color="#ffffff" strokeWidth={3} />
+                    <Plus size={Math.round(bottomIconSize * 0.5)} color="currentColor" strokeWidth={3} />
                   </span>
                 </button>
                 {isAddMenuOpen && <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-[280px] bg-black/95 border border-white/20 rounded-lg shadow-2xl overflow-hidden z-[10001] animate-in fade-in zoom-in-95 duration-100 flex flex-col p-1 text-white" style={{
@@ -514,8 +517,8 @@ export default function PlayerControllerPlaylistMenu(props) {
                         <span style={ICON_WHITE_OUTLINE} className="flex items-center justify-center">
                           <Circle 
                             size={Math.round(bottomIconSize * 0.5)} 
-                            fill={isAll ? '#ffffff' : dotHex} 
-                            color="#ffffff" 
+                            fill={isAll ? 'currentColor' : dotHex} 
+                            color="currentColor" 
                             strokeWidth={3} 
                           />
                         </span>
@@ -534,7 +537,7 @@ export default function PlayerControllerPlaylistMenu(props) {
 
                   <button onClick={handlePlaylistsGrid} onTouchStart={handlePlaylistsGrid} className="flex items-center justify-center group/tool transition-all" title={getInspectTitle('Playlists Grid View (Browse all playlist cards)')}>
                     <span style={ICON_WHITE_OUTLINE}>
-                      <Menu size={Math.round(bottomIconSize * 0.5)} color="#ffffff" strokeWidth={3} />
+                      <Menu size={Math.round(bottomIconSize * 0.5)} color="currentColor" strokeWidth={3} />
                     </span>
                   </button>
 

@@ -2,10 +2,265 @@
 @import "tailwindcss";
 
 :root {
-  --bg-primary: #000000;
-  --bg-secondary: #0a0a0a;
-  --bg-tertiary: #141414;
-  --border-color: rgba(255, 255, 255, 0.1);
+  --theme-bg: #000000;
+  --theme-bg-gradient: #000000;
+  --theme-fg: #ffffff;
+  --theme-fg-muted: rgba(255, 255, 255, 0.6);
+  --theme-fg-subtle: rgba(255, 255, 255, 0.2);
+  --theme-hover-bg: rgba(255, 255, 255, 0.1);
+  --theme-hover-border: rgba(255, 255, 255, 0.3);
+  --bg-primary: var(--theme-bg);
+  --bg-secondary: var(--theme-bg);
+  --bg-tertiary: var(--theme-bg);
+  --border-color: var(--theme-fg-subtle);
+}
+
+[data-theme="black"] {
+  --theme-bg: #000000;
+  --theme-bg-gradient: #000000;
+  --theme-fg: #ffffff;
+  --theme-fg-muted: rgba(255, 255, 255, 0.6);
+  --theme-fg-subtle: rgba(255, 255, 255, 0.2);
+  --theme-hover-bg: rgba(255, 255, 255, 0.1);
+  --theme-hover-border: rgba(255, 255, 255, 0.3);
+  --bg-primary: var(--theme-bg);
+  --bg-secondary: var(--theme-bg);
+  --bg-tertiary: var(--theme-bg);
+  --border-color: var(--theme-fg-subtle);
+}
+
+[data-theme="sky"] {
+  --theme-bg: #bae6fd;
+  --theme-bg-gradient: linear-gradient(180deg, #7dd3fc 0%, #a5d8ff 22%, #cbe5fe 55%, #f0f7fe 100%);
+  --theme-fg: #083344;
+  --theme-fg-muted: rgba(8, 51, 68, 0.7);
+  --theme-fg-subtle: rgba(8, 51, 68, 0.2);
+  --theme-hover-bg: rgba(8, 51, 68, 0.08);
+  --theme-hover-border: rgba(8, 51, 68, 0.3);
+  --bg-primary: var(--theme-bg);
+  --bg-secondary: var(--theme-bg);
+  --bg-tertiary: var(--theme-bg);
+  --border-color: var(--theme-fg-subtle);
+}
+
+[data-theme="white"] {
+  --theme-bg: #ffffff;
+  --theme-bg-gradient: #ffffff;
+  --theme-fg: #000000;
+  --theme-fg-muted: rgba(0, 0, 0, 0.6);
+  --theme-fg-subtle: rgba(0, 0, 0, 0.15);
+  --theme-hover-bg: rgba(0, 0, 0, 0.05);
+  --theme-hover-border: rgba(0, 0, 0, 0.3);
+  --bg-primary: var(--theme-bg);
+  --bg-secondary: var(--theme-bg);
+  --bg-tertiary: var(--theme-bg);
+  --border-color: var(--theme-fg-subtle);
+}
+
+html[data-theme="white"],
+html[data-theme="white"] body,
+html[data-theme="white"] #root,
+html[data-theme="white"] .layout-shell {
+  background: #ffffff !important;
+}
+
+html[data-theme="white"] .layout-shell__top-controller,
+html[data-theme="white"] .layout-shell__bottom-panel,
+html[data-theme="white"] .layout-shell__fullscreen-video-info,
+html[data-theme="white"] .bg-black {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+}
+
+html[data-theme="white"] .text-white,
+html[data-theme="white"] .text-white\/90,
+html[data-theme="white"] .text-white\/80,
+html[data-theme="white"] h1:not(.controller-title),
+html[data-theme="white"] h2,
+html[data-theme="white"] h3 {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+  text-shadow: none !important;
+  filter: none !important;
+}
+
+html[data-theme="white"] .text-white\/70,
+html[data-theme="white"] .text-white\/60,
+html[data-theme="white"] .text-white\/50 {
+  color: rgba(0, 0, 0, 0.6) !important;
+  text-shadow: none !important;
+}
+
+html[data-theme="white"] .border-white {
+  border-color: #000000 !important;
+}
+
+html[data-theme="white"] .border-white\/10,
+html[data-theme="white"] .border-white\/20,
+html[data-theme="white"] .border-white\/30,
+html[data-theme="white"] .border-white\/40 {
+  border-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+html[data-theme="white"] .hover\:border-white\/20:hover,
+html[data-theme="white"] .hover\:border-white\/30:hover,
+html[data-theme="white"] .hover\:border-white\/50:hover {
+  border-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+html[data-theme="white"] .bg-zinc-900\/80,
+html[data-theme="white"] .bg-zinc-900\/60,
+html[data-theme="white"] .bg-zinc-900\/40,
+html[data-theme="white"] .bg-zinc-800,
+html[data-theme="white"] .bg-black\/70,
+html[data-theme="white"] .bg-black\/90,
+html[data-theme="white"] .bg-black\/95 {
+  background-color: rgba(0, 0, 0, 0.06) !important;
+  color: #000000 !important;
+}
+
+html[data-theme="white"] .hover\:bg-zinc-900\/60:hover,
+html[data-theme="white"] .hover\:bg-zinc-800:hover,
+html[data-theme="white"] .hover\:bg-slate-800:hover {
+  background-color: rgba(0, 0, 0, 0.12) !important;
+}
+
+html[data-theme="white"] *::-webkit-scrollbar-track,
+html[data-theme="white"] *::-webkit-scrollbar-corner {
+  background: #ffffff !important;
+}
+
+html[data-theme="white"] *::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2) !important;
+}
+
+html[data-theme="white"] *::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.35) !important;
+}
+
+html[data-theme="sky"],
+html[data-theme="sky"] body,
+html[data-theme="sky"] #root,
+html[data-theme="sky"] .layout-shell {
+  background: linear-gradient(180deg, #7dd3fc 0%, #a5d8ff 22%, #cbe5fe 55%, #f0f7fe 100%) fixed !important;
+  background-size: 100vw 100vh !important;
+}
+
+html[data-theme="sky"] .layout-shell__top-controller,
+html[data-theme="sky"] .layout-shell__bottom-panel,
+html[data-theme="sky"] .layout-shell__fullscreen-video-info,
+html[data-theme="sky"] .layout-shell__side-menu,
+html[data-theme="sky"] .layout-shell__right-column,
+html[data-theme="sky"] .layout-shell__content,
+html[data-theme="sky"] .bg-black {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+html[data-theme="sky"] .sticky.bg-black {
+  background-color: rgba(224, 242, 254, 0.95) !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+/* Hero Titles: Pure Solid Midnight Sapphire + Dual-Layer Illuminated Backlight */
+html[data-theme="sky"] h1:not(.controller-title),
+html[data-theme="sky"] h2 {
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: #031b2e !important;
+  color: #031b2e !important;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 1px 2px rgba(255, 255, 255, 0.9) !important;
+  filter: none !important;
+}
+
+html[data-theme="sky"] h1 svg,
+html[data-theme="sky"] h2 svg {
+  -webkit-text-fill-color: initial !important;
+  color: #031b2e !important;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.8)) !important;
+}
+
+/* Card Titles: Crisp Solid Deep Sapphire with Dual-Layer Backlight */
+html[data-theme="sky"] h3 {
+  color: #031b2e !important;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.75), 0 1px 2px rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Body Typography & Metadata: Pure Crisp Sapphire + Backlight Cushion */
+html[data-theme="sky"] .text-white,
+html[data-theme="sky"] .text-white\/90,
+html[data-theme="sky"] .text-white\/80 {
+  color: #031b2e !important;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.75) !important;
+}
+
+html[data-theme="sky"] .text-white\/70,
+html[data-theme="sky"] .text-white\/60,
+html[data-theme="sky"] .text-white\/50 {
+  color: rgba(3, 27, 46, 0.75) !important;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Icons & Action Buttons: Delicate Luminous Backlight */
+html[data-theme="sky"] .group\/tool svg,
+html[data-theme="sky"] button svg {
+  filter: drop-shadow(0 1px 2px rgba(255, 255, 255, 0.6));
+}
+
+[data-theme="sky"] .border-white {
+  border-color: #052F4A !important;
+}
+
+[data-theme="sky"] .border-white\/10,
+[data-theme="sky"] .border-white\/20,
+[data-theme="sky"] .border-white\/30,
+[data-theme="sky"] .border-white\/40 {
+  border-color: var(--theme-fg-subtle) !important;
+}
+
+[data-theme="sky"] .hover\:border-white\/20:hover,
+[data-theme="sky"] .hover\:border-white\/30:hover,
+[data-theme="sky"] .hover\:border-white\/50:hover {
+  border-color: var(--theme-hover-border) !important;
+}
+
+[data-theme="sky"] .bg-zinc-900\/80,
+[data-theme="sky"] .bg-zinc-900\/60,
+[data-theme="sky"] .bg-zinc-900\/40,
+[data-theme="sky"] .bg-zinc-800,
+[data-theme="sky"] .bg-black\/70,
+[data-theme="sky"] .bg-black\/90,
+[data-theme="sky"] .bg-black\/95 {
+  background-color: var(--theme-hover-bg) !important;
+  color: var(--theme-fg) !important;
+}
+
+[data-theme="sky"] .hover\:bg-zinc-900\/60:hover,
+[data-theme="sky"] .hover\:bg-zinc-800:hover,
+[data-theme="sky"] .hover\:bg-slate-800:hover {
+  background-color: rgba(5, 47, 74, 0.15) !important;
+}
+
+[data-theme="sky"] *::-webkit-scrollbar-track,
+[data-theme="sky"] *::-webkit-scrollbar-corner {
+  background: var(--theme-bg) !important;
+}
+
+[data-theme="sky"] *::-webkit-scrollbar-thumb {
+  background: rgba(5, 47, 74, 0.25) !important;
+}
+
+[data-theme="sky"] *::-webkit-scrollbar-thumb:hover {
+  background: rgba(5, 47, 74, 0.4) !important;
+}
+
+/* Static Gradient Styling for Top Controller Titles */
+.title-gradient-text {
+  display: inline;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
 }
 
 * {
@@ -19,8 +274,8 @@ html,
   padding: 0;
   height: 100vh;
   width: 100vw;
-  background: var(--bg-primary);
-  color: #ffffff;
+  background: var(--theme-bg, #000000);
+  color: var(--theme-fg, #ffffff);
   overflow: hidden;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',

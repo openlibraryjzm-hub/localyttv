@@ -43,6 +43,38 @@ const hexToRgba = (hex, alpha = 1.0) => {
   return `rgba(${r},${g},${b},${alpha})`;
 };
 
+const isWhiteColor = (color) => {
+  if (!color) return true;
+  if (Array.isArray(color)) {
+    return color[0] >= 240 && color[1] >= 240 && color[2] >= 240;
+  }
+  const clean = String(color).trim().toLowerCase().replace('#', '');
+  if (clean === 'fff' || clean === 'ffffff') return true;
+  if (clean.startsWith('rgb')) {
+    const parts = clean.match(/\d+/g);
+    if (parts && parts.length >= 3) {
+      return parseInt(parts[0]) >= 240 && parseInt(parts[1]) >= 240 && parseInt(parts[2]) >= 240;
+    }
+  }
+  return false;
+};
+
+const isBlackColor = (color) => {
+  if (!color) return false;
+  if (Array.isArray(color)) {
+    return color[0] <= 30 && color[1] <= 30 && color[2] <= 30;
+  }
+  const clean = String(color).trim().toLowerCase().replace('#', '');
+  if (clean === '000' || clean === '000000') return true;
+  if (clean.startsWith('rgb')) {
+    const parts = clean.match(/\d+/g);
+    if (parts && parts.length >= 3) {
+      return parseInt(parts[0]) <= 30 && parseInt(parts[1]) <= 30 && parseInt(parts[2]) <= 30;
+    }
+  }
+  return false;
+};
+
 const AudioVisualizer = ({
   enabled = false,
   isActive = true, // NEW PROP: Controls audio capture separately from rendering
@@ -343,6 +375,8 @@ const AudioVisualizer = ({
     const centerY = canvasSize / 2;
 
     const strokeColor = hexToRgba(activeColor, 1.0);
+    const isDark = isBlackColor(activeColor);
+    const isColored = !isWhiteColor(activeColor) && !isDark;
 
     // Create or retrieve cached gradient
     if (visualizerGradient && !gradientRef.current) {
@@ -380,52 +414,57 @@ const AudioVisualizer = ({
             else ctx.lineTo(endX, endY);
           }
           ctx.closePath();
-          ctx.stroke();
+          if (isColored) {
+            ctx.lineWidth = barWidth;
+            ctx.strokeStyle = strokeColor;
+            ctx.globalAlpha = 0.85;
+            ctx.stroke();
+            ctx.lineWidth = Math.max(1.2, barWidth * 0.35);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.95)';
+            ctx.globalAlpha = 1.0;
+            ctx.stroke();
+          } else {
+            ctx.lineWidth = barWidth;
+            ctx.strokeStyle = visualizerGradient && gradientRef.current ? gradientRef.current : strokeColor;
+            ctx.globalAlpha = 1.0;
+            ctx.stroke();
+          }
+          ctx.globalAlpha = 1.0;
         } else if (visualizerMode === 'light') {
+          ctx.save();
+          if (isColored) ctx.globalCompositeOperation = 'lighter';
           for (let i = 0; i < barCount; i++) {
             const barIndex = clockwise ? i : (barCount - 1 - i);
             const angle = angleStart + (angleTotal / barCount) * barIndex;
             const normalizedAngle = ((angle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
             const x = centerX + (radius + minBarLength) * Math.cos(normalizedAngle);
             const y = centerY + (radiusY + minBarLength) * Math.sin(normalizedAngle);
+            const dotR = barWidth * 0.75;
             ctx.beginPath();
-            ctx.arc(x, y, barWidth * 0.75, 0, Math.PI * 2);
-            ctx.fillStyle = visualizerGradient && gradientRef.current ? gradientRef.current : strokeColor;
-            ctx.globalAlpha = 0.2;
+            ctx.arc(x, y, dotR, 0, Math.PI * 2);
+            ctx.fillStyle = strokeColor;
+            ctx.globalAlpha = isColored ? 0.6 : 0.2;
             ctx.fill();
-            ctx.globalAlpha = 1.0;
           }
+          ctx.restore();
         } else if (visualizerMode === 'light2') {
           const staticBarLength = minBarLength + maxBarLength * 0.2;
-          ctx.beginPath();
-          for (let i = 0; i < barCount; i++) {
-            const barIndex = clockwise ? i : (barCount - 1 - i);
-            const angle = angleStart + (angleTotal / barCount) * barIndex;
-            const normalizedAngle = ((angle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
-            const baseX = centerX + radius * Math.cos(normalizedAngle);
-            const baseY = centerY + radiusY * Math.sin(normalizedAngle);
-            const endX = baseX + staticBarLength * Math.cos(normalizedAngle);
-            const endY = baseY + staticBarLength * Math.sin(normalizedAngle);
-            ctx.moveTo(baseX, baseY);
-            ctx.lineTo(endX, endY);
-          }
-          ctx.globalAlpha = 0.4;
-          ctx.stroke();
-          ctx.globalAlpha = 1.0;
-
+          ctx.save();
+          if (isColored) ctx.globalCompositeOperation = 'lighter';
           for (let i = 0; i < barCount; i++) {
             const barIndex = clockwise ? i : (barCount - 1 - i);
             const angle = angleStart + (angleTotal / barCount) * barIndex;
             const normalizedAngle = ((angle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
             const x = centerX + (radius + staticBarLength) * Math.cos(normalizedAngle);
             const y = centerY + (radiusY + staticBarLength) * Math.sin(normalizedAngle);
+            const dotR = barWidth * 0.75;
             ctx.beginPath();
-            ctx.arc(x, y, barWidth * 0.75, 0, Math.PI * 2);
-            ctx.fillStyle = visualizerGradient && gradientRef.current ? gradientRef.current : strokeColor;
-            ctx.globalAlpha = 0.2;
+            ctx.arc(x, y, dotR, 0, Math.PI * 2);
+            ctx.fillStyle = strokeColor;
+            ctx.globalAlpha = isColored ? 0.6 : 0.35;
             ctx.fill();
-            ctx.globalAlpha = 1.0;
           }
+          ctx.restore();
         } else {
           ctx.beginPath();
           for (let i = 0; i < barCount; i++) {
@@ -442,7 +481,22 @@ const AudioVisualizer = ({
             ctx.moveTo(baseX, baseY);
             ctx.lineTo(endX, endY);
           }
-          ctx.stroke();
+          if (isColored) {
+            ctx.lineWidth = barWidth;
+            ctx.strokeStyle = strokeColor;
+            ctx.globalAlpha = 0.85;
+            ctx.stroke();
+            ctx.lineWidth = Math.max(1.2, barWidth * 0.35);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.95)';
+            ctx.globalAlpha = 1.0;
+            ctx.stroke();
+          } else {
+            ctx.lineWidth = barWidth;
+            ctx.strokeStyle = visualizerGradient && gradientRef.current ? gradientRef.current : strokeColor;
+            ctx.globalAlpha = 1.0;
+            ctx.stroke();
+          }
+          ctx.globalAlpha = 1.0;
         }
         animationFrameRef.current = requestAnimationFrame(draw);
         return;
@@ -468,8 +522,25 @@ const AudioVisualizer = ({
           else ctx.lineTo(endX, endY);
         }
         ctx.closePath();
-        ctx.stroke();
+        if (isColored) {
+          ctx.lineWidth = barWidth;
+          ctx.strokeStyle = strokeColor;
+          ctx.globalAlpha = 0.85;
+          ctx.stroke();
+          ctx.lineWidth = Math.max(1.2, barWidth * 0.35);
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.95)';
+          ctx.globalAlpha = 1.0;
+          ctx.stroke();
+        } else {
+          ctx.lineWidth = barWidth;
+          ctx.strokeStyle = visualizerGradient && gradientRef.current ? gradientRef.current : strokeColor;
+          ctx.globalAlpha = 1.0;
+          ctx.stroke();
+        }
+        ctx.globalAlpha = 1.0;
       } else if (visualizerMode === 'light') {
+        ctx.save();
+        if (isColored) ctx.globalCompositeOperation = 'lighter';
         for (let i = 0; i < barCount; i++) {
           const barIndex = clockwise ? i : (barCount - 1 - i);
           const angle = angleStart + (angleTotal / barCount) * barIndex;
@@ -486,29 +557,15 @@ const AudioVisualizer = ({
 
           ctx.beginPath();
           ctx.arc(x, y, dotRadius, 0, Math.PI * 2);
-          ctx.fillStyle = visualizerGradient && gradientRef.current ? gradientRef.current : strokeColor;
-          ctx.globalAlpha = 0.15 + normalizedValue * 0.85;
+          ctx.fillStyle = isColored ? strokeColor : (visualizerGradient && gradientRef.current ? gradientRef.current : strokeColor);
+          ctx.globalAlpha = isColored ? (0.35 + normalizedValue * 0.65) : (0.15 + normalizedValue * 0.85);
           ctx.fill();
-          ctx.globalAlpha = 1.0;
         }
+        ctx.restore();
       } else if (visualizerMode === 'light2') {
         const staticBarLength = minBarLength + maxBarLength * 0.2;
-        ctx.beginPath();
-        for (let i = 0; i < barCount; i++) {
-          const barIndex = clockwise ? i : (barCount - 1 - i);
-          const angle = angleStart + (angleTotal / barCount) * barIndex;
-          const normalizedAngle = ((angle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
-          const baseX = centerX + radius * Math.cos(normalizedAngle);
-          const baseY = centerY + radiusY * Math.sin(normalizedAngle);
-          const endX = baseX + staticBarLength * Math.cos(normalizedAngle);
-          const endY = baseY + staticBarLength * Math.sin(normalizedAngle);
-          ctx.moveTo(baseX, baseY);
-          ctx.lineTo(endX, endY);
-        }
-        ctx.globalAlpha = 0.4;
-        ctx.stroke();
-        ctx.globalAlpha = 1.0;
-
+        ctx.save();
+        if (isColored) ctx.globalCompositeOperation = 'lighter';
         for (let i = 0; i < barCount; i++) {
           const barIndex = clockwise ? i : (barCount - 1 - i);
           const angle = angleStart + (angleTotal / barCount) * barIndex;
@@ -523,11 +580,11 @@ const AudioVisualizer = ({
 
           ctx.beginPath();
           ctx.arc(x, y, dotRadius, 0, Math.PI * 2);
-          ctx.fillStyle = visualizerGradient && gradientRef.current ? gradientRef.current : strokeColor;
-          ctx.globalAlpha = 0.15 + normalizedValue * 0.85;
+          ctx.fillStyle = isColored ? strokeColor : (visualizerGradient && gradientRef.current ? gradientRef.current : strokeColor);
+          ctx.globalAlpha = isColored ? (0.35 + normalizedValue * 0.65) : (0.2 + normalizedValue * 0.8);
           ctx.fill();
-          ctx.globalAlpha = 1.0;
         }
+        ctx.restore();
       } else {
         // Standard bar mode
         ctx.beginPath();
@@ -548,7 +605,22 @@ const AudioVisualizer = ({
           ctx.moveTo(baseX, baseY);
           ctx.lineTo(endX, endY);
         }
-        ctx.stroke();
+        if (isColored) {
+          ctx.lineWidth = barWidth;
+          ctx.strokeStyle = strokeColor;
+          ctx.globalAlpha = 0.85;
+          ctx.stroke();
+          ctx.lineWidth = Math.max(1.2, barWidth * 0.35);
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.95)';
+          ctx.globalAlpha = 1.0;
+          ctx.stroke();
+        } else {
+          ctx.lineWidth = barWidth;
+          ctx.strokeStyle = visualizerGradient && gradientRef.current ? gradientRef.current : strokeColor;
+          ctx.globalAlpha = 1.0;
+          ctx.stroke();
+        }
+        ctx.globalAlpha = 1.0;
       }
 
       // Schedule next frame

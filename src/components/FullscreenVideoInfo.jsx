@@ -335,7 +335,7 @@ const FullscreenVideoInfo = () => {
   const bannerHorizontal = effectiveBanner?.horizontalOffset ?? 0;
 
   return (
-    <div className="layout-shell__fullscreen-video-info bg-black" data-debug-label="Fullscreen Video Info" style={{ position: 'relative', overflow: 'hidden', backgroundColor: '#000000' }}>
+    <div className="layout-shell__fullscreen-video-info bg-black" data-debug-label="Fullscreen Video Info" style={{ position: 'relative', overflow: 'hidden' }}>
       <div className="flex flex-col h-full w-full" style={{ position: 'relative', zIndex: 1, minHeight: 0 }}>
         {/* Scrollable area - metadata only now */}
         <div className="flex-1 overflow-y-auto px-0 pb-0 scrollbar-hide" style={{ minHeight: 0 }}>

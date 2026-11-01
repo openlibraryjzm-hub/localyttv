@@ -1035,6 +1035,15 @@ export const useConfigStore = create(
             // YouTube API Key
             youtubeApiKey: null,
             setYoutubeApiKey: (val) => set({ youtubeApiKey: val }),
+
+            // App Theme ('black' | 'sky')
+            appTheme: 'black',
+            setAppTheme: (val) => {
+                if (typeof document !== 'undefined') {
+                    document.documentElement.setAttribute('data-theme', val);
+                }
+                set({ appTheme: val });
+            },
         }), {
         name: 'config-storage-v12', // Bump version for migration
         storage: createJSONStorage(() => idbStorage),
@@ -1087,4 +1096,9 @@ export const useConfigStore = create(
 
 if (typeof window !== 'undefined') {
   window.useConfigStore = useConfigStore;
+  useConfigStore.persist?.onFinishHydration?.((state) => {
+    if (state?.appTheme && typeof document !== 'undefined') {
+      document.documentElement.setAttribute('data-theme', state.appTheme);
+    }
+  });
 }

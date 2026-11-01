@@ -16,7 +16,7 @@ The Central Orb is a circular element (154px diameter by default) positioned at 
 - **Orb Image**: Displays the current video's thumbnail by default, or a custom uploaded image. Supports **Orb Group Overrides** (random image from an assigned group). Clipped to a circular shape with optional "spill" effects.
 - **Orb Buttons Layout**:
   - **Orb Config Button**: (Top-Left) Opens the Orb Tab in Settings.
-  - **App Banner Button**: (Top-Right) Simple rectangle icon. Opens the App Banner Customization & Configuration page.
+  - **Theme Customization Button**: (Top-Right) Simple rectangle icon. Opens the Theme Customization Page to switch between curated 2-color duo-tone themes (OLED Black and Sky Blue).
   - **YouTube API Key Button**: (Bottom-Left) `Key` icon button. Left-clicking toggles the YouTube Data API v3 Key configuration popup modal.
   - **Cat Decorative Icon**: (Bottom-Right) Non-functional decorative button featuring a crisp `Cat` face icon.
   - **Home Hub Button**: (Bottom-Center) Returns to the Explorer page. The icon dynamically displays the **current Explorer page number** (e.g., "1", "2") for instant orientation within the Hub. On click, it locks the app and returns to the gamified dashboard.

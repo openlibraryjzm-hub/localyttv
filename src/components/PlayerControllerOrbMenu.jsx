@@ -177,26 +177,26 @@ export default function PlayerControllerOrbMenu(props) {
           <Circle size={14} className="text-[#052F4A]" strokeWidth={2.5} />
         </button>
 
-        {/* App Banner Edit Button (Top Right) */}
+        {/* Theme Customization Button (Top Right) */}
         <button onClick={() => {
           if (viewMode === 'full') {
             setFullscreenInfoBlanked(true);
             requestAnimationFrame(() => {
               setViewMode('half');
-              setCurrentPage('app');
+              setCurrentPage('theme');
             });
           } else {
-            setCurrentPage('app');
+            setCurrentPage('theme');
           }
         }} onTouchStart={() => {
           if (viewMode === 'full') {
             setFullscreenInfoBlanked(true);
             requestAnimationFrame(() => {
               setViewMode('half');
-              setCurrentPage('app');
+              setCurrentPage('theme');
             });
           } else {
-            setCurrentPage('app');
+            setCurrentPage('theme');
           }
         }} className="absolute rounded-full flex items-center justify-center bg-white shadow-xl hover:scale-110 active:scale-95 group/btn z-50 border-2 border-[#052F4A] opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300" style={{
           left: '85%',
@@ -204,7 +204,7 @@ export default function PlayerControllerOrbMenu(props) {
           transform: 'translate(-50%, -50%)',
           width: `28px`,
           height: `28px`
-        }} title={getInspectTitle('App Banner Customization Page (Configure and edit banners)')}>
+        }} title={getInspectTitle('Theme Customization Page (Switch and customize color themes)')}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#052F4A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <rect x="2" y="6" width="20" height="12" rx="2" />
           </svg>

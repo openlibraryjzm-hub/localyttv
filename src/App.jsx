@@ -38,6 +38,7 @@ import { clearOldPlaybackKeys } from './utils/storageUtils';
 import SupportPage from './components/SupportPage';
 import OrbConfigPlaceholderPage from './components/OrbConfigPlaceholderPage';
 import SettingsPlaceholderPage from './components/SettingsPlaceholderPage';
+import ThemePage from './components/ThemePage';
 import { THEMES } from './utils/themes';
 import './App.css';
 
@@ -48,6 +49,7 @@ function App() {
   const getInspectTitle = (label) => inspectMode ? label : undefined;
   const { showPlaylists, setShowPlaylists, setPlaylistItems, currentPlaylistItems, currentPlaylistId, currentVideoIndex, setCurrentVideoIndex } = usePlaylistStore();
   const { currentPage, setCurrentPage } = useNavigationStore();
+  const { appTheme } = useConfigStore();
   const [dbInitialized, setDbInitialized] = useState(false);
   const [secondPlayerVideoUrl, setSecondPlayerVideoUrl] = useState(null);
 
@@ -69,6 +71,12 @@ function App() {
     console.log('currentPage:', currentPage);
   }, [showPlaylists, dbInitialized, viewMode, currentPage]);
 
+
+  useEffect(() => {
+    if (appTheme && typeof document !== 'undefined') {
+      document.documentElement.setAttribute('data-theme', appTheme);
+    }
+  }, [appTheme]);
 
   useEffect(() => {
     // Clear orphaned playback keys from localStorage
@@ -621,6 +629,8 @@ function App() {
             ) : !showPlaylists && currentPage === 'tweet' ? (
               <TweetPage />
 
+            ) : !showPlaylists && (currentPage === 'theme' || currentPage === 'themes') ? (
+              <ThemePage />
             ) : !showPlaylists && currentPage === 'settings' ? (
               <MainSettingsPage
                 onNavigateToOrb={() => setCurrentPage('orbs')}

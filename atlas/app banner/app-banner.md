@@ -1,6 +1,6 @@
 ### App Banner
 
-The App Banner is the top-level header background system that spans the full width of the application and serves as the visual anchor for the Player Controller. Following the October 2026 dark mode refactor, the App Banner has been simplified to a **hardcoded pure black (`#000000`) background**, shedding performance-intensive disk image lookups, background scaling calculations, and continuous infinite scroll CSS animations.
+The App Banner is the top-level header background system that spans the full width of the application and serves as the visual anchor for the Player Controller. The App Banner is powered by the **minimalist 2-color duo-tone theme canvas (`var(--theme-bg)`)**, supporting both OLED Black (`#000000`) and Sky Blue (`#e0f2fe`) while eliminating performance-intensive disk image lookups, background scaling calculations, and continuous infinite scroll CSS animations.
 
 **Related Documentation:**
 - **Player Controller**: See `player-controller-unified.md` and `player-controller-top-menus.md` for the controller that sits on this banner
@@ -15,8 +15,8 @@ The App Banner is the top-level header background system that spans the full wid
 
 Users see a clean, full-width header (200px height) at the very top of the application:
 
-- **Solid Black Canvas**: Hardcoded `#000000` background eliminating GPU and memory overhead previously spent loading and scrolling high-resolution banner images.
-- **Floating Controls**: The Player Controller (Top Playlist Menu, Central Orb, Top Video Menu) floats seamlessly over the black canvas without card backdrops.
+- **Theme Canvas**: Dynamic `var(--theme-bg)` background matching the chosen theme (OLED Black or Sky Blue) with zero GPU and memory overhead.
+- **Floating Controls**: The Player Controller (Top Playlist Menu, Central Orb, Top Video Menu) floats seamlessly over the canvas without card backdrops.
 - **Window Controls / Web Prompt**: Custom window controls (Minimize, Maximize, Close) float in the top-right corner on Desktop targets (`isTauri()` / `isWebView2()`). On Web target (`isWeb()`), a dismissable/collapsible `<WebDownloadPrompt />` card floats in the top-right corner, constrained within the 200px banner height.
 - **Draggable Region**: The banner area serves as a dedicated drag region (`data-tauri-drag-region`) for moving the application window.
 - **Seamless Merge**: The bottom separator line (`.layout-shell__separator`) has been hidden (`display: none;`), allowing the top controller area to merge seamlessly into the video player and content areas below it.
@@ -30,7 +30,7 @@ Users see a clean, full-width header (200px height) at the very top of the appli
 
 **CSS/Styling:**
 - `src/LayoutShell.css`:
-  - `.layout-shell__top-controller`: Set to `background-color: #000000; border-bottom: none;`.
+  - `.layout-shell__top-controller`: Set to `background-color: var(--theme-bg, #000000); border-bottom: none;`.
   - `.layout-shell__banner-bg`: Hidden (`display: none;`).
   - `.layout-shell__separator`: Hidden (`display: none;`).
 

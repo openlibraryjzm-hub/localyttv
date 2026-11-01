@@ -138,6 +138,7 @@ yttv2/
 │   │   ├── page-pins.md          # Pins page
 │   │   ├── asset-manager-page.md # Unified Asset Manager
 │   │   ├── page-banner.md        # Shared Page Banner system
+│   │   ├── page-theme.md         # Theme Customization page (2-color duo-tone system)
 │   │   └── you-page.md           # Signature & Profile page
 │   │
 │   ├── player controller/        # Top Overlay Brain

@@ -111,7 +111,7 @@ const TopNavigation = () => {
     const containerStyle = {};
 
     const titleStyle = {
-        color: '#ffffff'
+        color: 'var(--theme-fg, #ffffff)'
     };
 
     const isContentEmpty = (!isPlaylistsPage && hasActiveContext) || isPlaylistsPage;

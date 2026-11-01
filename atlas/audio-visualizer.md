@@ -59,16 +59,17 @@ The system uses a "push" architecture where the Rust backend performs the mathem
 ## 3. Usage & Configuration
 
 ### 3.1 Customization Controls
-*   **Rendering Mode**: Standardized on **Light 2** (Static Starburst & Pulsing Tips) as the primary audio visualizer mode.
+*   **Rendering Mode**: Standardized on **Light 2** (Floating Constellation / Pulsing Orbital Nodes) as the primary audio visualizer mode.
 *   **Color Picker**: Located in the More Options menu (`PlayerControllerPlaylistMenu.jsx`). Offers a preset palette of curated colors (White, Sky Blue, Rose Pink, Emerald Green, Purple, Amber), a custom color input, and a continuous rainbow sliding gradient for fine hue adjustments. Custom selections update the visualizer in real-time.
 *   **Sensitivity**: Multiplier for responsiveness (`visualizerSensitivity` in `configStore`).
 *   **Smoothing**: Controls temporal decay/jitter resistance.
+*   **Chromatic Light Blending**: Custom colors automatically leverage Canvas 2D additive light blending (`ctx.globalCompositeOperation = 'lighter'`). Overlapping audio-reactive nodes blend naturally into glowing radiant intersections without harsh edges or concentric borders. Classic white (`#ffffff`) retains its clean, pure appearance.
 
 ### 3.2 Rendering Modes
-1.  **Light 2 (Static Starburst & Pulsing Tips)** (*Active Default*): Renders a constant, unmoving geometric cage/spoke framework with highly reactive, localized circular nodes pulsing directly over each spoke tip.
-2.  **Bar (Standard Live Spokes)**: Traditional spiky outward spokes extending linearly from the perimeter.
-3.  **Light 1 (Floating Fireflies)**: Replaces straight spokes with hovering, atmospheric nodes.
-4.  **Bubble (Liquid Ribbon)**: Horizontally connects the end-coordinates of all frequency bins into a single continuous path.
+1.  **Light 2 (Floating Constellation / Pulsing Orbital Nodes)** (*Active Default*): Stem/spoke lines are omitted to achieve an uncluttered floating look. Clean circular nodes hover in an orbital ring around the central Orb, dynamically expanding in radius and luminosity with audio frequency energy. Overlapping nodes blend smoothly into radiant light cores via additive blending.
+2.  **Bar (Standard Live Spokes)**: Outward spokes extending linearly from the orb perimeter with dual-core illumination on colored selections.
+3.  **Light 1 (Floating Fireflies)**: Floating atmospheric nodes with dynamic distance offsets and additive blending.
+4.  **Bubble (Liquid Ribbon)**: Horizontally connects the end-coordinates of all frequency bins into a single continuous fluid path with dual-core illumination.
 
 ---
 

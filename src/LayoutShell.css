@@ -98,47 +98,37 @@
    FULL SCREEN MODE
    ============================================ */
 .layout-shell--full .layout-shell__content {
-  grid-template-columns: var(--fullscreen-player-width, 75%) 1fr;
+  grid-template-columns: 1fr;
   grid-template-rows: 1fr;
+  background: #000000 !important;
+  background-color: #000000 !important;
 }
 
-/* Fullscreen player: fills first column only. */
+/* Fullscreen player: centered horizontally and vertically, sized to minimize black bars with solid black flanking margins */
 .layout-shell--full .layout-shell__player {
   grid-column: 1;
   grid-row: 1;
-  width: 100%;
   height: 100%;
+  max-height: 100%;
+  width: min(100%, calc((100vh - 200px) * (16 / 9)));
+  aspect-ratio: 16 / 9;
+  justify-self: center;
+  align-self: center;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-/* Fullscreen right panel: video info (author, year, view count) - now inside right column */
+/* Fullscreen right column: hidden (FullscreenVideoInfo suppressed) */
 .layout-shell--full .layout-shell__right-column {
-  grid-column: 2;
-  grid-row: 1;
-  position: relative;
-  overflow: hidden;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
+  display: none;
 }
 
 .layout-shell--full .layout-shell__fullscreen-video-info-mount {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  min-height: 0;
+  display: none;
 }
 
 .layout-shell--full .layout-shell__fullscreen-video-info {
-  grid-column: unset;
-  grid-row: unset;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  padding: 0 0.75rem 12px;
-  overflow: hidden;
-  background: transparent;
-  flex: 1;
-  min-height: 0;
+  display: none;
 }
 
 /* ============================================
@@ -154,6 +144,12 @@
   grid-row: 1;
   width: 100%;
   height: 100%;
+  max-width: none;
+  max-height: none;
+  aspect-ratio: auto;
+  justify-self: stretch;
+  align-self: stretch;
+  margin: 0;
 }
 
 .layout-shell--half .layout-shell__right-column {
@@ -230,6 +226,12 @@
   grid-row: 2;
   width: 100%;
   height: 100%;
+  max-width: none;
+  max-height: none;
+  aspect-ratio: auto;
+  justify-self: stretch;
+  align-self: stretch;
+  margin: 0;
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 

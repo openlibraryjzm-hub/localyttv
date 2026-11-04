@@ -4,7 +4,7 @@ import { useLayoutStore } from './store/layoutStore';
 import { useConfigStore } from './store/configStore';
 import WindowControls from './components/WindowControls';
 import WebDownloadPrompt from './components/WebDownloadPrompt';
-import FullscreenVideoInfo from './components/FullscreenVideoInfo';
+// import FullscreenVideoInfo from './components/FullscreenVideoInfo'; // Preserved in codebase; hidden in fullscreen per design
 import { isWeb } from './utils/platform';
 
 import './LayoutShell.css';
@@ -198,22 +198,9 @@ const LayoutShell = ({
           )}
         </div>
 
-        {/* Fullscreen only: video info panel in right margin (author, year, view count) */}
         {/* Side Menu - Only visible in half/quarter modes */}
-        {/* Unified right column: crossfade between FullscreenVideoInfo and side menu for smoother transition */}
         <div className="layout-shell__right-column">
           <AnimatePresence mode="wait">
-            {viewMode === 'full' && !showDebugBounds && (
-              <motion.div
-                key="fullscreen-video-info"
-                className="layout-shell__fullscreen-video-info-mount"
-                initial={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <FullscreenVideoInfo />
-              </motion.div>
-            )}
             {(viewMode === 'half' || viewMode === 'quarter') && (
               <motion.div
                 key="side-menu"

@@ -76,6 +76,11 @@ html[data-theme="white"] .bg-black {
   background-color: transparent !important;
 }
 
+html[data-theme="white"] .layout-shell--full .layout-shell__content {
+  background: #000000 !important;
+  background-color: #000000 !important;
+}
+
 html[data-theme="white"] .sticky.bg-black {
   background-color: rgba(241, 245, 249, 0.95) !important;
   backdrop-filter: blur(12px) !important;
@@ -178,6 +183,11 @@ html[data-theme="sky"] .layout-shell__content,
 html[data-theme="sky"] .bg-black {
   background: transparent !important;
   background-color: transparent !important;
+}
+
+html[data-theme="sky"] .layout-shell--full .layout-shell__content {
+  background: #000000 !important;
+  background-color: #000000 !important;
 }
 
 html[data-theme="sky"] .sticky.bg-black {

@@ -24,7 +24,10 @@ The Video Player system provides dual YouTube player support infrastructure, all
 Users see the main YouTube player as the primary video playback area:
 
 - **Player Display**: Full YouTube iframe player embedded in the main player slot
-  - Takes up the entire main player area (varies by view mode: full/half/quarter)
+  - Takes up the main player area based on view mode:
+    - **Fullscreen (iewMode === 'full')**: Centered horizontally and vertically below the 200px App Banner. Sized to 16:9 (min(100%, calc((100vh - 200px) * (16 / 9)))) to minimize black bars flanked by solid black side margins while the theme gradient remains active in the top App Banner and page backgrounds.
+    - **Split-Screen (iewMode === 'half')**: Fills the left 50% column with browsing pages in the right 50% column.
+    - **Quarter Mode (iewMode === 'quarter')**: Positioned in the bottom-left quadrant.
   - Black background when loading or if video invalid
   - Standard YouTube player controls (play/pause, volume, fullscreen, etc.)
 

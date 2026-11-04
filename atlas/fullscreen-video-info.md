@@ -1,6 +1,9 @@
 # Fullscreen Video Info Panel
 
-The Fullscreen Video Info panel is a dedicated component that appears in the right margin of the layout when the app is in **fullscreen mode** (`viewMode === 'full'`). It displays rich metadata for the currently playing video (thumbnail, author, view count, date, description, tags) and parent playlist card while keeping layout logic isolated from `LayoutShell.jsx`.
+> [!NOTE]
+> **Status Note (November 2026)**: The Fullscreen Video Info panel is currently hidden in fullscreen mode to allow the video player to be centered with 16:9 aspect-ratio sizing and theme gradient margins. The component, its hover controls, and its preview logic remain preserved in the codebase (`src/components/FullscreenVideoInfo.jsx`) for future activation or modular reuse.
+
+The Fullscreen Video Info panel is a dedicated component that previously appeared in the right margin of the layout when the app was in **fullscreen mode** (`viewMode === 'full'`). It displays rich metadata for the currently playing video (thumbnail, author, view count, date, description, tags) and parent playlist card while keeping layout logic isolated from `LayoutShell.jsx`.
 
 ---
 

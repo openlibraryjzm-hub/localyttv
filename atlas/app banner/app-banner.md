@@ -1,6 +1,6 @@
 ### App Banner
 
-The App Banner is the top-level header background system that spans the full width of the application and serves as the visual anchor for the Player Controller. The App Banner is powered by the **minimalist 2-color duo-tone theme canvas (`var(--theme-bg)`)**, supporting both OLED Black (`#000000`) and Sky Blue (`#e0f2fe`) while eliminating performance-intensive disk image lookups, background scaling calculations, and continuous infinite scroll CSS animations.
+The App Banner is the top-level header background system that spans the full width of the application and serves as the visual anchor for the Player Controller. The App Banner is powered by the **minimalist 2-color duo-tone theme canvas (`var(--theme-bg-gradient)`)**, supporting OLED Black, Sky Blue Radial, and Pure White Radial while eliminating performance-intensive disk image lookups, background scaling calculations, and continuous infinite scroll CSS animations.
 
 **Related Documentation:**
 - **Player Controller**: See `player-controller-unified.md` and `player-controller-top-menus.md` for the controller that sits on this banner

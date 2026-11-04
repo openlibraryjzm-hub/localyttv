@@ -10,48 +10,40 @@ The Fullscreen Video Info panel is a dedicated component that appears in the rig
 +-------------------------------------------------------+
 |  [Solid Opaque Black Canvas: bg-black / #000000]      |
 |  +-------------------------------------------------+  |
-|  | [Hero Video Metadata Card: border-0 bg-black]   |  |
-|  |  Row 1: Centered Avatar & Uploader (White Text) |  |
-|  |  Row 2: View Count & Upload Date (White Text)   |  |
-|  +-------------------------------------------------+  |
-|  +-------------------------------------------------+  |
 |  | [Main Video Thumbnail (16:9, borderless)]       |  |
-|  |  [Hover Overlay Controls: Vol, Tab, Shield]     |  |
+|  |  [Top Hover Overlay: Avatar, Author, Views, Yt] |  |
+|  |  [Bottom Hover Overlay: Vol, Tab, Shield]      |  |
 |  +-------------------------------------------------+  |
 |  +-------------------------------------------------+  |
-|  | [Integrated Description Box (border-0 bg-trans)]|  |
-|  | OR 18 Mini Thumbnail Grid (Playlist Tab)        |  |
+|  | [10 Mini Thumbnail Grid (2-Column x 5-Row)]     |  |
+|  |  OR [Integrated Description Box]                |  |
 |  +-------------------------------------------------+  |
 +-------------------------------------------------------+
 ```
 
-### 1. Minimalist Duo-Tone Canvas
-- **Theme Canvas Integration**: Dynamic `var(--theme-bg)` container matching the active 2-color duo-tone theme (OLED Black `#000000` or Sky Blue `#e0f2fe`) with zero background blur, glassmorphism, or glow overhead.
-- **Eliminated Atmospheric Banner Overhead**: Shed legacy blurred banner backdrop calculations and layers for maximum performance.
+### 1. Minimalist Duo-Tone Canvas & Top Player Alignment
+- **Top Edge Alignment**: The static metadata card was removed from the top of the panel. The main thumbnail now anchors directly at the very top of the panel, aligning flush with the top edge of the main video player in Column 1.
+- **2-Column x 5-Row Mini Grid**: The mini preview thumbnails use a **2-column layout** (`miniGridCols={2}`, `miniGridLimit={10}`) with 10 thumbnails. Each thumbnail expands from ~140px to ~214px wide (50% larger), allowing 5 rows of 2 to naturally fill the entire vertical height of the panel down to the bottom margin with zero dead space.
+- **Theme Canvas Integration**: Dynamic `var(--theme-bg)` container matching the active 2-color duo-tone theme with zero background blur or overhead.
 
 ---
 
-### 2. Layout Sections (Top to Bottom)
+### 2. Layout Sections & Hover Overlay Architecture
 
-- **Hero Video Metadata Card**:
-  - Borderless and shadowless container (`border-0 shadow-none p-3 rounded-2xl` matching `var(--theme-bg)` and `var(--theme-fg)`).
-  - Outer margin aligns pixel-perfectly with the main thumbnail via consistent 10px (`px-2.5`) outer container padding.
-  - **Row 1 (Centered Hero Uploader & Subtle YouTube Link)**:
-    - **Center**: Centered circular author avatar (48px, borderless) alongside channel uploader name in prominent hero font (**`text-lg font-black` in `var(--theme-fg)`**).
-    - **Right Edge**: Subtle, low-profile YouTube icon button (`ExternalLink` icon button, `border-transparent hover:border-[var(--theme-hover-border)] bg-[var(--theme-hover-bg)]`).
-  - **Row 2 (Dedicated Prominent Full-Width Metadata Bar)**:
-    - **Center**: Full-width dedicated row displaying View Count & Upload Date in crisp typography (**`text-[15px] font-black` in `var(--theme-fg)`**, e.g. `1,234,567 views  •  October 10, 2026`).
-    - The legacy horizontal divider line between Row 1 and Row 2 was removed, letting the metadata breathe naturally over canvas.
-- **Main Video Thumbnail (Hover Controls & Context Menu)**: 
-  - 16:9 aspect ratio thumbnail positioned directly underneath the Hero Video Metadata Card with clean borderless framing (`border-0 shadow-none rounded-xl`).
-  - **Right-Click Context Menu**: Right-clicking the main thumbnail opens `VideoCardThreeDotMenu` for the currently playing video at the cursor's exact coordinates (`cursor-context-menu`), giving instant access to pin toggles, drumstick 1–5 rating, colored folder assignments, and deletion.
-  - **Hover Overlay Controls Bar**: Hovering over the main video thumbnail reveals a gradient backdrop bar at the bottom of the thumbnail containing:
+- **Main Video Thumbnail (Dual Hover Overlays & Context Menu)**:
+  - 16:9 aspect ratio thumbnail positioned directly at the top of the panel with borderless framing (`border-0 shadow-none rounded-xl`).
+  - **Top Hover Overlay Bar**: Hovering over the main video thumbnail reveals a gradient backdrop bar (`bg-gradient-to-b from-black/95 via-black/70 to-transparent`) at the top of the thumbnail containing:
+    - **Channel Avatar & Name**: Circular avatar (36px, `border border-white/20`) alongside the channel/author name (`font-black text-sm text-white truncate`).
+    - **Metadata Line**: Crisp view count and upload date (`text-[11px] font-bold text-white/80`, e.g. `1,234,567 views  •  October 10, 2026`).
+    - **External Link Button**: YouTube icon button (`ExternalLink` icon, clickable) linking directly to the video URL on YouTube.
+  - **Bottom Hover Overlay Bar**: Hovering also reveals the bottom gradient bar containing:
     - Integrated Volume Slider controller (mute button + volume range track)
     - Info vs. Playlist mode tab toggle button (`ListMusic` / `Info`)
     - Screen Protector Shield toggle capsule (`Shield` / `ShieldOff`)
+  - **Right-Click Context Menu**: Right-clicking the thumbnail opens `VideoCardThreeDotMenu` for instant access to pin toggles, drumstick 1–5 rating, colored folder assignments, and deletion.
 - **Integrated Description Box / Mini Thumbnail Grid**:
-  - **Info Tab**: Displays the video description inside a seamless borderless container (`border-0 bg-transparent text-sm font-semibold`) with an expandable `[ Expand Description ]` toggle.
-  - **Playlist Tab**: Displays up to 18 preview items ($3 \text{ columns} \times 6 \text{ rows}$, `grid-cols-3 gap-1.5`) via `PlaylistCard` embedded in borderless pure black mode.
+  - **Playlist Tab**: Displays 10 large preview items ($2 \text{ columns} \times 5 \text{ rows}$, `grid-cols-2 gap-2`) via `PlaylistCard` directly underneath the top-aligned main thumbnail, filling the panel vertically to the bottom edge.
+  - **Info Tab**: Displays the expandable video description inside a seamless borderless container with `[ Expand Description ]`.
 
 ---
 

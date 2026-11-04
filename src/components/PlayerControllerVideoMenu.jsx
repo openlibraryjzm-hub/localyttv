@@ -14,8 +14,8 @@ import { useInspectLabel } from '../utils/inspectLabels';
 import { getAllPlaylists, getPlaylistItems, getAllFoldersWithVideos, getVideosInFolder, getAllStuckFolders, assignVideoToFolder, unassignVideoFromFolder, getVideoFolderAssignments, createPlaylist, addVideoToPlaylist, removeVideoFromPlaylist, getFolderMetadata, getWatchHistory, setSetting } from '../api/playlistApi';
 import { getThumbnailUrl, extractVideoId, fetchVideoMetadata } from '../utils/youtubeUtils';
 import { getFolderColorById, FOLDER_COLORS } from '../utils/folderColors';
-import { THEMES, getGradientTitleStyle } from '../utils/themes';
 import AudioVisualizer from './AudioVisualizer';
+import NeonActionStreak from './NeonActionStreak';
 import useLongPress from '../hooks/useLongPress';
 
 // Sub-component for menu buttons to handle long-press correctly
@@ -307,19 +307,20 @@ export default function PlayerControllerVideoMenu(props) {
                 ))}
               </div>
             </div> : <div className="w-full flex flex-col items-center justify-center transition-all relative h-full">
-              <h1 className="controller-title font-black text-center leading-tight line-clamp-3 tracking-tight transition-all pb-1 select-none" style={{
+              <h1 className="controller-title font-black text-center leading-tight line-clamp-3 tracking-tight transition-all pb-1 select-none text-white" style={{
                 fontSize: `${titleFontSize}px`
               }}>
-                <span className="title-gradient-text" style={getGradientTitleStyle(visualizerColor, appTheme)}>
-                  {displayVideo.title}
-                </span>
+                {displayVideo.title}
               </h1>
             </div>}
           </div>
           <div className="flex items-center px-3 shrink-0 relative bg-transparent" style={{
             height: `${bottomBarHeight}px`
           }}>
-            {showColorPicker ? <div className="flex items-center justify-center w-full h-full animate-in fade-in slide-in-from-bottom-1 duration-300"><span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/80">{hoveredColorName || `Select ${showColorPicker} color`}</span></div> : <div className="w-full h-full relative">
+            {/* Proud Neon Streak behind action buttons */}
+            <NeonActionStreak color={visualizerColor} side="right" />
+
+            {showColorPicker ? <div className="flex items-center justify-center w-full h-full animate-in fade-in slide-in-from-bottom-1 duration-300 relative z-10"><span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/80">{hoveredColorName || `Select ${showColorPicker} color`}</span></div> : <div className="w-full h-full relative z-10">
               {/* Navigation Controls - Now Absolute Centered */}
               {/* Navigation Contols (Left Cluster - "Far Left") - Mirrored from Playlist */}
               {/* Previous Video - Left of Grid */}

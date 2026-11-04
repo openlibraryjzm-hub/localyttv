@@ -20,15 +20,15 @@ The **Top Playlist Menu** and **Top Video Menu** form the left and right control
   - Both menus are completely **backdrop-free** (`bg-transparent`), rendering clean white typography, badges, and controls floating directly over the hardcoded black `#000000` header.
   - Dropdown popovers ("Add to Playlist", "More Options", API Key panel, Color Picker) are styled in high-contrast dark mode (`bg-black/95 border border-white/20 text-white shadow-2xl`).
   - The outer container maintains `overflow: visible`, ensuring popover menus float freely without being clipped.
-- **Static Duo-Tone Title Gradient Synchronization**:
-  - The **Playlist Title** (left menu) and **Video Title** (right menu) synchronize with `visualizerColor` and `appTheme` via `getGradientTitleStyle(visualizerColor, appTheme)` in `src/utils/themes.js`.
-  - **Zero Animation / Calm Minimalism**: Statically rendered with zero CSS keyframes, zero movement, and zero CPU overhead.
-  - **Duo-Tone Color Melt**: A clean left-to-right horizontal gradient (`linear-gradient(90deg, base 0%, accent 100%)`) spreads smoothly across the entire title text:
-    - **OLED Black Theme**: Blends smoothly from pure white `#ffffff` (0%) on the left to the visualizer's accent color (100%) on the right.
-    - **Pure White Theme**: Blends from pure black `#000000` (0%) on the left to the visualizer's accent color (100%) on the right.
-    - **Sky Blue Theme**: Blends from deep midnight sapphire `#031b2e` (0%) on the left to the visualizer's accent color (100%) on the right.
-  - **Default Monochrome Neutrality**: When the visualizer is default white (on black theme) or default black (on white theme), the titles render as solid high-contrast monochrome text without artificial gradients.
-  - Exclusively affects the two top menu titles; surrounding controls, chevrons, and badges remain strictly clean and unaffected.
+- **Solid High-Contrast Title Typography**:
+  - The **Playlist Title** (left menu) and **Video Title** (right menu) render as solid, high-contrast typography matching the active theme's foreground tone (`#ffffff` on OLED Black, `#000000` with illuminated backlight halos on Pure White, and `#031b2e` with illuminated backlight halos on Sky Blue).
+  - The legacy text gradient effect (`title-gradient-text`) has been eliminated, providing crisp, solid, distraction-free legibility.
+- **Neon Action Streak (Audio Visualizer Color Sync)**:
+  - Both menus feature a **proud, glowing neon streak** (`NeonActionStreak.jsx`) that runs horizontally directly behind the horizontally aligned action buttons.
+  - **Color Synchronization**: Dynamically synchronizes with `visualizerColor` (updating live with the audio visualizer, color picker, or active theme).
+  - **Multi-Layer Optical Bloom**: Constructed with 3 optical tiers: a broad atmospheric neon halo (`blur-md opacity-50`), a mid-layer neon tube bloom (`blur-[3px] opacity-85` with double box-shadows), and a crisp white-hot neon filament core beam (`h-[2.5px] rounded-full`).
+  - **Zero Obstruction of Orb & Visualizer**: Tapers smoothly to `transparent` at the inner edges facing the Central Orb, preserving a clean breathing gap around the central Orb's circular boundary and audio visualizer.
+  - **Non-Intrusive**: Has `pointer-events-none` and sits at `z-0` beneath the buttons (`z-10`), with icons using `ICON_WHITE_OUTLINE` for crisp silhouette contrast.
 - **Central Orb Customizability Protected**:
   - The Central Orb (`PlayerControllerOrbMenu.jsx`) between the menus remains completely intact with its multi-style audio visualizer, custom image uploads, SVG partial spillover masking, orbital crops, and favorites presets.
 

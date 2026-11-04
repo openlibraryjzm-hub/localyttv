@@ -30,8 +30,8 @@
 }
 
 [data-theme="sky"] {
-  --theme-bg: #bae6fd;
-  --theme-bg-gradient: linear-gradient(180deg, #7dd3fc 0%, #a5d8ff 22%, #cbe5fe 55%, #f0f7fe 100%);
+  --theme-bg: #0369a1;
+  --theme-bg-gradient: radial-gradient(ellipse at 50% 30%, #e0f2fe 0%, #38bdf8 25%, #0369a1 55%, #030f1c 95%);
   --theme-fg: #083344;
   --theme-fg-muted: rgba(8, 51, 68, 0.7);
   --theme-fg-subtle: rgba(8, 51, 68, 0.2);
@@ -44,8 +44,8 @@
 }
 
 [data-theme="white"] {
-  --theme-bg: #ffffff;
-  --theme-bg-gradient: #ffffff;
+  --theme-bg: #475569;
+  --theme-bg-gradient: radial-gradient(ellipse at 50% 30%, #ffffff 0%, #cbd5e1 30%, #475569 65%, #090d16 100%);
   --theme-fg: #000000;
   --theme-fg-muted: rgba(0, 0, 0, 0.6);
   --theme-fg-subtle: rgba(0, 0, 0, 0.15);
@@ -61,34 +61,56 @@ html[data-theme="white"],
 html[data-theme="white"] body,
 html[data-theme="white"] #root,
 html[data-theme="white"] .layout-shell {
-  background: #ffffff !important;
+  background: radial-gradient(ellipse at 50% 30%, #ffffff 0%, #cbd5e1 30%, #475569 65%, #090d16 100%) fixed !important;
+  background-size: 100vw 100vh !important;
 }
 
 html[data-theme="white"] .layout-shell__top-controller,
 html[data-theme="white"] .layout-shell__bottom-panel,
 html[data-theme="white"] .layout-shell__fullscreen-video-info,
+html[data-theme="white"] .layout-shell__side-menu,
+html[data-theme="white"] .layout-shell__right-column,
+html[data-theme="white"] .layout-shell__content,
 html[data-theme="white"] .bg-black {
-  background-color: #ffffff !important;
-  background: #ffffff !important;
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+html[data-theme="white"] .sticky.bg-black {
+  background-color: rgba(241, 245, 249, 0.95) !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+html[data-theme="white"] h1,
+html[data-theme="white"] h2 {
+  color: #000000 !important;
+  -webkit-text-fill-color: #000000 !important;
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.95), 0 1px 3px rgba(255, 255, 255, 1) !important;
+  filter: none !important;
+}
+
+html[data-theme="white"] h3 {
+  color: #000000 !important;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.9), 0 1px 2px rgba(255, 255, 255, 0.95) !important;
 }
 
 html[data-theme="white"] .text-white,
 html[data-theme="white"] .text-white\/90,
-html[data-theme="white"] .text-white\/80,
-html[data-theme="white"] h1:not(.controller-title),
-html[data-theme="white"] h2,
-html[data-theme="white"] h3 {
+html[data-theme="white"] .text-white\/80 {
   color: #000000 !important;
-  -webkit-text-fill-color: #000000 !important;
-  text-shadow: none !important;
-  filter: none !important;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.85), 0 1px 2px rgba(255, 255, 255, 0.9) !important;
 }
 
 html[data-theme="white"] .text-white\/70,
 html[data-theme="white"] .text-white\/60,
 html[data-theme="white"] .text-white\/50 {
-  color: rgba(0, 0, 0, 0.6) !important;
-  text-shadow: none !important;
+  color: rgba(0, 0, 0, 0.75) !important;
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.8), 0 1px 1px rgba(255, 255, 255, 0.85) !important;
+}
+
+html[data-theme="white"] .group\/tool svg,
+html[data-theme="white"] button svg {
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.8));
 }
 
 html[data-theme="white"] .border-white {
@@ -99,13 +121,13 @@ html[data-theme="white"] .border-white\/10,
 html[data-theme="white"] .border-white\/20,
 html[data-theme="white"] .border-white\/30,
 html[data-theme="white"] .border-white\/40 {
-  border-color: rgba(0, 0, 0, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
 }
 
 html[data-theme="white"] .hover\:border-white\/20:hover,
 html[data-theme="white"] .hover\:border-white\/30:hover,
 html[data-theme="white"] .hover\:border-white\/50:hover {
-  border-color: rgba(0, 0, 0, 0.4) !important;
+  border-color: rgba(255, 255, 255, 0.6) !important;
 }
 
 html[data-theme="white"] .bg-zinc-900\/80,
@@ -115,7 +137,8 @@ html[data-theme="white"] .bg-zinc-800,
 html[data-theme="white"] .bg-black\/70,
 html[data-theme="white"] .bg-black\/90,
 html[data-theme="white"] .bg-black\/95 {
-  background-color: rgba(0, 0, 0, 0.06) !important;
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(10px) !important;
   color: #000000 !important;
 }
 
@@ -142,7 +165,7 @@ html[data-theme="sky"],
 html[data-theme="sky"] body,
 html[data-theme="sky"] #root,
 html[data-theme="sky"] .layout-shell {
-  background: linear-gradient(180deg, #7dd3fc 0%, #a5d8ff 22%, #cbe5fe 55%, #f0f7fe 100%) fixed !important;
+  background: radial-gradient(ellipse at 50% 30%, #e0f2fe 0%, #38bdf8 25%, #0369a1 55%, #030f1c 95%) fixed !important;
   background-size: 100vw 100vh !important;
 }
 
@@ -163,7 +186,7 @@ html[data-theme="sky"] .sticky.bg-black {
 }
 
 /* Hero Titles: Pure Solid Midnight Sapphire + Dual-Layer Illuminated Backlight */
-html[data-theme="sky"] h1:not(.controller-title),
+html[data-theme="sky"] h1,
 html[data-theme="sky"] h2 {
   background: none !important;
   -webkit-background-clip: unset !important;

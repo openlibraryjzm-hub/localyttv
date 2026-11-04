@@ -376,9 +376,10 @@ const FullscreenVideoInfo = () => {
             const isValidProfileImg = profileImg && profileImg !== 'null' && profileImg !== 'undefined' && profileImg.trim() !== '';
 
             const isLocal = video.is_local || (!video.video_url?.includes('youtube.com') && !video.video_url?.includes('youtu.be'));
+            const ytUrl = video.video_url || video.videoUrl || (video.video_id ? `https://www.youtube.com/watch?v=${video.video_id}` : null);
 
             const renderVideoThumbnail = () => (
-              <div className="relative group/thumb px-0 my-1 cursor-context-menu" onContextMenu={handleMainThumbnailContextMenu}>
+              <div className="relative group/thumb px-0 mt-0 mb-1.5 cursor-context-menu" onContextMenu={handleMainThumbnailContextMenu}>
                 {thumbnailUrl ? (
                   <div className="rounded-xl overflow-hidden shadow-none border-0 aspect-video relative">
                     <img
@@ -387,7 +388,55 @@ const FullscreenVideoInfo = () => {
                       className="block w-full h-full object-cover"
                     />
 
-                    {/* Hover Overlay Controls Bar */}
+                    {/* Top Hover Overlay: Channel Author, Avatar, View Count, Upload Date & External Link */}
+                    <div className="absolute inset-x-0 top-0 p-2.5 bg-gradient-to-b from-black/95 via-black/70 to-transparent flex items-start justify-between gap-2.5 opacity-0 group-hover/thumb:opacity-100 transition-opacity duration-200 z-20">
+                      {/* Left: Avatar + Author & Metadata Stack */}
+                      <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                        {isValidProfileImg ? (
+                          <img
+                            src={profileImg}
+                            alt={author}
+                            className="w-9 h-9 rounded-full border border-white/20 object-cover bg-zinc-900 shrink-0 shadow-md"
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                            }}
+                          />
+                        ) : (
+                          <div className="w-9 h-9 rounded-full border border-white/20 bg-zinc-800 flex items-center justify-center text-white shrink-0 shadow-md">
+                            <User size={16} strokeWidth={2.5} />
+                          </div>
+                        )}
+
+                        <div className="flex flex-col min-w-0 flex-1 leading-tight">
+                          <span className="font-black text-sm text-white truncate drop-shadow-md" title={author}>
+                            {author}
+                          </span>
+                          {(viewCountText || formattedDate) && (
+                            <div className="flex items-center gap-1.5 font-bold text-[11px] text-white/80 truncate drop-shadow-sm mt-0.5">
+                              {viewCountText && <span>{viewCountText} views</span>}
+                              {viewCountText && formattedDate && <span className="opacity-40">•</span>}
+                              {formattedDate && <span>{formattedDate}</span>}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Right: YouTube External Link Button */}
+                      {ytUrl && (
+                        <a
+                          href={ytUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="border border-white/20 hover:border-white/40 rounded-lg p-1.5 bg-black/60 hover:bg-zinc-800 shadow-md flex items-center justify-center text-white transition-all active:scale-95 cursor-pointer select-none shrink-0"
+                          title="View on YouTube"
+                        >
+                          <ExternalLink size={14} strokeWidth={2.5} />
+                        </a>
+                      )}
+                    </div>
+
+                    {/* Bottom Hover Overlay Controls Bar */}
                     <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/90 via-black/60 to-transparent flex items-center justify-between gap-2 opacity-0 group-hover/thumb:opacity-100 transition-opacity duration-200 z-20">
                       {/* Left: Volume Controller */}
                       <div className="flex items-center gap-1.5 flex-1 min-w-[90px]" onClick={(e) => e.stopPropagation()}>
@@ -511,67 +560,9 @@ const FullscreenVideoInfo = () => {
             );
 
             return (
-              <div className="flex flex-col gap-0.5">
-                {/* Single Unified Hero Video Metadata Card */}
-                <div className="mt-1 px-2.5">
-                  <div className="border-0 rounded-2xl p-3 bg-black shadow-none relative overflow-hidden flex flex-col gap-2.5 shrink-0 text-white">
-                    {/* Row 1: Centered Avatar (48px) & Uploader Name with Subtle YouTube Icon Button on Right */}
-                    <div className="relative flex items-center justify-center w-full min-w-0">
-                      <div className="flex items-center justify-center gap-3 min-w-0 max-w-full px-7">
-                        {isValidProfileImg ? (
-                          <img
-                            src={profileImg}
-                            alt={author}
-                            className="w-12 h-12 rounded-full border-0 object-cover bg-zinc-900 shrink-0 shadow-none"
-                            onError={(e) => {
-                              e.target.style.display = 'none';
-                            }}
-                          />
-                        ) : (
-                          <div className="w-12 h-12 rounded-full border-0 bg-zinc-800 flex items-center justify-center text-white shrink-0 shadow-none">
-                            <User size={22} strokeWidth={2.5} />
-                          </div>
-                        )}
-
-                        <span className="font-black text-lg text-white truncate leading-tight text-center" title={author}>
-                          {author}
-                        </span>
-                      </div>
-
-                      {/* Subtle Compact YouTube External Link Button */}
-                      {(() => {
-                        const ytUrl = video.video_url || video.videoUrl || (video.video_id ? `https://www.youtube.com/watch?v=${video.video_id}` : null);
-                        if (!ytUrl) return null;
-                        return (
-                          <a
-                            href={ytUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="absolute right-0 top-1/2 -translate-y-1/2 border border-transparent hover:border-white/20 rounded-xl p-1.5 bg-zinc-900/60 hover:bg-zinc-800 shadow-none flex items-center justify-center text-white transition-all active:scale-95 cursor-pointer select-none shrink-0"
-                            title="View on YouTube"
-                          >
-                            <ExternalLink size={16} strokeWidth={2.5} />
-                          </a>
-                        );
-                      })()}
-                    </div>
-
-                    {/* Dedicated Spacing (Divider line removed for total black merge) */}
-                    <div className="w-full h-1" />
-
-                    {/* Row 2: Dedicated Full-Width Prominent View Count & Upload Date */}
-                    {(viewCountText || formattedDate) && (
-                      <div className="flex items-center justify-center text-center font-black text-[15px] text-white truncate py-0.5 tracking-tight">
-                        {viewCountText && <span>{viewCountText} views</span>}
-                        {viewCountText && formattedDate && <span className="mx-2.5 opacity-40">•</span>}
-                        {formattedDate && <span>{formattedDate}</span>}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
+              <div className="flex flex-col h-full w-full">
                 {/* Tab Content */}
-                <div className="px-0 min-h-0 flex-1 mt-2">
+                <div className="px-0 min-h-0 flex-1">
                   {activeTab === 'info' ? (
                     <div className="flex flex-col gap-3 px-2.5">
                       {renderVideoThumbnail()}
@@ -610,7 +601,7 @@ const FullscreenVideoInfo = () => {
                   ) : (
                     /* Playlist Tab */
                     currentPlaylistId && (
-                      <div className="w-full px-0 mt-0 flex justify-center">
+                      <div className="w-full px-2.5 mt-0 flex justify-center">
                         <div className="w-full">
                           {(() => {
                             const playlistObj = allPlaylists.find(p => String(p.id) === String(currentPlaylistId));
@@ -654,7 +645,8 @@ const FullscreenVideoInfo = () => {
                                 contentAboveGrid={renderVideoThumbnail()}
                                 showOnlyShuffleHover={true}
                                 hideTitleBar={true}
-                                miniGridLimit={18}
+                                miniGridLimit={10}
+                                miniGridCols={2}
                                 onVideoSelect={handleVideoSelect}
                               />
                             );

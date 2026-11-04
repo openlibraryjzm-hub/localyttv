@@ -127,6 +127,7 @@ const PlaylistCard = ({
   showOnlyShuffleHover = false,
   hideTitleBar = false,
   miniGridLimit = 15,
+  miniGridCols = 3,
 }) => {
   const { currentPlaylistId, setPlaylistItems, setPreviewPlaylist, setCurrentVideoIndex, currentPlaylistItems } =
     usePlaylistStore();
@@ -1120,7 +1121,7 @@ const PlaylistCard = ({
         {/* Mini Preview Grid – miniGridLimit items for large size, hidden in small size */}
         {size !== 'small' && (
           <div className="mt-1 flex-1 flex flex-col justify-center my-auto py-2 transition-all">
-            <div className="grid grid-cols-3 gap-1.5 px-0">
+            <div className={`grid ${miniGridCols === 2 ? 'grid-cols-2 gap-2' : 'grid-cols-3 gap-1.5'} px-0`}>
               {localPreviewVideos.slice(0, miniGridLimit).map((item, index) => {
               const slotKey = getPreviewItemKey(item, index);
               const thumbSrc = getPreviewItemThumbnail(item);
@@ -1149,7 +1150,7 @@ const PlaylistCard = ({
               );
             })}
             {Array.from({
-              length: Math.max(0, (localPreviewVideos.length > 0 ? Math.min(miniGridLimit, Math.max(3, Math.ceil(localPreviewVideos.length / 3) * 3)) : 3) - localPreviewVideos.length),
+              length: Math.max(0, (localPreviewVideos.length > 0 ? Math.min(miniGridLimit, Math.max(miniGridCols, Math.ceil(localPreviewVideos.length / miniGridCols) * miniGridCols)) : miniGridCols) - localPreviewVideos.length),
             }).map((_, i) => (
               <div
                 key={`empty-${i}`}

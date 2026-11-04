@@ -13,8 +13,8 @@ import { useInspectLabel } from '../utils/inspectLabels';
 import { getAllPlaylists, getPlaylistItems, getAllFoldersWithVideos, getVideosInFolder, getAllStuckFolders, assignVideoToFolder, unassignVideoFromFolder, getVideoFolderAssignments, createPlaylist, addVideoToPlaylist, removeVideoFromPlaylist, getFolderMetadata, getWatchHistory } from '../api/playlistApi';
 import { getThumbnailUrl, extractVideoId, fetchVideoMetadata } from '../utils/youtubeUtils';
 import { getFolderColorById, FOLDER_COLORS } from '../utils/folderColors';
-import { THEMES, getGradientTitleStyle } from '../utils/themes';
 import AudioVisualizer from './AudioVisualizer';
+import NeonActionStreak from './NeonActionStreak';
 import useLongPress from '../hooks/useLongPress';
 import { invoke, listen } from '../api/platformBridge';
 
@@ -222,13 +222,11 @@ export default function PlayerControllerPlaylistMenu(props) {
               handleShufflePlaylist();
             }}
           >
-            <h1 ref={playlistTitleRef} className="controller-title font-black text-center leading-tight line-clamp-3 tracking-tight transition-all pb-1 cursor-pointer hover:opacity-90 select-none" style={{
+            <h1 ref={playlistTitleRef} className="controller-title font-black text-center leading-tight line-clamp-3 tracking-tight transition-all pb-1 cursor-pointer hover:opacity-90 select-none text-white" style={{
               fontSize: `${titleFontSize}px`,
               pointerEvents: 'none'
             }} title={getInspectTitle(`Playlist: ${playlistTitle} (Click for Playlists Grid, Right-click for Mega Shuffle)`) || `${playlistTitle} (Long-press for mega shuffle)`}>
-              <span className="title-gradient-text" style={getGradientTitleStyle(visualizerColor, appTheme)}>
-                {playlistTitle}
-              </span>
+              {playlistTitle}
             </h1>
 
             {/* Badges Container */}
@@ -260,7 +258,10 @@ export default function PlayerControllerPlaylistMenu(props) {
           <div className="flex items-center px-6 shrink-0 relative bg-transparent" style={{
             height: `${bottomBarHeight}px`
           }}>
-            <div className="w-full h-full flex items-center relative">
+            {/* Proud Neon Streak behind action buttons */}
+            <NeonActionStreak color={visualizerColor} side="left" />
+
+            <div className="w-full h-full flex items-center relative z-10">
 
               {/* Left Side (2 items evenly spaced) */}
               <div className="flex-1 flex items-center justify-evenly h-full pr-4">
